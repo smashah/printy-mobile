@@ -1,0 +1,36 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "@printy-mobile/auth#generate": {
+      "persistent": false
+    },
+    "@printy-mobile/db#generate": {
+      "dependsOn": ["@printy-mobile/auth#generate"],
+      "persistent": false
+    },
+    "@printy-mobile/api#db:touchy": {
+      "persistent": false
+    },
+    "generate": {
+      "dependsOn": ["^generate"],
+      "persistent": false
+    },
+    "dev": {
+      "dependsOn": ["@printy-mobile/api#db:touchy", "^generate"],
+      "cache": false,
+      "persistent": true
+    }
+  }
+}

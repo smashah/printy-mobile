@@ -1,0 +1,52 @@
+# Mockups Consumption Rules
+
+Purpose: Guide agents when transforming `mockups/` into implementation plans and code.
+
+## Source Inputs
+- Primary: `mockups/` directory (folders per page/flow)
+- Secondary: `notes/PRD.md`
+- Optional hints: `mockups/manifest.json` (validated by `mockups/manifest.schema.json`)
+
+## Mandatory Constraints
+1. Structure over Styling
+   - Treat mockups as structural/layout/responsiveness references.
+   - Do NOT replicate pixel-exact styling, colors, borders, or bespoke CSS from mockups unless explicitly requested.
+   - Prefer existing design tokens and defaults.
+
+2. Components Only from `@repo/ui`
+   - Use only components exported by `@repo/ui`.
+   - Do NOT import new third-party UI libraries.
+   - Compose layouts with primitives available in `@repo/ui` (and standard HTML as needed), keeping accessibility rules from the project in mind.
+
+3. App Shell Scope Rule
+   - Ignore headers/sidebars/footers in mockups unless the mockup folder or notes explicitly state it is an app shell task.
+   - Example: If the mockup lives under `mockups/account-profile/`, only implement the Account Profile content area. Do not modify the global header/sidebar/footer.
+
+4. Accessibility & Responsiveness
+   - Ensure focus management, keyboard nav, and color contrast follow project rules.
+   - Implement responsive layout as implied by the mockup (stacking, grid changes) without introducing custom CSS frameworks.
+
+5. No Styling Overrides by Default
+   - Avoid adding custom CSS beyond minimal layout utilities already in the stack.
+   - Use Tailwind utility classes only where patterns already exist in the repo or provided UI components expect them.
+
+## Planning & Parsing Order
+1. Read `mockups/manifest.json` if present:
+   - Plan pages by `priority` (ascending; lower means earlier).
+   - Respect `routeHint` where applicable, mapping to existing routing conventions.
+   - Observe `status` (skip `done`, plan `todo`/`in-progress`).
+   - Use `flows[]` to group pages in the plan but still keep page-level scope.
+2. For each page/flow folder:
+   - If `design.html` exists, extract structure and component mapping.
+   - If only screenshots exist, infer structure using `@repo/ui` catalog.
+   - Read `notes.md` for behaviors, states, and acceptance criteria.
+3. Cross-check with `notes/PRD.md` to confirm requirements.
+
+## Deliverables
+- Create or update pages/routes without changing global shells unless instructed.
+- Use `@repo/ui` components for all interactive and visual elements.
+- Add tests and docs per project standards.
+
+## Examples
+- Good: Implement Account Profile form using `@repo/ui` form components, respecting the layout from `design.html`, ignoring custom mockup colors.
+- Bad: Introduce a new UI component library or custom CSS to reproduce exact mockup visuals.

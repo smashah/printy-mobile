@@ -1,0 +1,22 @@
+---
+description: General rules for the YOUR_PROJECT_NAME project
+globs: ["**/*"]
+alwaysApply: true
+---
+
+You are working on YOUR_PROJECT_NAME, YOUR_PROJECT_SLOGAN
+
+Always reference:
+@file [PRD.md](mdc:notes/PRD.md)
+@file [README.md](mdc:README.md)
+@file [STACK.md](mdc:notes/STACK.md)
+@file [TODO.md](mdc:notes/TODO.md)
+@file [DEVLOG.md](mdc:notes/DEVLOG.md)
+
+Key guidelines:
+1. Follow the monorepo structure defined in STACK.md
+2. Update DEVLOG.md with any significant changes, using the current date, tick off items in [TODO.md](mdc:notes/TODO.md) as we go.
+3. Keep documentation in sync with code changes
+4. Follow TypeScript best practices and strict type checking
+5. Use conventional commits
+6. Ensure all new code follows the project's architectural decisions

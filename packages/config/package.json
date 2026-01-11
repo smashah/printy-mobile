@@ -1,0 +1,20 @@
+{
+  "name": "@printy-mobile/config",
+  "version": "0.0.0",
+  "description": "Centralized environment configuration and validation for SmashStack monorepo",
+  "module": "./src/index.ts",
+  "type": "module",
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./globals": "./src/globals.ts"
+  }
+}

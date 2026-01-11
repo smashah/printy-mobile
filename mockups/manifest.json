@@ -1,0 +1,19 @@
+{
+  "$schema": "./manifest.schema.json",
+  "notes": "Declare mockup pages and optional flows to guide the vibe coding agent.",
+  "pages": [
+    {
+      "slug": "example-landing-page",
+      "title": "Example Landing Page",
+      "priority": 2,
+      "routeHint": "/",
+      "status": "todo"
+    }
+  ],
+  "flows": [
+    {
+      "name": "Onboarding",
+      "steps": ["example-landing-page"]
+    }
+  ]
+}

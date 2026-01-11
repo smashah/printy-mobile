@@ -1,0 +1,134 @@
+name: Deploy PR Previews
+
+on:
+  workflow_dispatch:
+  # pull_request:
+  #   types: [opened, synchronize, reopened, closed]
+
+jobs:
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies (skip heavy deps for faster CI)
+        run: SKIP_HEAVY_JOBS=1 pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Check Types
+        run: pnpm check-types
+
+      - name: Test
+        run: pnpm test
+
+  deploy-preview:
+    needs: lint-and-test
+    if: github.event.action != 'closed'
+    name: Deploy API and Webapp preview (PR #${{ github.event.number }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PR_NUMBER: ${{ github.event.number }}
+      API_NAME: printy-mobile-api-pr-${{ github.event.number }}
+      WEBAPP_NAME: printy-mobile-webapp-pr-${{ github.event.number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies (skip heavy deps for faster CI)
+        run: SKIP_HEAVY_JOBS=1 pnpm install --frozen-lockfile
+
+      - name: Deploy API (preview)
+        run: pnpx wrangler@latest deploy --minify apps/api/src/index.ts --name "$API_NAME" --config apps/api/wrangler.toml
+
+      - name: Build Webapp
+        run: pnpm -F @printy-mobile/webapp run build
+
+      - name: Deploy Webapp (preview)
+        run: pnpx wrangler@latest deploy --name "$WEBAPP_NAME" --config apps/webapp/wrangler.toml
+
+      - name: Comment preview info
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: pr-preview
+          message: |
+            Preview deployments created for PR #${{ env.PR_NUMBER }}
+            - API worker name: `${{ env.API_NAME }}`
+            - Webapp worker name: `${{ env.WEBAPP_NAME }}`
+            These run on your Cloudflare workers.dev subdomain.
+
+  teardown-preview:
+    if: github.event.action == 'closed'
+    name: Teardown preview deployments (PR #${{ github.event.number }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PR_NUMBER: ${{ github.event.number }}
+      API_NAME: printy-mobile-api-pr-${{ github.event.number }}
+      WEBAPP_NAME: printy-mobile-webapp-pr-${{ github.event.number }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.20.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies (skip heavy deps for faster CI)
+        run: SKIP_HEAVY_JOBS=1 pnpm install --frozen-lockfile
+
+      - name: Delete API preview worker
+        run: pnpx wrangler@latest delete --name "$API_NAME" --config apps/api/wrangler.toml --yes
+
+      - name: Delete Webapp preview worker
+        run: pnpx wrangler@latest delete --name "$WEBAPP_NAME" --config apps/webapp/wrangler.toml --yes
+
+      - name: Remove preview comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          header: pr-preview
+          delete: true

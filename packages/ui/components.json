@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@printy-mobile/ui/components",
+    "ui": "@printy-mobile/ui/components",
+    "utils": "@printy-mobile/ui/lib/utils",
+    "lib": "@printy-mobile/ui/lib",
+    "hooks": "@printy-mobile/ui/hooks"
+  }
+}

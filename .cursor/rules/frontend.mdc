@@ -1,0 +1,117 @@
+---
+description: Frontend development rules for React application
+globs: ["apps/web/**/*.{ts,tsx}"]
+alwaysApply: false
+---
+
+When working on frontend code:
+1. Use Tanstack suite for data management:
+   - Tanstack Router for routing
+   - Tanstack Query for data fetching
+   - Tanstack Forms for form handling
+   - Tanstack Table for data tables
+   - Tanstack Store for state management
+
+2. Data Fetching with RPC Client:
+   ```typescript
+   import { backendClient, MutationWrapper } from "~/utils/api";
+   
+   // ✅ CORRECT: Query pattern
+   const queryOptions = backendClient.api.resources.$get.queryOptions();
+   const { data } = useSuspenseQuery(queryOptions);
+   
+   // ✅ CORRECT: Mutation pattern
+   const mutation = useMutation(
+     backendClient.api.resources.$post.mutationOptions()
+   );
+   mutation.mutate(MutationWrapper({ name: "New Resource" }));
+   ```
+
+3. UI Components:
+   - Use shadcn/ui components when available
+   - Create custom components in packages/ui for reusability
+   - Follow component composition patterns
+   - Use Tailwind CSS for styling
+
+4. TypeScript:
+   - Use strict type checking
+   - Define proper interfaces and types
+   - Avoid any type
+   - Use proper type imports
+   - Import types from @repo/db/dtos
+
+5. State Management:
+   - Use Tanstack Store for global state
+   - Use React hooks for local state
+   - Implement proper error boundaries
+   - Handle loading states appropriately
+
+6. Performance:
+   - Implement proper memoization
+   - Use React.lazy for code splitting
+   - Optimize bundle size
+   - Follow React best practices
+
+## Critical Patterns
+
+### Queries (GET requests)
+```typescript
+// In route loader
+export const Route = createFileRoute('/(app)/posts/')({
+  loader: async ({ context }) => {
+    const queryOptions = context.backendClient.api.posts.$get.queryOptions({
+      input: { query: { status: "published" } }
+    });
+    await context.queryClient.ensureQueryData(queryOptions);
+    return { queryOptions };
+  },
+});
+
+// In component
+function PostsPage() {
+  const { queryOptions } = Route.useLoaderData();
+  const { data } = useSuspenseQuery(queryOptions);
+  return <PostList posts={data.data} />;
+}
+```
+
+### Mutations (POST/PATCH/DELETE)
+```typescript
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { backendClient, MutationWrapper } from "~/utils/api";
+
+function CreateForm() {
+  const queryClient = useQueryClient();
+  
+  // ✅ CORRECT: Use mutationOptions()
+  const mutation = useMutation(
+    backendClient.api.posts.$post.mutationOptions()
+  );
+  
+  const handleSubmit = (data) => {
+    // ✅ CORRECT: Wrap with MutationWrapper
+    mutation.mutate(MutationWrapper(data), {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["posts"] });
+      },
+    });
+  };
+}
+```
+
+### ❌ Common Mistakes
+```typescript
+// ❌ WRONG: Manual fetch
+const response = await fetch('/api/posts', {
+  method: 'POST',
+  body: JSON.stringify(data),
+});
+
+// ❌ WRONG: Not using mutationOptions
+const mutation = useMutation({
+  mutationFn: async (data) => { /* ... */ }
+});
+
+// ❌ WRONG: Not wrapping mutation data
+mutation.mutate({ name: "Test" }); // Missing MutationWrapper!
+``` 

@@ -1,0 +1,60 @@
+ENVIRONMENT="development"
+
+# ============================================
+# CRITICAL: Must be set before first sign up!
+# ============================================
+WEB_APP_HOST=http://localhost:9992
+BACK_OFFICE_HOST=http://localhost:9991
+
+# ============================================
+# Better Auth
+# ============================================
+BETTER_AUTH_URL=http://localhost:7800
+BETTER_AUTH_SECRET=your-super-secret-key-at-least-32-chars
+
+# ============================================
+# OAuth Providers (configure in each provider's dashboard)
+# ============================================
+AUTH_GOOGLE_CLIENT_ID=
+AUTH_GOOGLE_CLIENT_SECRET=
+AUTH_GITHUB_CLIENT_ID=
+AUTH_GITHUB_CLIENT_SECRET=
+AUTH_DISCORD_CLIENT_ID=
+AUTH_DISCORD_CLIENT_SECRET=
+
+# ============================================
+# Polar.sh Payment Integration (Optional)
+# Get these from https://polar.sh/settings/developers
+# ============================================
+POLAR_ACCESS_TOKEN=
+POLAR_WEBHOOK_SECRET=
+PRODUCT_ID_FREE=
+PRODUCT_ID_PRO=
+
+# ============================================
+# Email (Resend)
+# ============================================
+RESEND_API_KEY=
+
+# ============================================
+# S3-Compatible Storage (Optional)
+# ============================================
+AWS_BUCKET=
+AWS_ENDPOINT=
+AWS_REGION=auto
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+S3_PROVIDER=cloudflare
+MEDIA_BUCKET_URL=
+
+# ============================================
+# Trigger.dev Background Jobs (Optional)
+# ============================================
+TRIGGER_SECRET_KEY=
+TRIGGER_BASE_URL=
+TRIGGER_SECRET_M2M_KEY=
+
+# ============================================
+# Discord Webhook for Notifications (Optional)
+# ============================================
+DISCORD_WEBHOOK_URL=

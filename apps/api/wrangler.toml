@@ -1,0 +1,71 @@
+"$schema" = "node_modules/wrangler/config-schema.json"
+
+name = "printy-mobile-api" # TODO: Replace with your project name
+compatibility_date = "2025-02-04"
+compatibility_flags = [ "nodejs_compat", "nodejs_als" ]
+
+# Stub out heavy Node.js dependencies that don't work in Workers
+[alias]
+"sharp" = "./src/stubs/noop.ts"
+"ffmpeg-static" = "./src/stubs/noop.ts"
+"ffprobe-static" = "./src/stubs/noop.ts"
+# account_id = "YOUR_ACCOUNT_ID" # TODO: Replace with your Cloudflare account ID
+keep_vars = true
+
+
+[dev]
+port = 8930
+
+[[d1_databases]]
+binding = "DB"
+database_name = "printy-mobile-d1-database" # TODO: Replace with your database name
+database_id = "YOUR_DATABASE_ID" # TODO: Replace with your D1 database ID
+migrations_dir = "../../packages/db/migrations"
+
+# [[r2_buckets]]
+# binding = "MEDIA_BUCKET"
+# bucket_name = "printy-mobile-dev"
+
+# [vars]
+# MY_VAR = "my-variable"
+
+# Workers Logs
+# Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/
+# Configuration: https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs
+[observability]
+enabled = true
+
+# [[kv_namespaces]]
+# binding = "MY_KV_NAMESPACE"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# [[r2_buckets]]
+# binding = "MY_BUCKET"
+# bucket_name = "my-bucket"
+
+# [ai]
+# binding = "AI"
+
+[env.staging]
+name = "printy-mobile-api-staging"
+routes = [
+  { pattern = "api-staging.printy.mobile", zone_id = "YOUR_ZONE_ID", custom_domain = true }
+]
+
+
+[env.production]
+vars = { API_HOST = "api.printy.mobile" }
+name = "printy-mobile-api"
+routes = [
+  { pattern = "api.printy.mobile", zone_id = "YOUR_ZONE_ID", custom_domain = true }
+]
+
+[[env.production.r2_buckets]]
+binding = "MEDIA_BUCKET"
+bucket_name = "printy-mobile-production"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "printy-mobile-d1-database"
+database_id = "YOUR_DATABASE_ID"
+migrations_dir = "../../packages/db/migrations"
