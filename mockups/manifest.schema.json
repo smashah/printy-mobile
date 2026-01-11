@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://printy-mobile.local/mockups/manifest.schema.json",
+  "title": "Mockups Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "pages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+          "title": { "type": "string" },
+          "priority": { "type": "number", "minimum": 0 },
+          "routeHint": { "type": "string" },
+          "status": { "type": "string", "enum": ["todo", "in-progress", "done"] }
+        },
+        "required": ["slug"],
+        "unevaluatedProperties": false
+      }
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "steps": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["name", "steps"],
+        "unevaluatedProperties": false
+      }
+    },
+    "notes": { "type": "string" }
+  }
+}

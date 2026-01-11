@@ -1,0 +1,132 @@
+# API Development Guidelines
+
+## Hono RPC Pattern with Full Type Safety
+
+### Backend Client Usage
+Always use the Hono RPC `backendClient` from `utils/api` which should be consumed from the route context and wrapped with React Query implementation.
+
+#### Pattern:
+- `backendClient` (Hono RPC client) is available in route context
+- Use `backendClient.api.posts.$get()` instead of manual fetch calls
+- Wrap RPC calls with React Query for caching and state management
+- Access both `backendClient` and `queryClient` from context in `beforeLoad`
+
+#### Example Implementation:
+
+```typescript
+// Route context provides typed RPC client
+const {backendClient, queryClient} = context;
+
+// Use RPC client with React Query
+const queryFn = () => backendClient.api.posts.$get({
+  query: { limit: '10', category: 'tech' }
+}).then(resp => resp.json())
+
+// In route beforeLoad
+beforeLoad: async ({context, location}) => {
+  const {backendClient, queryClient} = context;
+  
+  const queryOptions = {
+    queryKey: ['posts', location.search],
+    queryFn: () => backendClient.api.posts.$get({query: location.search})
+  }
+  queryClient.ensureQueryData(queryOptions);
+  return { queryOptions }
+}
+
+// In component
+const { data: posts } = useSuspenseQuery(queryOptions)
+```
+
+### API Endpoint Development
+
+#### Always Add Zod Validation
+Every API endpoint should have proper validation:
+
+```typescript
+import * as z from 'zod'
+
+// Define validation schemas
+const postsQuerySchema = z.object({
+  limit: z.string().optional(),
+  category: z.string().optional()
+})
+
+const createPostSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  body: z.string().min(1, "Body is required")
+})
+
+// Apply to endpoints
+.get("/posts", zodValidator('query', postsQuerySchema), async (c) => {
+  const { limit, category } = c.req.valid('query');
+  // Use validated data
+})
+
+.post("/posts", zodValidator('json', createPostSchema), async (c) => {
+  const { title, body } = c.req.valid('json');
+  // Use validated data
+})
+```
+
+#### Required CORS Configuration
+Include all necessary origins for development and production:
+
+```typescript
+cors({
+  origin: [
+    "http://localhost:5173", 
+    "http://localhost:3000", 
+    "http://localhost:8787", 
+    "http://localhost:7803", 
+    "https://yourdomain.com",
+    "https://yourapp-webapp.yourname.workers.dev"
+  ],
+  allowHeaders: ["Content-Type", "Authorization"],
+  allowMethods: ["POST", "GET", "OPTIONS"],
+  exposeHeaders: ["Content-Length"],
+  maxAge: 600,
+  credentials: true,
+})
+```
+
+### Environment Detection Pattern
+
+#### Frontend API Client
+```typescript
+// utils/api.ts
+export const getApiHost = () => import.meta.env.PROD 
+  ? `https://api.yourdomain.com`
+  : 'http://localhost:8787'
+
+export const backendClient = hc<AppType>(getApiHost())
+```
+
+### Deployment Configuration
+
+#### Wrangler Configuration
+Always include `keep_vars = true` and use `pnpx wrangler@latest`:
+
+```toml
+# wrangler.toml
+name = "your-project-api"
+compatibility_date = "2025-02-04"
+compatibility_flags = [ "nodejs_compat" ]
+keep_vars = true
+```
+
+#### Package.json Scripts
+```json
+{
+  "deploy": "pnpm run db:migrate:cf:remote && pnpx wrangler@latest deploy --minify src/index.ts"
+}
+```
+
+## Best Practices
+
+1. **Type Safety**: Always use the typed RPC client, never manual fetch
+2. **Validation**: Every endpoint must have Zod validation
+3. **Error Handling**: Use the zodValidator middleware for consistent error responses  
+4. **Environment Awareness**: Detect prod vs dev environments for API endpoints
+5. **CORS**: Include all necessary origins before deployment
+6. **Deployment**: Use latest wrangler and keep_vars for consistency

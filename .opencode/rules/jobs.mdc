@@ -1,0 +1,41 @@
+---
+description: Background job processing rules using Trigger.dev
+globs: ["packages/jobs/**/*.ts"]
+alwaysApply: false
+---
+
+When working on background jobs:
+1. Job Structure:
+   - Organize jobs by domain (OCR, marking, PDF processing)
+   - Implement proper retry logic
+   - Handle job failures gracefully
+   - Maintain job state
+   - Implement proper logging
+
+2. PDF Processing Jobs:
+   - Extract questions and metadata
+   - Handle different PDF formats
+   - Implement proper error handling
+   - Optimize for performance
+   - Support batch processing
+
+3. OCR Jobs:
+   - Process image uploads
+   - Handle multiple image formats
+   - Implement proper queuing
+   - Track processing status
+   - Support parallel processing
+
+4. Marking Jobs:
+   - Process answers against rubrics
+   - Handle concurrent marking requests
+   - Implement progress tracking
+   - Stream results when available
+   - Maintain marking history
+
+5. Job Monitoring:
+   - Track job status and progress
+   - Monitor resource usage
+   - Implement alerting for failures
+   - Maintain job statistics
+   - Handle cleanup tasks 

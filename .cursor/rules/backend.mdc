@@ -1,0 +1,123 @@
+---
+description: Backend development rules for Hono API and Cloudflare Workers
+globs: ["apps/api/**/*.ts"]
+alwaysApply: false
+---
+
+## 🔥 CRITICAL PATTERNS (MUST FOLLOW)
+
+### Route Type Bindings
+```typescript
+import type { APIBindings } from "../middleware/type";
+
+// ✅ CORRECT: Use APIBindings for full type safety
+export const tripsRoutes = new Hono<APIBindings>();
+
+// ❌ WRONG: Custom Env type bypasses middleware
+export const tripsRoutes = new Hono<{ Bindings: { DB: D1Database } }>();
+```
+
+### Database Access
+```typescript
+// ✅ CORRECT: Use middleware-provided DB client
+const db = c.var.db;  // Already configured with schema and relations
+const user = c.var.user;  // From auth middleware
+
+// ❌ WRONG: Creating new Drizzle client (wasteful!)
+const db = drizzle(c.env.DB, { schema: { ...schema, ...relations } });
+```
+
+### Validation
+```typescript
+import { zValidator } from "@hono/zod-validator";  // ✅ CORRECT name
+
+// ✅ CORRECT usage
+tripsRoutes.post("/", zValidator("json", ZTripInsert), async (c) => {
+  const db = c.var.db;
+  const user = c.var.user;
+  const data = c.req.valid("json");
+});
+
+// ❌ WRONG: zodValidator doesn't exist!
+import { zodValidator } from "@hono/zod-validator";  // ❌ WRONG
+```
+
+### Schema Imports & Naming
+```typescript
+// ✅ CORRECT: Import from main schema export
+import * as schema from "@hypermile.club/db/schema";
+
+// ✅ CORRECT: Use table aliases (plural, with 't' prefix)
+import { tUsers, tTrips, tUserData } from "@hypermile.club/db/schema/alias";
+
+// ❌ WRONG: Don't import from internal paths
+import * as schema from "@hypermile.club/db/schema/hypermile-index";
+import * as relations from "@hypermile.club/db/schema/relations";
+
+// ❌ NEVER: Create a custom 'users' table (conflicts with Better-Auth)
+export const users = sqliteTable("users", { ... });  // ❌ WRONG!
+
+// ✅ CORRECT: Extend user data in separate table
+import { user } from "@hypermile.club/db/generated/auth";
+export const userData = sqliteTable("user_data", {
+  userId: text("user_id").references(() => user.id),
+  // ... custom fields
+});
+```
+
+**CRITICAL SCHEMA RULES:**
+1. **Table names MUST be singular**: `trip`, `vehicle`, `user_data` (not `trips`, `vehicles`, `users`)
+2. **NEVER duplicate Better-Auth tables**: Use `user` from `generated/auth.ts`
+3. **Table aliases are plural**: `tTrips`, `tVehicles`, `tUserData`
+4. **Reference Better-Auth user correctly**: `import { user } from "../generated/auth"`
+
+See [SCHEMA-NAMING-CONVENTIONS.md](../../packages/db/SCHEMA-NAMING-CONVENTIONS.md) for complete guide.
+
+### Route File Organization
+```
+apps/api/src/routes/
+├── trips.routes.ts        ✅ CORRECT: Direct in routes/
+├── vehicles.routes.ts     ✅ CORRECT
+├── social.routes.ts       ✅ CORRECT
+├── index.ts               ✅ CORRECT: Combines all routes
+└── hypermile/             ❌ WRONG: No project-scoped subfolders!
+    └── trips.routes.ts    ❌ WRONG
+```
+
+---
+
+When working on backend code:
+1. API Design:
+   - Follow RESTful principles
+   - Use proper HTTP methods and status codes
+   - Implement proper error handling
+   - Use middleware for common functionality (dbProvider, authMiddleware)
+   - Document all endpoints
+   - **ALWAYS use `APIBindings` type for routes**
+   - **ALWAYS use `c.var.db` instead of creating new Drizzle clients**
+
+2. Cloudflare Workers:
+   - Optimize for edge computing
+   - Handle proper caching strategies
+   - Implement proper security headers
+   - Use environment variables for configuration
+
+3. Database:
+   - Use Drizzle ORM for database access via `c.var.db`
+   - Write type-safe queries
+   - Implement proper migrations
+   - Handle database errors gracefully
+   - Use transactions where necessary
+   - **NEVER recreate the Drizzle client in route handlers**
+
+4. Authentication:
+   - Use better-auth for authentication
+   - Implement proper session management
+   - Handle JWT tokens securely
+   - Implement proper authorization checks
+
+5. Performance:
+   - Optimize database queries
+   - Implement proper caching
+   - Handle rate limiting
+   - Monitor performance metrics 

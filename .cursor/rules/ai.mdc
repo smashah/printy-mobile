@@ -1,0 +1,41 @@
+---
+description: AI and ML development rules for marking and OCR
+globs: ["packages/ai/**/*.ts"]
+alwaysApply: false
+---
+
+When working on AI-related code:
+1. OpenRouter.ai Integration:
+   - Implement proper error handling for API calls
+   - Use appropriate model selection
+   - Handle rate limiting and quotas
+   - Implement fallback strategies
+   - Cache responses when appropriate
+
+2. OCR Processing:
+   - Use Mistral OCR for handwriting recognition
+   - Implement proper image preprocessing
+   - Handle different handwriting styles
+   - Provide confidence scores
+   - Allow manual corrections
+
+3. Marking System:
+   - Implement rubric-based marking
+   - Handle partial marks
+   - Provide detailed feedback
+   - Calculate confidence scores
+   - Support multiple marking schemes
+
+4. Performance:
+   - Optimize API calls
+   - Implement proper caching
+   - Handle batch processing
+   - Monitor AI service costs
+   - Track accuracy metrics
+
+5. Error Handling:
+   - Handle API failures gracefully
+   - Provide meaningful error messages
+   - Implement retry mechanisms
+   - Log errors for analysis
+   - Maintain audit trails 

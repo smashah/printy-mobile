@@ -1,0 +1,33 @@
+{
+  "name": "@printy-mobile/auth",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "generate": "yes | pnpx @better-auth/cli@latest generate --config auth.config.ts --output ../db/src/generated/auth.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "catalog:"
+  },
+  "dependencies": {
+    "@better-auth-kit/legal-consent": "^1.1.1",
+    "@better-auth-kit/reverify": "^1.0.3",
+    "@icons-pack/react-simple-icons": "catalog:",
+    "@polar-sh/better-auth": "catalog:",
+    "@polar-sh/sdk": "catalog:",
+    "@refinedev/core": "catalog:",
+    "@printy-mobile/db": "workspace:*",
+    "better-auth": "catalog:",
+    "react-icons": "^5.5.0"
+  },
+  "exports": {
+    ".": "./index.ts",
+    "./defaults": "./lib/defaults.ts",
+    "./lib": "./lib/index.ts",
+    "./types": "./lib/types.ts",
+    "./refine": "./lib/refine.ts",
+    "./providers": "./lib/providers.ts"
+  }
+}
