@@ -1,0 +1,30 @@
+{
+  "name": "Printy Mobile",
+  "namespace": "@printy-mobile",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev-ai": "turbo run --ui stream dev",
+    "generate": "turbo run generate",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types",
+    "init-project": "bun repo-init.ts",
+    "init": "pnpm run init-project",
+    "deps:reset": "pnpx npkill -D -y",
+    "touch": "turbo run db:touchy"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.4",
+    "lefthook": "^1.13.6",
+    "prettier": "^3.6.2",
+    "turbo": "catalog:",
+    "typescript": "5.9.3",
+    "ultracite": "5.4.5"
+  },
+  "packageManager": "pnpm@10.27.0",
+  "engines": {
+    "node": ">=18"
+  }
+}
