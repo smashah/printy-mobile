@@ -1,12 +1,27 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
+const path = require("path");
+const { FileStore } = require('@expo/metro/metro-cache');
 const { getDefaultConfig } = require("expo/metro-config");
 const { withNativeWind } = require("nativewind/metro");
 
-const config = withNativeWind(getDefaultConfig(__dirname), {
-	input: "./global.css",
-	configPath: "./tailwind.config.js",
-});
+const projectRoot = __dirname;
+const workspaceRoot = path.resolve(projectRoot, "../..");
+
+const config = getDefaultConfig(projectRoot);
+
+config.watchFolders = [workspaceRoot];
+
+config.resolver.nodeModulesPaths = [
+	path.resolve(projectRoot, "node_modules"),
+	path.resolve(workspaceRoot, "node_modules"),
+];
 
 config.resolver.unstable_enablePackageExports = true;
 
-module.exports = config;
+config.cacheStores = [
+  new FileStore({ root: path.join(__dirname, 'node_modules', '.cache', 'metro') }),
+];
+
+module.exports = withNativeWind(config, {
+	input: "./global.css",
+	configPath: "./tailwind.config.js",
+});

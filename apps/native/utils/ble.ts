@@ -1,7 +1,15 @@
 import { BleManager, type Device } from "react-native-ble-plx";
 import { PermissionsAndroid, Platform } from "react-native";
 
-export const manager = new BleManager();
+// Lazy initialization to avoid SSR issues with Expo Router static export
+let _manager: BleManager | null = null;
+
+export const getManager = (): BleManager => {
+  if (!_manager) {
+    _manager = new BleManager();
+  }
+  return _manager;
+};
 
 export const requestPermissions = async () => {
   if (Platform.OS === "android") {
@@ -25,7 +33,7 @@ export const requestPermissions = async () => {
 export const scanForPeripherals = (
   onDeviceFound: (device: Device) => void,
 ) => {
-  manager.startDeviceScan(null, null, (error, device) => {
+  getManager().startDeviceScan(null, null, (error, device) => {
     if (error) {
       return;
     }
@@ -36,12 +44,12 @@ export const scanForPeripherals = (
 };
 
 export const stopScan = () => {
-  manager.stopDeviceScan();
+  getManager().stopDeviceScan();
 };
 
 export const connectToDevice = async (deviceId: string) => {
   try {
-    const device = await manager.connectToDevice(deviceId);
+    const device = await getManager().connectToDevice(deviceId);
     await device.discoverAllServicesAndCharacteristics();
     return device;
   } catch (error) {

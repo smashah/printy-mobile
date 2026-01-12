@@ -3,8 +3,14 @@ main = "src/index.ts"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Stub out heavy Node.js dependencies that don't work in Workers
+[alias]
+"sharp" = "../api/src/stubs/noop.ts"
+"ffmpeg-static" = "../api/src/stubs/noop.ts"
+"ffprobe-static" = "../api/src/stubs/noop.ts"
+
 [dev]
-port = 8930
+port = 8938
 
 [vars]
 ENVIRONMENT = "development"
