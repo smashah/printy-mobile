@@ -71,38 +71,44 @@ function CreateKeyModal() {
 
 ```typescript
 const createMutation = useMutation(
-  backendClient.api.resources.$post.mutationOptions()
+  backendClient.api.resources.$post.mutationOptions(),
 );
 
-createMutation.mutate(MutationWrapper({ 
-  name: "New Resource",
-  description: "Description here"
-}));
+createMutation.mutate(
+  MutationWrapper({
+    name: "New Resource",
+    description: "Description here",
+  }),
+);
 ```
 
 ### PATCH (Update)
 
 ```typescript
 const updateMutation = useMutation(
-  backendClient.api.resources[":id"].$patch.mutationOptions()
+  backendClient.api.resources[":id"].$patch.mutationOptions(),
 );
 
-updateMutation.mutate(MutationWrapper({ 
-  param: { id: resourceId },
-  json: { name: "Updated Name" }
-}));
+updateMutation.mutate(
+  MutationWrapper({
+    param: { id: resourceId },
+    json: { name: "Updated Name" },
+  }),
+);
 ```
 
 ### DELETE
 
 ```typescript
 const deleteMutation = useMutation(
-  backendClient.api.resources[":id"].$delete.mutationOptions()
+  backendClient.api.resources[":id"].$delete.mutationOptions(),
 );
 
-deleteMutation.mutate(MutationWrapper({ 
-  param: { id: resourceId }
-}));
+deleteMutation.mutate(
+  MutationWrapper({
+    param: { id: resourceId },
+  }),
+);
 ```
 
 ## ✅ Benefits
@@ -120,9 +126,9 @@ deleteMutation.mutate(MutationWrapper({
 
 ```typescript
 // ❌ Don't do this
-const response = await fetch('/api/api-keys', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
+const response = await fetch("/api/api-keys", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
   body: JSON.stringify(data),
 });
 ```
@@ -150,7 +156,7 @@ createMutation.mutate({ name: "Test" }); // Missing MutationWrapper!
 ```typescript
 // ✅ Do this
 const mutation = useMutation(
-  backendClient.api["api-keys"].$post.mutationOptions()
+  backendClient.api["api-keys"].$post.mutationOptions(),
 );
 
 mutation.mutate(MutationWrapper({ name: "Test" }));
@@ -174,7 +180,7 @@ import { toast } from 'sonner';
 
 function CreateApiKeyForm() {
   const queryClient = useQueryClient();
-  
+
   const mutation = useMutation(
     backendClient.api["api-keys"].$post.mutationOptions()
   );
@@ -239,4 +245,3 @@ function CreateApiKeyForm() {
 | **Success**       | Use `onSuccess` callback                                          |
 | **Error**         | Use `onError` callback                                            |
 | **Refresh Data**  | `queryClient.invalidateQueries()`                                 |
-

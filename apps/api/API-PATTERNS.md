@@ -33,8 +33,8 @@ export const resourcesRoutes = new Hono<{ Bindings: Env }>();
 
 ```typescript
 resourcesRoutes.post("/", zValidator("json", ZResourceInsert), async (c) => {
-  const db = c.var.db;  // ✅ CORRECT: From dbProvider middleware
-  const user = c.var.user;  // ✅ CORRECT: From authMiddleware
+  const db = c.var.db; // ✅ CORRECT: From dbProvider middleware
+  const user = c.var.user; // ✅ CORRECT: From authMiddleware
 
   // Use db directly - already configured with schema and relations
   const [resource] = await db.insert(schema.resources).values(data).returning();
@@ -49,6 +49,7 @@ const db = drizzle(c.env.DB, { schema: { ...schema, ...relations } });
 ```
 
 **Why this matters:**
+
 - Middleware provides a singleton DB client with schema and relations pre-configured
 - Recreating the client is wasteful and error-prone
 - Middleware pattern ensures consistency across all routes
@@ -59,18 +60,18 @@ const db = drizzle(c.env.DB, { schema: { ...schema, ...relations } });
 **✅ CORRECT Import:**
 
 ```typescript
-import { zValidator } from "@hono/zod-validator";  // ✅ Note: zValidator, not zodValidator
+import { zValidator } from "@hono/zod-validator"; // ✅ Note: zValidator, not zodValidator
 ```
 
 **✅ CORRECT Usage:**
 
 ```typescript
 resourcesRoutes.post("/", zValidator("json", ZResourceInsert), async (c) => {
-  const data = c.req.valid("json");  // Validated and typed
+  const data = c.req.valid("json"); // Validated and typed
 });
 
 resourcesRoutes.get("/", zValidator("query", ZResourcesQuery), async (c) => {
-  const query = c.req.valid("query");  // Validated and typed
+  const query = c.req.valid("query"); // Validated and typed
 });
 ```
 
@@ -169,7 +170,7 @@ resourcesRoutes.post("/", zValidator("json", ZResourceInsert), async (c) => {
 
     return c.json(
       { success: true, data: resource, message: "Resource created" },
-      201
+      201,
     );
   } catch (error) {
     console.error("Error creating resource:", error);
@@ -254,7 +255,10 @@ resourcesRoutes.get("/:id", async (c) => {
     }
 
     // Privacy check if needed
-    if (resource.privacy === "private" && (!currentUser || resource.userId !== currentUser.id)) {
+    if (
+      resource.privacy === "private" &&
+      (!currentUser || resource.userId !== currentUser.id)
+    ) {
       throw new HTTPException(403, { message: "Access denied" });
     }
 
@@ -319,7 +323,7 @@ resourcesRoutes.patch(
       console.error("Error updating resource:", error);
       throw new HTTPException(500, { message: "Failed to update resource" });
     }
-  }
+  },
 );
 
 /**
@@ -417,14 +421,14 @@ type APIBindings = {
     // ... all environment variables
   };
   Variables: {
-    user: User | null;              // From authMiddleware
-    session: Session | null;        // From authMiddleware
-    db: DrizzleD1Database;          // From dbProvider
-    auth: BetterAuth;               // From authMiddleware
-    setupTasks: () => Tasks;        // From jobsMiddleware
-    aws: AwsClient;                 // From dbProvider
+    user: User | null; // From authMiddleware
+    session: Session | null; // From authMiddleware
+    db: DrizzleD1Database; // From dbProvider
+    auth: BetterAuth; // From authMiddleware
+    setupTasks: () => Tasks; // From jobsMiddleware
+    aws: AwsClient; // From dbProvider
     awsUrl: (path: string) => string;
-    p3: PicoS3;                     // From dbProvider
+    p3: PicoS3; // From dbProvider
   };
 };
 ```
@@ -432,12 +436,12 @@ type APIBindings = {
 Access these via:
 
 ```typescript
-const db = c.var.db;           // Database client
-const user = c.var.user;       // Authenticated user (or null)
+const db = c.var.db; // Database client
+const user = c.var.user; // Authenticated user (or null)
 const session = c.var.session; // User session (or null)
-const auth = c.var.auth;       // Better-auth instance
-const bucket = c.env.MEDIA_BUCKET;  // R2 bucket for uploads
-const setupTasks = c.var.setupTasks;  // Trigger.dev jobs
+const auth = c.var.auth; // Better-auth instance
+const bucket = c.env.MEDIA_BUCKET; // R2 bucket for uploads
+const setupTasks = c.var.setupTasks; // Trigger.dev jobs
 ```
 
 ---
@@ -474,7 +478,7 @@ import { backendClient } from "~/utils/api";
 function ResourcesPage() {
   const { queryOptions } = Route.useLoaderData();
   const { data } = useSuspenseQuery(queryOptions);
-  
+
   return <ResourceList resources={data.data} />;
 }
 
@@ -499,12 +503,12 @@ import type { ResourceInsert } from "@printy-mobile/db/dtos";
 
 function CreateResourceForm() {
   const queryClient = useQueryClient();
-  
+
   // ✅ CORRECT: Use mutationOptions() from hono-rpc-query
   const createMutation = useMutation(
     backendClient.api.resources.$post.mutationOptions()
   );
-  
+
   const handleSubmit = (data: ResourceInsert) => {
     // ✅ CORRECT: Wrap data with MutationWrapper
     createMutation.mutate(MutationWrapper(data), {
@@ -517,7 +521,7 @@ function CreateResourceForm() {
       },
     });
   };
-  
+
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(formData); }}>
       <Button type="submit" disabled={createMutation.isPending}>
@@ -533,25 +537,30 @@ function CreateResourceForm() {
 ```typescript
 // PATCH /resources/:id
 const updateMutation = useMutation(
-  backendClient.api.resources[":id"].$patch.mutationOptions()
+  backendClient.api.resources[":id"].$patch.mutationOptions(),
 );
 
-updateMutation.mutate(MutationWrapper({ 
-  param: { id: resourceId },
-  json: { name: "Updated Name" }
-}));
+updateMutation.mutate(
+  MutationWrapper({
+    param: { id: resourceId },
+    json: { name: "Updated Name" },
+  }),
+);
 
 // DELETE /resources/:id
 const deleteMutation = useMutation(
-  backendClient.api.resources[":id"].$delete.mutationOptions()
+  backendClient.api.resources[":id"].$delete.mutationOptions(),
 );
 
-deleteMutation.mutate(MutationWrapper({ 
-  param: { id: resourceId }
-}));
+deleteMutation.mutate(
+  MutationWrapper({
+    param: { id: resourceId },
+  }),
+);
 ```
 
 **Key Points:**
+
 - ✅ Use `mutationOptions()` from `hono-rpc-query`
 - ✅ Wrap all mutation data with `MutationWrapper(data)`
 - ✅ Use callbacks (`onSuccess`, `onError`) for side effects
@@ -565,11 +574,14 @@ deleteMutation.mutate(MutationWrapper({
 ### Success Response (Single Item)
 
 ```typescript
-return c.json({
-  success: true,
-  data: resource,
-  message: "Resource created successfully",  // Optional
-}, 201);  // Appropriate status code
+return c.json(
+  {
+    success: true,
+    data: resource,
+    message: "Resource created successfully", // Optional
+  },
+  201,
+); // Appropriate status code
 ```
 
 ### Success Response (List with Pagination)
@@ -706,25 +718,25 @@ apps/api/src/
 
 ### Backend (API Routes)
 
-| Pattern | ✅ CORRECT | ❌ WRONG |
-|---------|-----------|----------|
-| Type | `new Hono<APIBindings>()` | `new Hono<{ Bindings: Env }>()` |
-| DB Access | `c.var.db` | `drizzle(c.env.DB, ...)` |
-| Auth | `c.var.user` | `c.env.AUTH_USER` |
-| Validator | `zValidator` | `zodValidator` |
-| Schema | `@printy-mobile/db/schema` | `.../db/schema/index` |
-| Location | `src/routes/resources.routes.ts` | `src/routes/myproject/resources.routes.ts` |
+| Pattern   | ✅ CORRECT                       | ❌ WRONG                                   |
+| --------- | -------------------------------- | ------------------------------------------ |
+| Type      | `new Hono<APIBindings>()`        | `new Hono<{ Bindings: Env }>()`            |
+| DB Access | `c.var.db`                       | `drizzle(c.env.DB, ...)`                   |
+| Auth      | `c.var.user`                     | `c.env.AUTH_USER`                          |
+| Validator | `zValidator`                     | `zodValidator`                             |
+| Schema    | `@printy-mobile/db/schema`       | `.../db/schema/index`                      |
+| Location  | `src/routes/resources.routes.ts` | `src/routes/myproject/resources.routes.ts` |
 
 ### Frontend (React Components)
 
-| Pattern | ✅ CORRECT | ❌ WRONG |
-|---------|-----------|----------|
-| Queries | `backendClient.api.posts.$get.queryOptions()` | `fetch('/api/posts')` |
-| Mutations | `useMutation(backendClient.api.posts.$post.mutationOptions())` | `useMutation({ mutationFn: ... })` |
-| Data Wrapper | `MutationWrapper({ name: "Test" })` | `{ name: "Test" }` |
-| Query Hook | `useSuspenseQuery(queryOptions)` | `useQuery(queryOptions)` |
-| Types | `import type { PostSelect } from '@printy-mobile/db/dtos'` | Manual type definitions |
-| Import | `import { backendClient, MutationWrapper } from '~/utils/api'` | Direct fetch calls |
+| Pattern      | ✅ CORRECT                                                     | ❌ WRONG                           |
+| ------------ | -------------------------------------------------------------- | ---------------------------------- |
+| Queries      | `backendClient.api.posts.$get.queryOptions()`                  | `fetch('/api/posts')`              |
+| Mutations    | `useMutation(backendClient.api.posts.$post.mutationOptions())` | `useMutation({ mutationFn: ... })` |
+| Data Wrapper | `MutationWrapper({ name: "Test" })`                            | `{ name: "Test" }`                 |
+| Query Hook   | `useSuspenseQuery(queryOptions)`                               | `useQuery(queryOptions)`           |
+| Types        | `import type { PostSelect } from '@printy-mobile/db/dtos'`     | Manual type definitions            |
+| Import       | `import { backendClient, MutationWrapper } from '~/utils/api'` | Direct fetch calls                 |
 
 ---
 
@@ -756,12 +768,15 @@ postsRoutes.post("/", zValidator("json", ZPostInsert), async (c) => {
   const db = c.var.db;
   const user = c.var.user;
   const data = c.req.valid("json");
-  
-  const [post] = await db.insert(schema.posts).values({
-    ...data,
-    userId: user.id,
-  }).returning();
-  
+
+  const [post] = await db
+    .insert(schema.posts)
+    .values({
+      ...data,
+      userId: user.id,
+    })
+    .returning();
+
   return c.json({ success: true, data: post }, 201);
 });
 ```
@@ -776,8 +791,8 @@ import type { AppType } from "@printy-mobile/api/client";
 
 export const backendClient = hcQuery(
   hc<AppType>(getApiHost(), {
-    init: { credentials: "include" }
-  })
+    init: { credentials: "include" },
+  }),
 );
 
 export const MutationWrapper = (data: any) => ({ json: data });
@@ -793,12 +808,12 @@ import type { PostInsert } from "@printy-mobile/db/dtos";
 
 export function CreatePostModal() {
   const queryClient = useQueryClient();
-  
+
   // Use mutationOptions from backend RPC client
   const createMutation = useMutation(
     backendClient.api.posts.$post.mutationOptions()
   );
-  
+
   const handleSubmit = (data: PostInsert) => {
     // Wrap data with MutationWrapper
     createMutation.mutate(MutationWrapper(data), {
@@ -808,7 +823,7 @@ export function CreatePostModal() {
       },
     });
   };
-  
+
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(formData); }}>
       <Button disabled={createMutation.isPending}>
@@ -822,17 +837,20 @@ export function CreatePostModal() {
 ### Why This Pattern?
 
 **✅ Type Safety:**
+
 - Backend types automatically flow to frontend via `AppType`
 - No manual type definitions needed
 - Compile-time errors if API changes
 
 **✅ DX Benefits:**
+
 - Autocomplete for all API endpoints
 - No manual URL construction
 - Automatic error handling
 - Built-in loading states
 
 **✅ Performance:**
+
 - Middleware provides singleton DB client
 - React Query handles caching
 - Optimistic updates supported
@@ -849,6 +867,6 @@ export function CreatePostModal() {
 ✅ **Use `mutationOptions()`** - For all mutations  
 ✅ **Wrap with `MutationWrapper`** - Required for mutation data  
 ✅ **Use `useSuspenseQuery`** - For data loading  
-✅ **Import types from `@printy-mobile/db/dtos`** - Shared types  
+✅ **Import types from `@printy-mobile/db/dtos`** - Shared types
 
 These patterns ensure consistency, performance, and type safety across the entire API.

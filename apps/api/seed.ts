@@ -55,7 +55,7 @@ function getLocalD1Db() {
   const pathToDb = getLocalD1dbPath();
   if (!pathToDb) {
     console.error(
-      "⚠️ Local D1 database not found. Try running `npm run db:touch` to create one."
+      "⚠️ Local D1 database not found. Try running `npm run db:touch` to create one.",
     );
     process.exit(1);
   }
@@ -123,7 +123,7 @@ async function getProductionDatabase(): Promise<
 
   if (!(apiToken && accountId && databaseId)) {
     console.error(
-      "Database seed failed: production environment variables not set (make sure you have a .prod.vars file)"
+      "Database seed failed: production environment variables not set (make sure you have a .prod.vars file)",
     );
     process.exit(1);
   }
@@ -141,7 +141,7 @@ async function getProductionDatabase(): Promise<
 export function createProductionD1Connection(
   accountId: string,
   databaseId: string,
-  apiToken: string
+  apiToken: string,
 ) {
   /**
    * Executes a single query against the Cloudflare D1 HTTP API.
@@ -161,7 +161,7 @@ export function createProductionD1Connection(
     apiToken: string,
     sql: string,
     params: Any[],
-    method: string
+    method: string,
   ): Promise<{ rows: Any[][] }> {
     const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`;
 
@@ -178,13 +178,13 @@ export function createProductionD1Connection(
 
     if (res.status !== 200) {
       throw new Error(
-        `Error from sqlite proxy server: ${res.status} ${res.statusText}\n${JSON.stringify(data)}`
+        `Error from sqlite proxy server: ${res.status} ${res.statusText}\n${JSON.stringify(data)}`,
       );
     }
 
     if (data.errors.length > 0 || !data.success) {
       throw new Error(
-        `Error from sqlite proxy server: \n${JSON.stringify(data)}}`
+        `Error from sqlite proxy server: \n${JSON.stringify(data)}}`,
       );
     }
 
@@ -192,7 +192,7 @@ export function createProductionD1Connection(
 
     if (!qResult?.success) {
       throw new Error(
-        `Error from sqlite proxy server: \n${JSON.stringify(data)}`
+        `Error from sqlite proxy server: \n${JSON.stringify(data)}`,
       );
     }
 
@@ -209,7 +209,7 @@ export function createProductionD1Connection(
       apiToken,
       sql,
       params,
-      method
+      method,
     );
 
   /**
@@ -226,7 +226,7 @@ export function createProductionD1Connection(
         apiToken,
         sql,
         params,
-        method
+        method,
       );
       results.push(result);
     }

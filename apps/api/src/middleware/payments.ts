@@ -99,5 +99,5 @@ export const paymentsMiddleware = createMiddleware<APIBindings>(
     c.set("hasSufficientBalance", hasSufficientBalance);
 
     return next();
-  }
+  },
 );

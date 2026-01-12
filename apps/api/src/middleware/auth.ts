@@ -33,11 +33,8 @@ export const auth = (c: APIContext): ReturnType<typeof betterAuth> => {
           clientSecret: c.env.AUTH_GOOGLE_CLIENT_SECRET,
         },
       },
-      trustedOrigins: [
-        c.env.WEB_APP_HOST,
-        c.env.BACK_OFFICE_HOST,
-      ],
-    })
+      trustedOrigins: [c.env.WEB_APP_HOST, c.env.BACK_OFFICE_HOST],
+    }),
   );
 };
 
@@ -66,13 +63,13 @@ export const authMiddleware = createMiddleware<APIBindings>(async (c, next) => {
     "🚀 ~ c.req.path:",
     c.req.path,
     c.env.BACK_OFFICE_HOST,
-    c.env.WEB_APP_HOST
+    c.env.WEB_APP_HOST,
   );
   if (c.req.path.startsWith("/api/auth/cb/backoffice/")) {
     const path = c.req.path.replace("/api/auth/cb/backoffice/", "");
     console.log(
       "REDIRECTING TO BACKOFFICE",
-      `${c.env.BACK_OFFICE_HOST}/${path}`
+      `${c.env.BACK_OFFICE_HOST}/${path}`,
     );
     return c.redirect(`${c.env.BACK_OFFICE_HOST}/${path}`);
   } else if (c.req.path.startsWith("/api/auth/cb/webapp/")) {

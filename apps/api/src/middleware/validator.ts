@@ -14,7 +14,7 @@ export const zodValidator = <
   Schema extends z.AnyZodObject,
 >(
   target: Target,
-  schema: Schema
+  schema: Schema,
 ) =>
   validator(target, (value): Schema["_output"] => {
     const result = schema.safeParse(value);

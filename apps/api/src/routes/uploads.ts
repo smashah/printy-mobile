@@ -14,7 +14,10 @@ export const uploadsRouter = new Hono<APIBindings>()
   // Direct file upload
   .post(
     "/direct",
-    zodValidator("query", z.object({ path: z.string().optional().default("uploads") })),
+    zodValidator(
+      "query",
+      z.object({ path: z.string().optional().default("uploads") }),
+    ),
     async (c) => {
       const { path } = c.req.valid("query");
       const formData = await c.req.parseBody();
@@ -36,7 +39,7 @@ export const uploadsRouter = new Hono<APIBindings>()
       });
 
       return c.json({ success: true, data: result });
-    }
+    },
   )
 
   // Direct image upload
@@ -69,7 +72,7 @@ export const uploadsRouter = new Hono<APIBindings>()
         fileExtension: z.string(),
         path: z.string().optional().default("uploads"),
         expiresIn: z.number().optional().default(3600),
-      })
+      }),
     ),
     async (c) => {
       const { fileExtension, path, expiresIn } = c.req.valid("json");
@@ -95,7 +98,7 @@ export const uploadsRouter = new Hono<APIBindings>()
           key,
         },
       });
-    }
+    },
   )
 
   // Delete file
@@ -129,7 +132,7 @@ export const uploadsRouter = new Hono<APIBindings>()
         fileName: z.string(),
         fileSize: z.number(),
         mimeType: z.string(),
-      })
+      }),
     ),
     async (c) => {
       const { fileExtension } = c.req.valid("json");
@@ -155,7 +158,7 @@ export const uploadsRouter = new Hono<APIBindings>()
           key,
         },
       });
-    }
+    },
   )
 
   // Complete presigned upload
@@ -171,6 +174,5 @@ export const uploadsRouter = new Hono<APIBindings>()
       //   .where(eq(schema.uploads.key, key));
 
       return c.json({ success: true, message: "Upload completed" });
-    }
+    },
   );
-

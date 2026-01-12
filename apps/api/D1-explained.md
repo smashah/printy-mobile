@@ -28,7 +28,6 @@ This is how it works
 - runs `db:migrate` to apply the migration files (run them) on the local database
 - runs `db:seed` to seed the local database with some data
 
-
 ## Production
 
 Create a Cloudflare account and D1 instance, retrieve the database key and your account id from the dashboard and addionally create an API token with D1 edit rights, and add it to your .prod.vars file.
