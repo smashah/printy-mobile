@@ -8,6 +8,13 @@
       "when": 1768133564833,
       "tag": "0000_thankful_leech",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1768176726007,
+      "tag": "0001_fair_gateway",
+      "breakpoints": true
     }
   ]
 }

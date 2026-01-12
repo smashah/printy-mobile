@@ -3,14 +3,14 @@
 name = "printy-mobile-api" # TODO: Replace with your project name
 compatibility_date = "2025-02-04"
 compatibility_flags = [ "nodejs_compat", "nodejs_als" ]
+account_id = "11b1f0d90e2e01f7787152098cb332c3" # TODO: Replace with your Cloudflare account ID
 
 # Stub out heavy Node.js dependencies that don't work in Workers
 [alias]
 "sharp" = "./src/stubs/noop.ts"
 "ffmpeg-static" = "./src/stubs/noop.ts"
 "ffprobe-static" = "./src/stubs/noop.ts"
-# account_id = "YOUR_ACCOUNT_ID" # TODO: Replace with your Cloudflare account ID
-keep_vars = true
+# keep_vars = true
 
 
 [dev]
@@ -19,7 +19,7 @@ port = 8930
 [[d1_databases]]
 binding = "DB"
 database_name = "printy-mobile-d1-database" # TODO: Replace with your database name
-database_id = "YOUR_DATABASE_ID" # TODO: Replace with your D1 database ID
+database_id = "73fd0f92-7cd4-4052-9c72-5e3b9e46daf1" # TODO: Replace with your D1 database ID
 migrations_dir = "../../packages/db/migrations"
 
 # [[r2_buckets]]
@@ -67,5 +67,5 @@ bucket_name = "printy-mobile-production"
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "printy-mobile-d1-database"
-database_id = "YOUR_DATABASE_ID"
+database_id = "73fd0f92-7cd4-4052-9c72-5e3b9e46daf1"
 migrations_dir = "../../packages/db/migrations"
