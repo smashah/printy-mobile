@@ -39,15 +39,18 @@ pnpm db:generate
 ```
 
 **What it does:**
+
 - Compares your schema files with the current database
 - Creates SQL migration files in `packages/db/migrations/`
 - Names migrations with timestamp prefixes
 
 **When to use:**
+
 - After modifying any schema files in `packages/db/src/schema/`
 - Before applying changes to the database
 
 **Output:**
+
 - Creates new `.sql` files in `migrations/` folder
 - Generates a `meta/` folder with migration metadata
 
@@ -66,16 +69,19 @@ ENVIRONMENT=production pnpm db:migrate
 ```
 
 **What it does:**
+
 - Checks for pending migrations in `migrations/` folder
 - Executes SQL migration files in order
 - Tracks applied migrations to prevent re-running
 
 **When to use:**
+
 - After generating new migrations
 - When deploying to production
 - After pulling changes that include new migrations
 
 **Safety:**
+
 - Production runs include a 5-second cancellation window
 - Automatically handles migration ordering
 - Idempotent - safe to run multiple times
@@ -95,22 +101,26 @@ ENVIRONMENT=production pnpm db:seed
 ```
 
 **What it creates:**
+
 - **Users**: 10 users including admin and test accounts
 - **Posts**: 20 posts distributed across users
 - **Replies**: 50 replies including nested/threaded replies
 
 **Sample accounts:**
+
 - Admin: `admin@example.com`
 - Test: `test@example.com`
 - Users: `user3@example.com` through `user10@example.com`
 
 **Safety:**
+
 - Checks if database is already seeded
 - Skips if users already exist
 - Production seeding includes 5-second cancellation window
 
 **Customization:**
 Edit `SEED_CONFIG` in `seed.ts` to adjust:
+
 - Number of users, posts, replies
 - Sample data templates
 - Nested reply probability
@@ -126,16 +136,19 @@ pnpm db:reset
 ```
 
 **What it does:**
+
 1. Drops all tables (except SQLite system tables)
 2. Runs all migrations to recreate schema
 3. Seeds database with fresh sample data
 
-**⚠️  WARNING:**
+**⚠️ WARNING:**
+
 - **Deletes ALL data** in your local database
 - Production resets are blocked for safety
 - Includes 5-second cancellation window
 
 **When to use:**
+
 - When you want a completely fresh database
 - After making breaking schema changes
 - When sample data gets messy during development
@@ -151,12 +164,14 @@ pnpm db:studio
 ```
 
 **Features:**
+
 - Browse all tables and data
 - Run queries with autocomplete
 - Edit data directly in the UI
 - View relationships and foreign keys
 
 **Access:**
+
 - Opens at `http://localhost:3003`
 - Works with local development database
 
@@ -171,16 +186,19 @@ pnpm db:push
 ```
 
 **What it does:**
+
 - Directly applies schema changes to database
 - Skips creating migration files
 - Faster for rapid development
 
 **When to use:**
+
 - During early development/prototyping
 - When you don't need migration history
 - For quick schema experiments
 
-**⚠️  Warning:**
+**⚠️ Warning:**
+
 - Does NOT create migration files
 - Not recommended for production
 - Can cause data loss on breaking changes
@@ -196,11 +214,13 @@ pnpm db:pull
 ```
 
 **What it does:**
+
 - Introspects your database
 - Generates Drizzle schema from existing tables
 - Creates TypeScript schema files
 
 **When to use:**
+
 - Importing an existing database
 - Reverse-engineering a schema
 - Syncing schema from production
@@ -255,12 +275,14 @@ ENVIRONMENT=production pnpm db:migrate
 Drizzle doesn't have built-in rollback. To revert:
 
 **Option 1: Manual Rollback**
+
 ```bash
 # Create a new migration that reverses changes
 pnpm db:generate
 ```
 
 **Option 2: Restore from Backup**
+
 ```bash
 # Use Cloudflare D1 backup/restore
 # Or restore from your database snapshot
@@ -330,7 +352,7 @@ Edit `scripts/seed.ts` to customize sample data:
 ```typescript
 const SEED_CONFIG = {
   users: {
-    count: 10,              // Total users to create
+    count: 10, // Total users to create
     admin: {
       email: "admin@example.com",
       name: "Admin User",
@@ -341,12 +363,12 @@ const SEED_CONFIG = {
     },
   },
   posts: {
-    count: 20,              // Total posts to create
+    count: 20, // Total posts to create
     minPerUser: 1,
     maxPerUser: 5,
   },
   replies: {
-    count: 50,              // Total replies to create
+    count: 50, // Total replies to create
     minPerPost: 0,
     maxPerPost: 10,
     nestedProbability: 0.3, // 30% chance of nested reply
@@ -363,10 +385,13 @@ Extend the seed script with your own data:
 
 async function seedCustomData(db: Any, users: Any[]) {
   // Add your custom seeding logic
-  const products = await db.insert(schema.products).values([
-    { name: "Product 1", price: 9.99 },
-    { name: "Product 2", price: 19.99 },
-  ]).returning();
+  const products = await db
+    .insert(schema.products)
+    .values([
+      { name: "Product 1", price: 9.99 },
+      { name: "Product 2", price: 19.99 },
+    ])
+    .returning();
 
   return products;
 }
@@ -384,6 +409,7 @@ const customData = await seedCustomData(db, users);
 **Problem:** Can't find `.wrangler` database file
 
 **Solutions:**
+
 ```bash
 # Start dev server first to create database
 cd apps/api
@@ -398,6 +424,7 @@ pnpm run db:touch
 **Problem:** No migrations exist yet
 
 **Solution:**
+
 ```bash
 # Generate initial migration from schema
 pnpm db:generate
@@ -408,6 +435,7 @@ pnpm db:generate
 **Problem:** Seed script detects existing data
 
 **Solutions:**
+
 ```bash
 # Option 1: Reset and seed fresh
 pnpm db:reset
@@ -422,6 +450,7 @@ pnpm db:studio
 **Problem:** Migration fails on production
 
 **Solutions:**
+
 1. Check `.prod.vars` configuration
 2. Verify API token has correct permissions
 3. Review migration SQL for syntax errors
@@ -432,6 +461,7 @@ pnpm db:studio
 **Problem:** Can't seed due to foreign key violations
 
 **Solution:**
+
 ```bash
 # Reset database completely
 pnpm db:reset

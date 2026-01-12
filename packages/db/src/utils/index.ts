@@ -21,7 +21,7 @@ export function getLocalD1DB() {
     return url;
   } catch (err) {
     console.log(
-      `Error  ${err instanceof Error ? err.message : "Unknown error"}`
+      `Error  ${err instanceof Error ? err.message : "Unknown error"}`,
     );
   }
 }

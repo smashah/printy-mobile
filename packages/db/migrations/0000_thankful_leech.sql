@@ -1,29 +1,47 @@
-CREATE TABLE `posts` (
+CREATE TABLE `subscriptions` (
 	`id` text PRIMARY KEY NOT NULL,
 	`user_id` text NOT NULL,
-	`title` text NOT NULL,
-	`content` text NOT NULL,
-	`likes_count` integer DEFAULT 0 NOT NULL,
-	`replies_count` integer DEFAULT 0 NOT NULL,
-	`views_count` integer DEFAULT 0 NOT NULL,
-	`is_published` integer DEFAULT true NOT NULL,
-	`created_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updated_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
+	`provider` text NOT NULL,
+	`provider_sub_id` text NOT NULL,
+	`status` text NOT NULL,
+	`current_period_end` integer,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE TABLE `replies` (
+CREATE TABLE `credit_balance` (
 	`id` text PRIMARY KEY NOT NULL,
-	`post_id` text NOT NULL,
 	`user_id` text NOT NULL,
-	`parent_reply_id` text,
-	`content` text NOT NULL,
-	`likes_count` integer DEFAULT 0 NOT NULL,
-	`created_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	`updated_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
-	FOREIGN KEY (`post_id`) REFERENCES `posts`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade,
-	FOREIGN KEY (`parent_reply_id`) REFERENCES `replies`(`id`) ON UPDATE no action ON DELETE cascade
+	`balance` integer DEFAULT 0 NOT NULL,
+	`last_refill_date` integer,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `credit_balance_user_id_unique` ON `credit_balance` (`user_id`);--> statement-breakpoint
+CREATE TABLE `credit_transactions` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`amount` integer NOT NULL,
+	`reason` text NOT NULL,
+	`metadata` text,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
+);
+--> statement-breakpoint
+CREATE TABLE `webhooks` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`name` text NOT NULL,
+	`url` text NOT NULL,
+	`secret` text NOT NULL,
+	`event_types` text DEFAULT '[]' NOT NULL,
+	`active` integer DEFAULT true NOT NULL,
+	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `account` (
