@@ -15,25 +15,34 @@ description: Quick start guide for building features - Read this FIRST
 ## The 5-Step Process
 
 ### 1. Analyze (10 min)
+
 - Read mockup/requirements
 - List what data entities you need (users, posts, comments, etc.)
 - List what actions users can do (create, read, update, delete)
 
 ### 2. Database Schema (30 min)
+
 ```typescript
 // packages/db/src/schema/posts.ts
 export const posts = sqliteTable("posts", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id").notNull().references(() => users.id),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id),
   title: text("title").notNull(),
   content: text("content").notNull(),
-  createdAt: text("created_at").notNull().$defaultFn(() => new Date().toISOString()),
+  createdAt: text("created_at")
+    .notNull()
+    .$defaultFn(() => new Date().toISOString()),
 });
 ```
 
 👉 For detailed patterns: Read `backend-patterns/schema.md`
 
 ### 3. Create DTOs (15 min)
+
 ```typescript
 // packages/db/src/dtos/validation.ts
 import { createInsertSchema } from "drizzle-zod";
@@ -46,6 +55,7 @@ export const ZPostInsert = createInsertSchema(schema.posts, {
 👉 For detailed patterns: Read `backend-patterns/dtos.md`
 
 ### 4. Create API Routes (45 min)
+
 ```typescript
 // apps/api/src/routes/posts.routes.ts
 import type { APIBindings } from "../middleware/type"; // ✅ CRITICAL
@@ -53,8 +63,8 @@ import type { APIBindings } from "../middleware/type"; // ✅ CRITICAL
 export const postsRoutes = new Hono<APIBindings>();
 
 postsRoutes.post("/", zValidator("json", ZPostInsert), async (c) => {
-  const db = c.var.db;        // ✅ Use middleware DB
-  const user = c.var.user;    // ✅ From auth middleware
+  const db = c.var.db; // ✅ Use middleware DB
+  const user = c.var.user; // ✅ From auth middleware
   // ... implementation
 });
 ```
@@ -62,6 +72,7 @@ postsRoutes.post("/", zValidator("json", ZPostInsert), async (c) => {
 👉 For detailed patterns: Read `backend-patterns/api-routes.md`
 
 ### 5. Test Backend (15 min)
+
 ```bash
 # Generate & run migrations
 pnpm --filter @printy-mobile/api db:generate
@@ -75,6 +86,7 @@ curl -X POST http://localhost:8787/api/posts \
 ```
 
 ### 6. Build Frontend (1-2 hours)
+
 ```typescript
 // apps/webapp/src/routes/(app)/posts/index.tsx
 import type { PostSelect } from '@printy-mobile/db/dtos';
@@ -102,6 +114,7 @@ function PostsPage() {
 ## Critical Rules (Read Once, Remember Forever)
 
 ### ✅ ALWAYS Do This:
+
 ```typescript
 // 1. Use APIBindings
 export const routes = new Hono<APIBindings>();
@@ -118,6 +131,7 @@ import { zValidator } from "@hono/zod-validator"; // NOT zodValidator!
 ```
 
 ### ❌ NEVER Do This:
+
 ```typescript
 // 1. Custom Env type
 export const routes = new Hono<{ Bindings: { DB: D1Database } }>();
@@ -126,7 +140,9 @@ export const routes = new Hono<{ Bindings: { DB: D1Database } }>();
 const db = drizzle(c.env.DB, { schema });
 
 // 3. Hand-write types
-interface Post { title: string } // Backend has different fields!
+interface Post {
+  title: string;
+} // Backend has different fields!
 
 // 4. Wrong validator name
 import { zodValidator } from "@hono/zod-validator"; // WRONG!
@@ -152,18 +168,21 @@ import { zodValidator } from "@hono/zod-validator"; // WRONG!
 This quick start covers the essentials. For deeper patterns:
 
 **Backend:**
+
 - `backend-patterns/schema.md` - Database schema patterns
 - `backend-patterns/dtos.md` - Validation schemas
 - `backend-patterns/api-routes.md` - Complete CRUD examples
 - `backend-patterns/testing.md` - Testing strategies
 
 **Frontend:**
+
 - `frontend-patterns/tanstack-router.md` - Routing & data loading
 - `frontend-patterns/data-fetching.md` - React Query patterns
 - `frontend-patterns/forms.md` - Form handling with TanStack Form
 - `frontend-patterns/components.md` - UI component patterns
 
 **Critical Reference:**
+
 - `critical-rules.md` - All the must-know patterns in one place
 
 ---

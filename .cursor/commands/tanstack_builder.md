@@ -9,6 +9,7 @@ You are a TanStack Router specialist. Build production-ready frontend pages with
 ## 🚨 PREREQUISITE: Backend Must Exist
 
 **Before using this command, backend MUST be complete:**
+
 - [ ] Database schema exists
 - [ ] API routes tested with curl
 - [ ] Types exported from `@printy-mobile/db`
@@ -18,6 +19,7 @@ If backend is missing → Use `/buildmockup` instead.
 ## Your Task
 
 Build a complete TanStack Router page with:
+
 - Proper route configuration
 - Type-safe data loading
 - Component separation
@@ -74,6 +76,7 @@ function PostsPage() {
 ```
 
 **Key Points:**
+
 - ✅ Use `context.backendClient` (not manual fetch)
 - ✅ Use `useSuspenseQuery` (not `useQuery`)
 - ✅ Import types from `@printy-mobile/db`
@@ -96,6 +99,7 @@ routes/(app)/posts/
 ```
 
 **Co-location Rules:**
+
 - Prefix with `-` to exclude from routing
 - Only used by this route? → Co-locate it
 - Used by multiple routes? → Move to `apps/webapp/src/components/`
@@ -174,22 +178,24 @@ function CreatePostPage() {
 ```typescript
 // POST /api/posts
 const createMutation = useMutation(
-  backendClient.api.posts.$post.mutationOptions()
+  backendClient.api.posts.$post.mutationOptions(),
 );
 createMutation.mutate(MutationWrapper({ title: "New Post" }));
 
 // PATCH /api/posts/:id
 const updateMutation = useMutation(
-  backendClient.api.posts[":id"].$patch.mutationOptions()
+  backendClient.api.posts[":id"].$patch.mutationOptions(),
 );
-updateMutation.mutate(MutationWrapper({ 
-  param: { id: postId },
-  json: { title: "Updated" }
-}));
+updateMutation.mutate(
+  MutationWrapper({
+    param: { id: postId },
+    json: { title: "Updated" },
+  }),
+);
 
 // DELETE /api/posts/:id
 const deleteMutation = useMutation(
-  backendClient.api.posts[":id"].$delete.mutationOptions()
+  backendClient.api.posts[":id"].$delete.mutationOptions(),
 );
 deleteMutation.mutate(MutationWrapper({ param: { id: postId } }));
 ```
@@ -200,14 +206,19 @@ deleteMutation.mutate(MutationWrapper({ param: { id: postId } }));
 
 ```typescript
 // ✅ CORRECT - Use @printy-mobile/ui
-import { Button } from '@printy-mobile/ui/button';
-import { Card, CardHeader, CardTitle, CardContent } from '@printy-mobile/ui/card';
-import { Dialog, DialogContent, DialogHeader } from '@printy-mobile/ui/dialog';
-import { Input } from '@printy-mobile/ui/input';
-import { Label } from '@printy-mobile/ui/label';
+import { Button } from "@printy-mobile/ui/button";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@printy-mobile/ui/card";
+import { Dialog, DialogContent, DialogHeader } from "@printy-mobile/ui/dialog";
+import { Input } from "@printy-mobile/ui/input";
+import { Label } from "@printy-mobile/ui/label";
 
 // ✅ Icons from lucide-react
-import { Plus, Edit, Trash, Heart } from 'lucide-react';
+import { Plus, Edit, Trash, Heart } from "lucide-react";
 ```
 
 ### 5. Loading/Error/Empty States
@@ -292,12 +303,14 @@ function OnboardingFlow() {
 ## Checklist Before Completion
 
 ### Data Loading
+
 - [ ] Route uses `context.backendClient` for data loading
 - [ ] Using `useSuspenseQuery` (not `useQuery`)
 - [ ] Query options passed through loader
 - [ ] Types imported from `@printy-mobile/db/dtos`
 
 ### Mutations
+
 - [ ] Uses `mutationOptions()` from `backendClient`
 - [ ] Wraps mutation data with `MutationWrapper()`
 - [ ] Handles loading state with `mutation.isPending`
@@ -305,6 +318,7 @@ function OnboardingFlow() {
 - [ ] Shows error/success toasts
 
 ### Components & UI
+
 - [ ] All states handled (loading/error/empty/success)
 - [ ] Components properly co-located in `-components/`
 - [ ] Forms use TanStack Form
@@ -318,6 +332,7 @@ function OnboardingFlow() {
 Provide:
 
 1. **File Structure**
+
    ```
    routes/(app)/feature/
    ├── index.tsx

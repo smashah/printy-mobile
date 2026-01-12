@@ -13,17 +13,21 @@ I've updated all the Cursor command documentation to be **project-agnostic** and
 **Purpose**: Complete generic template for backend-first implementation
 
 **Key Features**:
+
 - Uses generic placeholders (`@printy-mobile/db`, `resources`, etc.)
 - Includes TanStack Router loader pattern with `context.backendClient`
 - Shows proper `useSuspenseQuery` usage
 - Fully adaptable to any project
 
 **Pattern Added** (from your example):
+
 ```typescript
-export const Route = createFileRoute('/path')({
+export const Route = createFileRoute("/path")({
   loader: async ({ context, params }) => {
-    const queryOptions = context.backendClient.api.users[':username'].$get.queryOptions({
-      input: { param: { username: params.username } }
+    const queryOptions = context.backendClient.api.users[
+      ":username"
+    ].$get.queryOptions({
+      input: { param: { username: params.username } },
     });
     await context.queryClient.ensureQueryData(queryOptions);
     return { queryOptions };
@@ -40,6 +44,7 @@ function Component() {
 ### 2. ✅ Updated buildmockup.md
 
 **Changes**:
+
 - Removed all `hypermile.club` specific references
 - Changed `trips`, `vehicles` → `resources` (generic)
 - Changed `@hypermile.club/*` → `@printy-mobile/*`
@@ -50,6 +55,7 @@ function Component() {
 ### 3. ✅ Updated tanstack_builder.md
 
 **Changes**:
+
 - References GENERIC_BACKEND_FIRST.md instead of old file
 - Added adaptation requirements section
 - Updated data management patterns with TanStack Router
@@ -61,6 +67,7 @@ function Component() {
 **Purpose**: Guide for using the generic templates
 
 **Includes**:
+
 - Overview of all documentation files
 - Adaptation instructions
 - Key patterns quick reference
@@ -71,6 +78,7 @@ function Component() {
 ### 5. ✅ Updated LESSONS_LEARNED.md
 
 **Changes**:
+
 - Made generic where applicable
 - Kept the learning points intact
 - Updated examples to use generic placeholders
@@ -97,17 +105,18 @@ Deleted:
 
 ```typescript
 const PRINTY_MOBILE = {
-  dbPackage: '@printy-mobile/db',
-  uiPackage: '@printy-mobile/ui',
-  entities: ['posts', 'products', 'tasks'], // Not "trips", "vehicles"
-  statusTypes: ['draft', 'published'],       // Your enums
-  privacyLevels: ['public', 'private'],      // Your enums
+  dbPackage: "@printy-mobile/db",
+  uiPackage: "@printy-mobile/ui",
+  entities: ["posts", "products", "tasks"], // Not "trips", "vehicles"
+  statusTypes: ["draft", "published"], // Your enums
+  privacyLevels: ["public", "private"], // Your enums
 };
 ```
 
 ### Step 2: Replace Placeholders
 
 When reading the docs, mentally replace:
+
 - `@printy-mobile/db` → `@acme/database`
 - `@printy-mobile/ui` → `@acme/ui`
 - `resources` → `posts` or `products` (your entity)
@@ -195,6 +204,7 @@ To verify the docs are project-agnostic:
 ## Summary
 
 All documentation is now:
+
 - ✅ **Generic** - Works for any project
 - ✅ **Reusable** - Copy to other projects as-is
 - ✅ **Complete** - Includes TanStack Router patterns
@@ -205,5 +215,3 @@ All documentation is now:
 **These docs can now be used on ANY project with React + TanStack Router + Drizzle + Hono.**
 
 Just replace the placeholders with your project specifics and follow the workflow!
-
-

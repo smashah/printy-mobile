@@ -16,10 +16,12 @@ ${CRITICAL_INSTRUCTION}
 ---
 
 INPUT FILES:
+
 - **HTML (Structural Content):** Read and analyze the content and structure of the file at **${HTML_PATH}**.
 - **Screenshot (Visual Reference):** Reference the visual presentation indicated by the file at **${SCREENSHOT_PATH}**.
 
 FEATURES TO DOCUMENT:
+
 1.  **Page Title/View Name:** Identify and state the primary function of this page.
 2.  **Key Components:** List the major, unique, non-boilerplate sections, widgets, or panels on the page.
 3.  **Specific Interactions:** Detail any unique buttons, forms, dynamic content, or hover/state changes revealed by the HTML and implied by the visual.
@@ -37,10 +39,12 @@ Write the complete documentation directly to **${OUTPUT_PATH}** using the follow
 ## Key Features & Components
 
 ### 1. [Unique Feature/Component Title, e.g., 'User Profile Card']
+
 - Detail of what's shown or done in this area.
 - Another detail about its function or content.
 
 ### 2. [Another Unique Feature/Component Title]
+
 - Detail.
 - Detail.
 

@@ -7,26 +7,31 @@ This directory contains **reusable, project-agnostic** documentation for full-st
 ## Core Files
 
 ### 🌟 GENERIC_BACKEND_FIRST.md
+
 **Primary Reference Document** - Complete generic template for backend-first implementation.
 
 Use this as your main reference. It contains:
+
 - Generic database schema patterns
 - DTO validation patterns
-- API route patterns  
+- API route patterns
 - TanStack Router integration
 - Frontend implementation with proper data fetching
 - Testing workflows
 
 **Adaptation Required**: Replace placeholders with your project specifics:
-- `@printy-mobile/db` → Your database package
-- `@printy-mobile/ui` → Your UI package
+
+- `@your-project/db` → Your database package
+- `@your-project/ui` → Your UI package
 - `resources` → Your domain entities
 - Field names → Your schema fields
 
 ### 📝 buildmockup.md
+
 **Quick Reference** - Streamlined guide for building from mockups.
 
 Follows 6-phase workflow:
+
 1. Analyze Requirements
 2. Database Schema
 3. Validation DTOs
@@ -37,9 +42,11 @@ Follows 6-phase workflow:
 References GENERIC_BACKEND_FIRST.md for detailed patterns.
 
 ### 📘 tanstack_builder.md
+
 **Comprehensive Guide** - Detailed implementation process.
 
 Includes:
+
 - Phase 0: Backend Verification (MANDATORY)
 - Complete component architecture planning
 - TanStack Router patterns
@@ -49,6 +56,7 @@ Includes:
 ## Key Patterns Documented
 
 ### 1. Backend-First Workflow
+
 ```
 Analyze → Schema → DTOs → API → Test → Frontend
 ```
@@ -56,12 +64,13 @@ Analyze → Schema → DTOs → API → Test → Frontend
 Never skip backend. Never mock data.
 
 ### 2. TanStack Router Data Loading
+
 ```typescript
 // Loader pattern (REQUIRED)
-export const Route = createFileRoute('/path')({
+export const Route = createFileRoute("/path")({
   loader: async ({ context, params }) => {
     const queryOptions = context.backendClient.api.endpoint.$get.queryOptions({
-      input: { param: params }
+      input: { param: params },
     });
     await context.queryClient.ensureQueryData(queryOptions);
     return { queryOptions };
@@ -77,15 +86,17 @@ function Component() {
 ```
 
 ### 3. Type Safety
+
 ```typescript
 // ✅ ALWAYS import types from backend
-import type { ResourceSelect } from '@printy-mobile/db/dtos';
+import type { ResourceSelect } from '@your-project/db/dtos';
 
 // ❌ NEVER hand-write types
 interface Resource { ... } // Wrong!
 ```
 
 ### 4. API Response Format
+
 ```typescript
 // Standard format (use consistently)
 {
@@ -119,22 +130,23 @@ Before using these docs, identify:
 ```typescript
 // Your project configuration
 const PROJECT_CONFIG = {
-  dbPackage: '@printy-mobile/db',
-  uiPackage: '@printy-mobile/ui',
-  apiPath: 'apps/api',
-  webappPath: 'apps/webapp',
-  
+  dbPackage: "@your-project/db",
+  uiPackage: "@your-project/ui",
+  apiPath: "apps/api",
+  webappPath: "apps/webapp",
+
   // Your domain entities
-  entities: ['posts', 'users', 'products'],
-  
+  entities: ["posts", "users", "products"],
+
   // Your enums
-  statusTypes: ['draft', 'published', 'archived'],
-  privacyLevels: ['public', 'private', 'friends'],
+  statusTypes: ["draft", "published", "archived"],
+  privacyLevels: ["public", "private", "friends"],
 };
 ```
 
 Replace all instances of:
-- `@printy-mobile/*` with your package names
+
+- `@your-project/*` with your package names
 - `resources` with your entity names
 - Generic field names with your schema fields
 
@@ -158,13 +170,13 @@ Replace all instances of:
 
 ```bash
 # Generate migrations
-pnpm --filter @printy-mobile/api db:generate
+pnpm --filter @your-project/api db:generate
 
 # Apply migrations
-pnpm --filter @printy-mobile/api db:migrate
+pnpm --filter @your-project/api db:migrate
 
 # Start dev server
-pnpm --filter @printy-mobile/api dev
+pnpm --filter @your-project/api dev
 
 # Test endpoints
 curl http://localhost:8787/api/resources
@@ -173,12 +185,13 @@ curl -X POST http://localhost:8787/api/resources \
   -d '{"title":"Test"}'
 
 # Open database studio
-pnpm --filter @printy-mobile/api db:studio
+pnpm --filter @your-project/api db:studio
 ```
 
 ## Common Mistakes to Avoid
 
 ### ❌ Frontend Before Backend
+
 ```typescript
 // WRONG: Creating components without backend
 function MyPage() {
@@ -188,6 +201,7 @@ function MyPage() {
 ```
 
 ### ❌ Hand-Written Types
+
 ```typescript
 // WRONG: Guessing at types
 interface User {
@@ -196,16 +210,18 @@ interface User {
 ```
 
 ### ❌ Manual Fetch Calls
+
 ```typescript
 // WRONG: Not using backendClient
-const response = await fetch('/api/users');
+const response = await fetch("/api/users");
 const data = await response.json();
 ```
 
 ### ✅ Correct Pattern
+
 ```typescript
 // RIGHT: Backend first, then frontend with types
-import type { UserSelect } from '@printy-mobile/db/dtos';
+import type { UserSelect } from '@your-project/db/dtos';
 
 export const Route = createFileRoute('/users')({
   loader: async ({ context }) => {
@@ -247,12 +263,14 @@ notes/
 ```
 
 Always read both:
+
 1. `.cursor/commands/` - Generic patterns and workflows
 2. `notes/` - Project-specific implementation details
 
 ## Support
 
 If these templates don't match your project structure:
+
 1. Identify the differences
 2. Update the adaptation guide
 3. Keep patterns consistent with project conventions
@@ -261,6 +279,7 @@ If these templates don't match your project structure:
 ## Version
 
 These templates are designed for:
+
 - React 18/19+
 - TanStack Router v1+
 - TanStack Query v5+
@@ -273,5 +292,3 @@ Adapt as needed for your specific versions.
 ---
 
 **Remember**: Backend first. No exceptions. Ever.
-
-

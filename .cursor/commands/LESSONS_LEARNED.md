@@ -19,6 +19,7 @@ This created the illusion that backend work was **optional** or could be **defer
 5. **Result**: Non-functional frontend with no working backend
 
 The user then had to manually:
+
 - Create complete database schema (37 files, 6,728 lines)
 - Organize schema modularly by domain
 - Define relations between entities
@@ -31,9 +32,11 @@ The user then had to manually:
 ### 1. **No Enforcement of Backend-First**
 
 **Original Language:**
+
 > "Backend Implementation (When Applicable): Before creating the frontend, analyze the mockup..."
 
 **Should Have Been:**
+
 > "🚨 STOP! Backend Implementation (MANDATORY): You MUST create the complete backend infrastructure before writing ANY frontend code. DO NOT proceed to Phase 6 until backend is tested and working."
 
 ### 2. **No Clear Backend Patterns**
@@ -48,6 +51,7 @@ The docs said "define necessary API endpoints" but didn't show:
 - How to use relations with Drizzle ORM
 
 **Missing Pattern:** Modular Schema Organization
+
 ```
 packages/db/src/schema/
 ├── types.ts              # Shared enums and utilities
@@ -61,6 +65,7 @@ packages/db/src/schema/
 ```
 
 **Missing Pattern:** DTO Generation with drizzle-zod
+
 ```typescript
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
@@ -68,22 +73,23 @@ export const ZTripInsert = createInsertSchema(schema.trips, {
   title: z.string().min(1).max(200),
   // ... custom validation
 }).omit({
-  id: true,          // Server-set fields
+  id: true, // Server-set fields
   createdAt: true,
   updatedAt: true,
 });
 ```
 
 **Missing Pattern:** Hono Route Structure
+
 ```typescript
 tripsRoutes.post("/", zodValidator("json", ZTripInsert), async (c) => {
   const db = drizzle(c.env.DB, { schema: { ...schema, ...relations } });
   const user = c.var.user;
-  
+
   if (!user) {
     throw new HTTPException(401, { message: "Authentication required" });
   }
-  
+
   // ... handler logic
 });
 ```
@@ -105,7 +111,10 @@ The docs didn't specify how to import from the monorepo packages:
 // These patterns were not documented:
 import * as schema from "@hypermile.club/db/schema/hypermile-index";
 import * as relations from "@hypermile.club/db/schema/relations";
-import { ZTripInsert, type TripInsert } from "@hypermile.club/db/dtos/hypermile-validation";
+import {
+  ZTripInsert,
+  type TripInsert,
+} from "@hypermile.club/db/dtos/hypermile-validation";
 ```
 
 ### 5. **No Response Format Standards**
@@ -144,7 +153,7 @@ The docs didn't emphasize that frontend MUST import types from backend:
 
 ```typescript
 // ✅ REQUIRED
-import type { TripSelect, TripsQuery } from '@hypermile.club/db/dtos';
+import type { TripSelect, TripsQuery } from "@hypermile.club/db/dtos";
 
 // ❌ FORBIDDEN
 interface Trip {
@@ -214,12 +223,14 @@ const trip = await db.query.trips.findFirst({
 ## What We Fixed
 
 ### 1. Created BACKEND_FIRST_PRINCIPLE.md
+
 - Comprehensive guide on backend implementation
 - Clear examples from actual codebase
 - Mandatory verification checklist
 - Testing instructions
 
 ### 2. Updated buildmockup.md
+
 - Made backend implementation Phase 2-5 (not optional)
 - Added concrete schema examples
 - Added DTO generation examples
@@ -228,12 +239,14 @@ const trip = await db.query.trips.findFirst({
 - Added Backend Completion Checklist
 
 ### 3. Updated tanstack_builder.md
+
 - Added Phase 0: Backend Verification (MANDATORY)
 - Referenced BACKEND_FIRST_PRINCIPLE.md at the top
 - Updated import patterns throughout
 - Emphasized type imports from backend
 
 ### 4. Added Real Patterns
+
 - Modular schema organization
 - Relation definitions
 - DTO generation with drizzle-zod
@@ -301,5 +314,3 @@ The original documentation assumed too much knowledge and didn't enforce the bac
 - ✅ Emphasizes type safety throughout
 
 **The cardinal rule**: Backend first. No exceptions. Ever.
-
-
