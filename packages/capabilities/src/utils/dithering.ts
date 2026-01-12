@@ -13,7 +13,7 @@ function floydSteinbergDither(input: DitherInput): DitherInput {
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * 4;
-      
+
       for (let c = 0; c < 3; c++) {
         const oldPixel = output[idx + c] ?? 0;
         const newPixel = oldPixel < 128 ? 0 : 255;
@@ -21,15 +21,36 @@ function floydSteinbergDither(input: DitherInput): DitherInput {
         const quantError = oldPixel - newPixel;
 
         if (x + 1 < width) {
-          output[idx + 4 + c] = Math.min(255, Math.max(0, (output[idx + 4 + c] ?? 0) + quantError * 7 / 16));
+          output[idx + 4 + c] = Math.min(
+            255,
+            Math.max(0, (output[idx + 4 + c] ?? 0) + (quantError * 7) / 16),
+          );
         }
         if (y + 1 < height) {
           if (x > 0) {
-            output[(idx + width * 4 - 4) + c] = Math.min(255, Math.max(0, (output[(idx + width * 4 - 4) + c] ?? 0) + quantError * 3 / 16));
+            output[idx + width * 4 - 4 + c] = Math.min(
+              255,
+              Math.max(
+                0,
+                (output[idx + width * 4 - 4 + c] ?? 0) + (quantError * 3) / 16,
+              ),
+            );
           }
-          output[(idx + width * 4) + c] = Math.min(255, Math.max(0, (output[(idx + width * 4) + c] ?? 0) + quantError * 5 / 16));
+          output[idx + width * 4 + c] = Math.min(
+            255,
+            Math.max(
+              0,
+              (output[idx + width * 4 + c] ?? 0) + (quantError * 5) / 16,
+            ),
+          );
           if (x + 1 < width) {
-            output[(idx + width * 4 + 4) + c] = Math.min(255, Math.max(0, (output[(idx + width * 4 + 4) + c] ?? 0) + quantError * 1 / 16));
+            output[idx + width * 4 + 4 + c] = Math.min(
+              255,
+              Math.max(
+                0,
+                (output[idx + width * 4 + 4 + c] ?? 0) + (quantError * 1) / 16,
+              ),
+            );
           }
         }
       }

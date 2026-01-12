@@ -1,5 +1,13 @@
 import React from "react";
-import { Document, Page, Text, View, StyleSheet, Image, Font } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Font,
+} from "@react-pdf/renderer";
 
 // Register fonts
 Font.register({
@@ -109,29 +117,40 @@ export const ColoringPage = ({ data }: { data: ColoringPageData }) => {
           </View>
 
           <View style={styles.imageContainer}>
-             {/* Use a high contrast filter if possible, but for now just the image */}
+            {/* Use a high contrast filter if possible, but for now just the image */}
             <Image src={data.imageUrl} style={styles.image} />
           </View>
 
           <View style={styles.infoSection}>
-            <Text style={styles.infoText}>{data.description || "Color this in!"}</Text>
+            <Text style={styles.infoText}>
+              {data.description || "Color this in!"}
+            </Text>
 
-            <View style={{ alignItems: 'center', marginTop: 8 }}>
-                <Text style={{ fontSize: 8, marginBottom: 4, fontWeight: 'bold' }}>Suggested Colors:</Text>
-                <View style={styles.colorsSection}>
+            <View style={{ alignItems: "center", marginTop: 8 }}>
+              <Text
+                style={{ fontSize: 8, marginBottom: 4, fontWeight: "bold" }}
+              >
+                Suggested Colors:
+              </Text>
+              <View style={styles.colorsSection}>
                 {data.suggestedColors.map((color, i) => (
-                    <View key={i} style={{ alignItems: 'center', marginRight: 5 }}>
-                        {/*<View style={[styles.colorBubble, { backgroundColor: color }]} />*/}
-                        <Text style={{ fontSize: 6, marginTop: 2 }}>{color}</Text>
-                    </View>
+                  <View
+                    key={i}
+                    style={{ alignItems: "center", marginRight: 5 }}
+                  >
+                    {/*<View style={[styles.colorBubble, { backgroundColor: color }]} />*/}
+                    <Text style={{ fontSize: 6, marginTop: 2 }}>{color}</Text>
+                  </View>
                 ))}
-                </View>
+              </View>
             </View>
           </View>
 
           <View style={styles.footer}>
-             <Text style={styles.footerText}>PRINTY • COLORING</Text>
-             <Text style={styles.footerText}>{new Date().toLocaleDateString()}</Text>
+            <Text style={styles.footerText}>PRINTY • COLORING</Text>
+            <Text style={styles.footerText}>
+              {new Date().toLocaleDateString()}
+            </Text>
           </View>
         </View>
       </Page>

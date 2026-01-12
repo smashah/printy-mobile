@@ -52,7 +52,9 @@ interface RawRecipe {
 export function parseRecipeJson(raw: RawRecipe, name: string): RecipeData {
   const ingredients = (raw.ingredients || []).map((ing) => ({
     name: ing.name,
-    quantity: ing.quantity?.value?.value?.value ? String(ing.quantity.value.value.value) : "",
+    quantity: ing.quantity?.value?.value?.value
+      ? String(ing.quantity.value.value.value)
+      : "",
     unit: ing.quantity?.unit || "",
   }));
 
@@ -70,14 +72,19 @@ export function parseRecipeJson(raw: RawRecipe, name: string): RecipeData {
             for (const item of stepItem.value.items) {
               if (item.type === "text") {
                 stepText += item.value;
-              } else if (item.type === "ingredient" && item.index !== undefined) {
-                const ingName = raw.ingredients?.[item.index]?.name || "ingredient";
+              } else if (
+                item.type === "ingredient" &&
+                item.index !== undefined
+              ) {
+                const ingName =
+                  raw.ingredients?.[item.index]?.name || "ingredient";
                 stepText += ingName;
               } else if (item.type === "cookware" && item.index !== undefined) {
                 const cookName = raw.cookware?.[item.index]?.name || "cookware";
                 stepText += cookName;
               } else if (item.type === "timer") {
-                stepText += `${item.quantity?.value?.value || ""} ${item.quantity?.unit || ""}`.trim();
+                stepText +=
+                  `${item.quantity?.value?.value || ""} ${item.quantity?.unit || ""}`.trim();
               }
             }
             steps.push(stepText);
@@ -98,7 +105,7 @@ export function parseRecipeJson(raw: RawRecipe, name: string): RecipeData {
   }
 
   return {
-    title: raw.metadata?.map?.source ? name : (raw.metadata?.title || name),
+    title: raw.metadata?.map?.source ? name : raw.metadata?.title || name,
     ingredients,
     cookware,
     steps,

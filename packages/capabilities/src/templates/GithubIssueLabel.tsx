@@ -11,7 +11,6 @@ import {
   Path,
 } from "@react-pdf/renderer";
 
-
 const SHOW_QR_CODE_TOP_RIGHT_CORNER = true;
 // Register Fonts
 Font.register({
@@ -214,12 +213,17 @@ const CommentIcon = () => (
 );
 
 const ReactionIcon = () => (
-  <Svg width="16" height="16" viewBox="0 0 122.88 122.88" style={styles.statIcon}>
-      <Path
-        d="M45.54,2.1A61.48,61.48,0,1,1,8.25,30.74,61.26,61.26,0,0,1,45.54,2.1ZM30.61,70.3a38,38,0,0,0,8.34,8,40.39,40.39,0,0,0,23.58,7.1A38.05,38.05,0,0,0,85.3,77.68a33.56,33.56,0,0,0,7.08-7.42.22.22,0,0,1,.3-.06L95,72.49a.21.21,0,0,1,0,.27A43.47,43.47,0,0,1,81.7,87.08a35.7,35.7,0,0,1-19,6,36.82,36.82,0,0,1-19.53-5.25A47.5,47.5,0,0,1,27.87,72.9a.23.23,0,0,1,0-.27l2.38-2.36a.22.22,0,0,1,.3,0l0,0ZM76.23,33.89c4.06,0,7.35,4.77,7.35,10.65s-3.29,10.64-7.35,10.64-7.35-4.77-7.35-10.64,3.29-10.65,7.35-10.65Zm-29.58,0c4.06,0,7.35,4.77,7.35,10.65s-3.29,10.64-7.35,10.64S39.3,50.41,39.3,44.54s3.29-10.65,7.35-10.65Zm42.1-19.75A54.64,54.64,0,1,0,114.18,47.3,54.46,54.46,0,0,0,88.75,14.14Z"
-        fill="#000000"
-      />
-    </Svg>
+  <Svg
+    width="16"
+    height="16"
+    viewBox="0 0 122.88 122.88"
+    style={styles.statIcon}
+  >
+    <Path
+      d="M45.54,2.1A61.48,61.48,0,1,1,8.25,30.74,61.26,61.26,0,0,1,45.54,2.1ZM30.61,70.3a38,38,0,0,0,8.34,8,40.39,40.39,0,0,0,23.58,7.1A38.05,38.05,0,0,0,85.3,77.68a33.56,33.56,0,0,0,7.08-7.42.22.22,0,0,1,.3-.06L95,72.49a.21.21,0,0,1,0,.27A43.47,43.47,0,0,1,81.7,87.08a35.7,35.7,0,0,1-19,6,36.82,36.82,0,0,1-19.53-5.25A47.5,47.5,0,0,1,27.87,72.9a.23.23,0,0,1,0-.27l2.38-2.36a.22.22,0,0,1,.3,0l0,0ZM76.23,33.89c4.06,0,7.35,4.77,7.35,10.65s-3.29,10.64-7.35,10.64-7.35-4.77-7.35-10.64,3.29-10.65,7.35-10.65Zm-29.58,0c4.06,0,7.35,4.77,7.35,10.65s-3.29,10.64-7.35,10.64S39.3,50.41,39.3,44.54s3.29-10.65,7.35-10.65Zm42.1-19.75A54.64,54.64,0,1,0,114.18,47.3,54.46,54.46,0,0,0,88.75,14.14Z"
+      fill="#000000"
+    />
+  </Svg>
 );
 
 const ThumbsUpIcon = () => (
@@ -253,35 +257,41 @@ export const GithubIssueLabel = ({ issue }: { issue: IssueData }) => {
             <Text style={styles.repoName}>{issue.repo}</Text>
             <Text style={styles.issueNumber}>#{issue.number}</Text>
           </View>
-          {SHOW_QR_CODE_TOP_RIGHT_CORNER ? issue.qrCodeDataUrl && (
-            <Image
-              style={[styles.qrCode, { marginLeft: 10 }]}
-              src={issue.qrCodeDataUrl}
-            />
-          ) : <View
-            style={[
-              styles.statusBadge,
-              { backgroundColor: "black", position: "relative", border: "1"},
-            ]}
-          >
+          {SHOW_QR_CODE_TOP_RIGHT_CORNER ? (
+            issue.qrCodeDataUrl && (
+              <Image
+                style={[styles.qrCode, { marginLeft: 10 }]}
+                src={issue.qrCodeDataUrl}
+              />
+            )
+          ) : (
             <View
-              style={{
-                position: "relative",
-                zIndex: 100,
-                backgroundColor: "rgba(255, 255, 255, 0.01)",
-                paddingHorizontal: 4,
-                paddingVertical: 1,
-                borderRadius: 4,
-              }}
+              style={[
+                styles.statusBadge,
+                { backgroundColor: "black", position: "relative", border: "1" },
+              ]}
             >
-              <Text
-                style={[styles.statusText, { color:
-                  issue.statusDitheredBackground ? "#FFF" : "#000" }]}
+              <View
+                style={{
+                  position: "relative",
+                  zIndex: 100,
+                  backgroundColor: "rgba(255, 255, 255, 0.01)",
+                  paddingHorizontal: 4,
+                  paddingVertical: 1,
+                  borderRadius: 4,
+                }}
               >
-                {issue.status}
-              </Text>
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: issue.statusDitheredBackground ? "#FFF" : "#000" },
+                  ]}
+                >
+                  {issue.status}
+                </Text>
+              </View>
             </View>
-          </View>}
+          )}
         </View>
 
         <Text style={styles.title}>{issue.title}</Text>
@@ -306,7 +316,11 @@ export const GithubIssueLabel = ({ issue }: { issue: IssueData }) => {
                   key={i}
                   style={[
                     styles.labelChip,
-                    { backgroundColor: "transparent", position: "relative", border: "1" },
+                    {
+                      backgroundColor: "transparent",
+                      position: "relative",
+                      border: "1",
+                    },
                   ]}
                 >
                   <View
@@ -343,14 +357,16 @@ export const GithubIssueLabel = ({ issue }: { issue: IssueData }) => {
               </View>
               <View style={styles.statItem}>
                 {(issue.reactions?.["+1"] || 0) > 0 ? (
-                  <ReactionIcon/>
+                  <ReactionIcon />
                 ) : (
                   <ReactionIcon />
                 )}
-                <Text style={{
-                  ...styles.statText,
-                  marginLeft: 8
-                }}>
+                <Text
+                  style={{
+                    ...styles.statText,
+                    marginLeft: 8,
+                  }}
+                >
                   {(issue.reactions?.["+1"] || 0) > 0
                     ? issue.reactions?.["+1"]
                     : issue.reactions?.total_count || 0}

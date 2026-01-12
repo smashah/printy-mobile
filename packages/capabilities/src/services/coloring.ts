@@ -70,8 +70,12 @@ async function getRandomPrompt(): Promise<RandomPromptResult> {
     );
 
     const data = (await response.json()) as Record<string, unknown>;
-    const candidates = data.candidates as Array<Record<string, unknown>> | undefined;
-    const content = candidates?.[0]?.content as Record<string, unknown> | undefined;
+    const candidates = data.candidates as
+      | Array<Record<string, unknown>>
+      | undefined;
+    const content = candidates?.[0]?.content as
+      | Record<string, unknown>
+      | undefined;
     const parts = content?.parts as Array<Record<string, unknown>> | undefined;
     const textValue = parts?.[0]?.text;
     if (typeof textValue !== "string") {
@@ -119,8 +123,12 @@ async function getMetadataForPrompt(prompt: string): Promise<MetadataResult> {
     );
 
     const data = (await response.json()) as Record<string, unknown>;
-    const candidates = data.candidates as Array<Record<string, unknown>> | undefined;
-    const content = candidates?.[0]?.content as Record<string, unknown> | undefined;
+    const candidates = data.candidates as
+      | Array<Record<string, unknown>>
+      | undefined;
+    const content = candidates?.[0]?.content as
+      | Record<string, unknown>
+      | undefined;
     const parts = content?.parts as Array<Record<string, unknown>> | undefined;
     const textValue = parts?.[0]?.text;
     if (typeof textValue !== "string") {
@@ -136,7 +144,9 @@ async function getMetadataForPrompt(prompt: string): Promise<MetadataResult> {
   }
 }
 
-export async function generateColoringPage(userPrompt?: string): Promise<ColoringPageData> {
+export async function generateColoringPage(
+  userPrompt?: string,
+): Promise<ColoringPageData> {
   const apiKey = process.env.GEMINI_API_KEY || process.env.NANOBANANA_API_KEY;
   let title = "";
   let basePrompt = userPrompt?.trim() || "";
@@ -188,14 +198,24 @@ export async function generateColoringPage(userPrompt?: string): Promise<Colorin
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`Gemini API Error: ${response.status} ${response.statusText} - ${errText}`);
+        throw new Error(
+          `Gemini API Error: ${response.status} ${response.statusText} - ${errText}`,
+        );
       }
 
       const data = (await response.json()) as Record<string, unknown>;
-      const candidates = data.candidates as Array<Record<string, unknown>> | undefined;
-      const content = candidates?.[0]?.content as Record<string, unknown> | undefined;
-      const parts = content?.parts as Array<Record<string, unknown>> | undefined;
-      const inlineData = parts?.[0]?.inlineData as Record<string, unknown> | undefined;
+      const candidates = data.candidates as
+        | Array<Record<string, unknown>>
+        | undefined;
+      const content = candidates?.[0]?.content as
+        | Record<string, unknown>
+        | undefined;
+      const parts = content?.parts as
+        | Array<Record<string, unknown>>
+        | undefined;
+      const inlineData = parts?.[0]?.inlineData as
+        | Record<string, unknown>
+        | undefined;
 
       if (inlineData?.data) {
         const mime = (inlineData.mimeType as string) || "image/jpeg";

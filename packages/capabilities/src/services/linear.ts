@@ -71,23 +71,36 @@ export async function fetchLinearIssue(url: string): Promise<IssueData> {
 
       if (issue) {
         const labelsData = issue.labels as Record<string, unknown> | undefined;
-        const labelNodes = (labelsData?.nodes as Array<Record<string, unknown>>) || [];
+        const labelNodes =
+          (labelsData?.nodes as Array<Record<string, unknown>>) || [];
         const labels = await Promise.all(
           labelNodes.map(async (l) => {
             const color = l.color as string | undefined;
-            const colorHex = color?.startsWith("#") ? color : `#${color || "cccccc"}`;
+            const colorHex = color?.startsWith("#")
+              ? color
+              : `#${color || "cccccc"}`;
             return {
               name: l.name as string,
               color: color || "cccccc",
-              ditheredBackground: await createDitheredBackground(colorHex, 100, 50),
+              ditheredBackground: await createDitheredBackground(
+                colorHex,
+                100,
+                50,
+              ),
             };
           }),
         );
 
         const state = issue.state as Record<string, unknown> | undefined;
         const statusColor = (state?.color as string) || "#5e6ad2";
-        const statusColorHex = statusColor.startsWith("#") ? statusColor : `#${statusColor}`;
-        const statusDitheredBg = await createDitheredBackground(statusColorHex, 100, 50);
+        const statusColorHex = statusColor.startsWith("#")
+          ? statusColor
+          : `#${statusColor}`;
+        const statusDitheredBg = await createDitheredBackground(
+          statusColorHex,
+          100,
+          50,
+        );
 
         const creator = issue.creator as Record<string, unknown> | undefined;
         const authorAvatar = creator?.avatarUrl
@@ -100,7 +113,12 @@ export async function fetchLinearIssue(url: string): Promise<IssueData> {
           : undefined;
 
         const assignees = assignee
-          ? [{ login: assignee.name as string, avatarUrl: assigneeAvatar || "" }]
+          ? [
+              {
+                login: assignee.name as string,
+                avatarUrl: assigneeAvatar || "",
+              },
+            ]
           : [];
 
         return {
@@ -120,7 +138,10 @@ export async function fetchLinearIssue(url: string): Promise<IssueData> {
         };
       }
     } catch (e) {
-      console.error("Failed to fetch from Linear API, falling back to URL parsing", e);
+      console.error(
+        "Failed to fetch from Linear API, falling back to URL parsing",
+        e,
+      );
     }
   }
 

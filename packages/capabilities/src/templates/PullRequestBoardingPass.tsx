@@ -211,14 +211,24 @@ const XIcon = () => (
 );
 
 export const PullRequestBoardingPass = ({ pr }: { pr: PullRequestData }) => {
-  const statusColor = pr.status === "open" ? "#2da44e" : 
-                      pr.status === "merged" ? "#8250df" : "#6e7781";
-  const ciStatusClass = pr.ciStatus === "passing" ? styles.ciStatusPassing : 
-                        pr.ciStatus === "failing" ? styles.ciStatusFailing : 
-                        styles.ciStatusPassing;
-  const ciStatusTextClass = pr.ciStatus === "passing" ? styles.ciStatusTextPassing : 
-                             pr.ciStatus === "failing" ? styles.ciStatusTextFailing : 
-                             styles.ciStatusTextPassing;
+  const statusColor =
+    pr.status === "open"
+      ? "#2da44e"
+      : pr.status === "merged"
+        ? "#8250df"
+        : "#6e7781";
+  const ciStatusClass =
+    pr.ciStatus === "passing"
+      ? styles.ciStatusPassing
+      : pr.ciStatus === "failing"
+        ? styles.ciStatusFailing
+        : styles.ciStatusPassing;
+  const ciStatusTextClass =
+    pr.ciStatus === "passing"
+      ? styles.ciStatusTextPassing
+      : pr.ciStatus === "failing"
+        ? styles.ciStatusTextFailing
+        : styles.ciStatusTextPassing;
 
   return (
     <Document>
@@ -255,7 +265,14 @@ export const PullRequestBoardingPass = ({ pr }: { pr: PullRequestData }) => {
           <Text style={styles.sectionTitle}>Reviewers</Text>
           <View style={styles.reviewersRow}>
             {pr.reviewers.slice(0, 3).map((reviewer, i) => (
-              <View key={i} style={{ flexDirection: "row", alignItems: "center", marginRight: 8 }}>
+              <View
+                key={i}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginRight: 8,
+                }}
+              >
                 <Image style={styles.reviewerAvatar} src={reviewer.avatarUrl} />
                 <Text style={styles.reviewerName}>{reviewer.login}</Text>
               </View>
@@ -264,9 +281,20 @@ export const PullRequestBoardingPass = ({ pr }: { pr: PullRequestData }) => {
         </View>
 
         <View style={[styles.ciStatus, ciStatusClass]}>
-          {pr.ciStatus === "passing" ? <CheckIcon /> : pr.ciStatus === "failing" ? <XIcon /> : <CheckIcon />}
+          {pr.ciStatus === "passing" ? (
+            <CheckIcon />
+          ) : pr.ciStatus === "failing" ? (
+            <XIcon />
+          ) : (
+            <CheckIcon />
+          )}
           <Text style={[styles.ciStatusText, ciStatusTextClass]}>
-            CI {pr.ciStatus === "passing" ? "Passed" : pr.ciStatus === "failing" ? "Failed" : "Pending"}
+            CI{" "}
+            {pr.ciStatus === "passing"
+              ? "Passed"
+              : pr.ciStatus === "failing"
+                ? "Failed"
+                : "Pending"}
           </Text>
         </View>
 

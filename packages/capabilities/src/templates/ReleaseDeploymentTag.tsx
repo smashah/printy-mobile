@@ -194,7 +194,9 @@ export const ReleaseDeploymentTag = ({ release }: { release: ReleaseData }) => {
         <View style={styles.versionSection}>
           <Text style={styles.versionNumber}>{release.version}</Text>
           <Text style={styles.commitHash}>{release.commitHash}</Text>
-          <Text style={styles.dateTime}>{formatDate(release.deploymentTime)}</Text>
+          <Text style={styles.dateTime}>
+            {formatDate(release.deploymentTime)}
+          </Text>
         </View>
 
         <View style={styles.deployerSection}>

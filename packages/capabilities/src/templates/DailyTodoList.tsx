@@ -175,11 +175,26 @@ const TodoItem = ({ number }: { number: number }) => (
 );
 
 const quotes = [
-  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-  { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
-  { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
-  { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
-  { text: "Success is not final, failure is not fatal.", author: "Winston Churchill" },
+  {
+    text: "The secret of getting ahead is getting started.",
+    author: "Mark Twain",
+  },
+  {
+    text: "It always seems impossible until it's done.",
+    author: "Nelson Mandela",
+  },
+  {
+    text: "Don't watch the clock; do what it does. Keep going.",
+    author: "Sam Levenson",
+  },
+  {
+    text: "The future depends on what you do today.",
+    author: "Mahatma Gandhi",
+  },
+  {
+    text: "Success is not final, failure is not fatal.",
+    author: "Winston Churchill",
+  },
 ];
 
 const getRandomQuote = () => {
@@ -207,16 +222,14 @@ export const DailyTodoList = ({ todo }: { todo: TodoData }) => {
 
         <View style={styles.todoSection}>
           <Text style={styles.sectionTitle}>Today's Tasks</Text>
-          
+
           {[...Array(itemCount)].map((_, i) => (
             <TodoItem key={i} number={i + 1} />
           ))}
         </View>
 
         <View style={styles.motivationalSection}>
-          <Text style={styles.motivationalText}>
-            Make today count! ✨
-          </Text>
+          <Text style={styles.motivationalText}>Make today count! ✨</Text>
         </View>
 
         <View style={styles.footer}>
