@@ -88,3 +88,26 @@ pnpm start    # Expo dev server
 pnpm ios      # iOS simulator
 pnpm android  # Android emulator
 ```
+
+## REQUIRED DEPENDENCIES
+
+NativeWind v4 requires these peer dependencies. **ALWAYS verify they are installed:**
+
+```json
+{
+  "nativewind": "^4.x",
+  "react-native-css-interop": "^0.2.x"  // REQUIRED - NativeWind v4 JSX runtime
+}
+```
+
+If you see `Unable to resolve "react-native-css-interop/jsx-runtime"`:
+```bash
+pnpm --filter native add react-native-css-interop
+```
+
+## ANTI-PATTERNS
+
+- **NEVER** forget `react-native-css-interop` when using NativeWind v4.
+- **NEVER** use the same port as other apps (native uses 8939).
+- **NEVER** import from `@printy-mobile/ui` (web-only shadcn components).
+- **NEVER** assume peer dependencies are auto-installed in pnpm workspaces.

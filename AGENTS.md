@@ -63,8 +63,38 @@ pnpm check-types                    # Check all packages
 pnpm format                         # Format all with Biome/Prettier
 ```
 
+## DEV SERVER PORTS
+
+Each app runs on a dedicated port to avoid conflicts:
+
+| App | Port | Notes |
+|-----|------|-------|
+| `apps/api` | 8930 | Main backend API |
+| `apps/printer-api-service` | 8938 | PDF generation API |
+| `apps/native` (Expo) | 8939 | Mobile dev server |
+
+**CRITICAL:** When adding new apps, assign unique ports and document them here.
+
+## WRANGLER CONFIGURATION
+
+Before deploying or running Cloudflare Workers locally:
+
+1. **`account_id`** - Must be set in `wrangler.toml` (get from Cloudflare dashboard)
+2. **`database_id`** - Must be a valid D1 database ID (run `wrangler d1 create <name>` to create)
+3. **`keep_vars`** - Comment out if causing issues with local dev
+
+```toml
+# apps/api/wrangler.toml - REQUIRED fields
+account_id = "your-account-id"
+
+[[d1_databases]]
+database_id = "your-d1-database-id"  # NOT "YOUR_DATABASE_ID"
+```
+
 ## ANTI-PATTERNS
 
 - **NEVER** use `any`, `@ts-ignore` in `packages/capabilities`.
 - **NEVER** add business logic to `printer-api-service`; keep it in `packages/capabilities/services`.
 - **NEVER** modify `pnpm-lock.yaml` manually.
+- **NEVER** leave placeholder values like `YOUR_DATABASE_ID` in config files.
+- **NEVER** use conflicting ports across apps.
