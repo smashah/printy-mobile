@@ -1,7 +1,7 @@
 import { useGetIdentity } from "@refinedev/core";
 import { Avatar, AvatarFallback, AvatarImage } from "../../avatar";
 import { Skeleton } from "../../skeleton";
-import { cn } from "@printy-mobile/ui/lib/utils"
+import { cn } from "@printy-mobile/ui/lib/utils";
 
 type User = {
   id: number;

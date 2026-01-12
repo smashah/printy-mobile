@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslate } from "@refinedev/core";
 import { Button } from "../../button";
-import { cn } from "@printy-mobile/ui/lib/utils"
+import { cn } from "@printy-mobile/ui/lib/utils";
 
 type UndoableNotificationProps = {
   message: string;
@@ -44,7 +44,7 @@ export function UndoableNotification({
         "border",
         "border-border",
         "min-w-[320px]",
-        "max-w-md"
+        "max-w-md",
       )}
     >
       <div className={cn("flex", "items-center", "justify-between")}>
@@ -71,7 +71,7 @@ export function UndoableNotification({
             "py-2",
             "text-sm",
             "font-medium",
-            "rounded-md"
+            "rounded-md",
           )}
         >
           {t("buttons.undo", "Undo")}

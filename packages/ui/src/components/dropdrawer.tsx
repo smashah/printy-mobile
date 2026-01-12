@@ -27,7 +27,7 @@ import {
   DropdownMenuTrigger,
 } from "@printy-mobile/ui/components/dropdown-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { cn } from "@printy-mobile/ui/lib/utils"
+import { cn } from "@printy-mobile/ui/lib/utils";
 
 const DropDrawerContext = React.createContext<{ isMobile: boolean }>({
   isMobile: false,
@@ -37,7 +37,7 @@ const useDropDrawerContext = () => {
   const context = React.useContext(DropDrawerContext);
   if (!context) {
     throw new Error(
-      "DropDrawer components cannot be rendered outside the DropDrawer Context"
+      "DropDrawer components cannot be rendered outside the DropDrawer Context",
     );
   }
   return context;
@@ -106,7 +106,7 @@ function DropDrawerContent({
 
   // Create a ref to store submenu content by ID
   const submenuContentRef = React.useRef<Map<string, React.ReactNode[]>>(
-    new Map()
+    new Map(),
   );
 
   // Function to navigate to a submenu
@@ -144,7 +144,7 @@ function DropDrawerContent({
     (id: string, content: React.ReactNode[]) => {
       submenuContentRef.current.set(id, content);
     },
-    []
+    [],
   );
 
   // Function to extract submenu content
@@ -189,7 +189,7 @@ function DropDrawerContent({
                       subContentProps.children,
                       (contentChild) => {
                         result.push(contentChild);
-                      }
+                      },
                     );
                   }
                 }
@@ -203,7 +203,7 @@ function DropDrawerContent({
         if (props.children) {
           if (Array.isArray(props.children)) {
             props.children.forEach((child: React.ReactNode) =>
-              findSubmenuContent(child)
+              findSubmenuContent(child),
             );
           } else {
             findSubmenuContent(props.children);
@@ -220,7 +220,7 @@ function DropDrawerContent({
 
       return result;
     },
-    []
+    [],
   );
 
   // Get submenu content (either from cache or extract it)
@@ -246,7 +246,7 @@ function DropDrawerContent({
 
       return submenuContent;
     },
-    [children, extractSubmenuContent]
+    [children, extractSubmenuContent],
   );
 
   // Animation variants for Framer Motion
@@ -379,7 +379,7 @@ function DropDrawerContent({
         sideOffset={4}
         className={cn(
           "max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[220px] overflow-y-auto",
-          className
+          className,
         )}
         {...props}
       >
@@ -420,7 +420,7 @@ function DropDrawerItem({
       }
       return false;
     },
-    []
+    [],
   );
 
   // Create a ref to check if the item is in a group
@@ -465,7 +465,7 @@ function DropDrawerItem({
           inset && "pl-8",
           variant === "destructive" && "text-destructive dark:text-destructive",
           disabled && "pointer-events-none opacity-50",
-          className
+          className,
         )}
         onClick={handleClick}
         aria-disabled={disabled}
@@ -546,7 +546,7 @@ function DropDrawerLabel({
           data-slot="drop-drawer-label"
           className={cn(
             "text-muted-foreground px-4 py-2 text-sm font-medium",
-            className
+            className,
           )}
           {...props}
         >
@@ -616,7 +616,7 @@ function DropDrawerGroup({
     // Filter out any existing separators
     const filteredChildren = childArray.filter(
       (child) =>
-        React.isValidElement(child) && child.type !== DropDrawerSeparator
+        React.isValidElement(child) && child.type !== DropDrawerSeparator,
     );
 
     // Add separators between items
@@ -641,7 +641,7 @@ function DropDrawerGroup({
         role="group"
         className={cn(
           "bg-accent dark:bg-accent mx-2 my-3 overflow-hidden rounded-xl",
-          className
+          className,
         )}
         {...props}
       >
@@ -714,7 +714,7 @@ function DropDrawerSub({
           (child.props as { children?: React.ReactNode }).children,
           (contentChild) => {
             contentItems.push(contentChild);
-          }
+          },
         );
       }
     });
@@ -740,7 +740,7 @@ function DropDrawerSub({
             "data-submenu-id": submenuId,
             // Use only data attributes, not custom props
             "data-parent-submenu": submenuId,
-          } as React.HTMLAttributes<HTMLElement>
+          } as React.HTMLAttributes<HTMLElement>,
         );
       }
 
@@ -753,7 +753,7 @@ function DropDrawerSub({
             "data-submenu-id": submenuId,
             // Use only data attributes, not custom props
             "data-parent-submenu": submenuId,
-          } as React.HTMLAttributes<HTMLElement>
+          } as React.HTMLAttributes<HTMLElement>,
         );
       }
 
@@ -811,7 +811,7 @@ function DropDrawerSubTrigger({
       }
       return false;
     },
-    []
+    [],
   );
 
   // Create a ref to check if the item is in a group
@@ -903,7 +903,7 @@ function DropDrawerSubTrigger({
           // For items in a group, don't add background but add more padding
           isInsideGroup && "bg-transparent py-4",
           inset && "pl-8",
-          className
+          className,
         )}
         onClick={combinedOnClick}
         {...restProps}
@@ -947,7 +947,7 @@ function DropDrawerSubContent({
       sideOffset={sideOffset}
       className={cn(
         "z-50 min-w-[8rem] overflow-hidden rounded-md border p-1 shadow-lg",
-        className
+        className,
       )}
       {...props}
     >
