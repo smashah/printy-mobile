@@ -40,45 +40,54 @@ export class AppError extends Error {
     message: string,
     public code: string,
     public statusCode: number,
-    public meta?: Record<string, unknown>
+    public meta?: Record<string, unknown>,
   ) {
     super(message);
-    this.name = 'AppError';
+    this.name = "AppError";
   }
 }
 
 export const logger = {
   info: (msg: string, context?: object) => {
-    console.log(JSON.stringify({
-      level: 'info',
-      msg,
-      ...context,
-      timestamp: new Date().toISOString()
-    }));
+    console.log(
+      JSON.stringify({
+        level: "info",
+        msg,
+        ...context,
+        timestamp: new Date().toISOString(),
+      }),
+    );
   },
 
   error: (msg: string, error: unknown, context?: object) => {
-    console.error(JSON.stringify({
-      level: 'error',
-      msg,
-      error: error instanceof Error ? {
-        name: error.name,
-        message: error.message,
-        stack: error.stack
-      } : error,
-      ...context,
-      timestamp: new Date().toISOString()
-    }));
+    console.error(
+      JSON.stringify({
+        level: "error",
+        msg,
+        error:
+          error instanceof Error
+            ? {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+              }
+            : error,
+        ...context,
+        timestamp: new Date().toISOString(),
+      }),
+    );
   },
 
   warn: (msg: string, context?: object) => {
-    console.warn(JSON.stringify({
-      level: 'warn',
-      msg,
-      ...context,
-      timestamp: new Date().toISOString()
-    }));
-  }
+    console.warn(
+      JSON.stringify({
+        level: "warn",
+        msg,
+        ...context,
+        timestamp: new Date().toISOString(),
+      }),
+    );
+  },
 };
 ```
 
@@ -92,12 +101,12 @@ export const logger = {
 
 ```typescript
 // apps/api/src/middleware/requestId.ts
-import { createMiddleware } from 'hono/factory';
+import { createMiddleware } from "hono/factory";
 
 export const requestIdMiddleware = createMiddleware(async (c, next) => {
   const requestId = crypto.randomUUID();
-  c.set('requestId', requestId);
-  c.res.headers.set('X-Request-Id', requestId);
+  c.set("requestId", requestId);
+  c.res.headers.set("X-Request-Id", requestId);
   await next();
 });
 ```
@@ -118,13 +127,13 @@ export const apiResponse = {
     success: true,
     data,
     meta,
-    timestamp: Date.now()
+    timestamp: Date.now(),
   }),
 
   error: (message: string, code: string, details?: unknown) => ({
     success: false,
     error: { message, code, details },
-    timestamp: Date.now()
+    timestamp: Date.now(),
   }),
 
   paginated: <T>(data: T[], page: number, limit: number, total: number) => ({
@@ -136,16 +145,16 @@ export const apiResponse = {
       total,
       pages: Math.ceil(total / limit),
       hasNext: page * limit < total,
-      hasPrev: page > 1
+      hasPrev: page > 1,
     },
-    timestamp: Date.now()
+    timestamp: Date.now(),
   }),
 
   created: <T>(data: T, location?: string) => ({
     success: true,
     data,
-    timestamp: Date.now()
-  })
+    timestamp: Date.now(),
+  }),
 };
 ```
 
@@ -172,21 +181,20 @@ app.get("/posts", async (c) => {
 **Location:** `packages/db/src/utils/queries.ts`
 
 ```typescript
-import { isNull } from 'drizzle-orm';
+import { isNull } from "drizzle-orm";
 
 export const withPagination = (limit?: string, offset?: string) => ({
   limit: limit ? Number.parseInt(limit, 10) : 20,
-  offset: offset ? Number.parseInt(offset, 10) : 0
+  offset: offset ? Number.parseInt(offset, 10) : 0,
 });
 
-export const withSoftDelete = <T extends { deletedAt: any }>(
-  table: T
-) => isNull(table.deletedAt);
+export const withSoftDelete = <T extends { deletedAt: any }>(table: T) =>
+  isNull(table.deletedAt);
 
 // Common query patterns
 export const findOneOrThrow = async <T>(
   query: Promise<T[]>,
-  errorMsg = "Resource not found"
+  errorMsg = "Resource not found",
 ) => {
   const results = await query;
   if (results.length === 0) {
@@ -197,12 +205,12 @@ export const findOneOrThrow = async <T>(
 
 export const findManyWithCount = async <T>(
   query: Promise<T[]>,
-  countQuery: Promise<{ count: number }[]>
+  countQuery: Promise<{ count: number }[]>,
 ) => {
   const [data, countResult] = await Promise.all([query, countQuery]);
   return {
     data,
-    total: countResult[0].count
+    total: countResult[0].count,
   };
 };
 
@@ -223,7 +231,7 @@ app.get("/posts/:id", async (c) => {
 
   const post = await findOneOrThrow(
     db.select().from(schema.tPosts).where(eq(schema.tPosts.id, id)),
-    "Post not found"
+    "Post not found",
   );
 
   return c.json(apiResponse.success(post));
@@ -241,14 +249,18 @@ app.get("/posts/:id", async (c) => {
 **Location:** `packages/common/src/validation.ts`
 
 ```typescript
-import { z } from 'zod';
+import { z } from "zod";
 
 // Sanitization helpers
 export const sanitizers = {
   email: (email: string) => email.toLowerCase().trim(),
-  slug: (str: string) => str.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-'),
-  phone: (phone: string) => phone.replace(/\D/g, ''),
-  url: (url: string) => url.trim().replace(/\/$/, '')
+  slug: (str: string) =>
+    str
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-"),
+  phone: (phone: string) => phone.replace(/\D/g, ""),
+  url: (url: string) => url.trim().replace(/\/$/, ""),
 };
 
 // Common validation schemas
@@ -260,38 +272,46 @@ export const commonSchemas = {
   pagination: z.object({
     limit: z.coerce.number().min(1).max(100).default(20),
     offset: z.coerce.number().min(0).default(0),
-    page: z.coerce.number().min(1).default(1)
+    page: z.coerce.number().min(1).default(1),
   }),
 
-  dateRange: z.object({
-    from: z.coerce.date(),
-    to: z.coerce.date()
-  }).refine(data => data.from < data.to, {
-    message: "'from' date must be before 'to' date"
-  }),
+  dateRange: z
+    .object({
+      from: z.coerce.date(),
+      to: z.coerce.date(),
+    })
+    .refine((data) => data.from < data.to, {
+      message: "'from' date must be before 'to' date",
+    }),
 
   slug: z.string().min(1).transform(sanitizers.slug),
 
   url: z.string().url().transform(sanitizers.url),
 
-  phoneNumber: z.string().transform(sanitizers.phone).refine(
-    (phone) => phone.length >= 10 && phone.length <= 15,
-    { message: "Invalid phone number" }
-  )
+  phoneNumber: z
+    .string()
+    .transform(sanitizers.phone)
+    .refine((phone) => phone.length >= 10 && phone.length <= 15, {
+      message: "Invalid phone number",
+    }),
 };
 
 // Schema composition helpers
-export const withTimestamps = <T extends z.ZodRawShape>(schema: z.ZodObject<T>) => {
+export const withTimestamps = <T extends z.ZodRawShape>(
+  schema: z.ZodObject<T>,
+) => {
   return schema.extend({
     createdAt: z.string().datetime(),
-    updatedAt: z.string().datetime()
+    updatedAt: z.string().datetime(),
   });
 };
 
-export const withPagination = <T extends z.ZodRawShape>(schema: z.ZodObject<T>) => {
+export const withPagination = <T extends z.ZodRawShape>(
+  schema: z.ZodObject<T>,
+) => {
   return schema.extend({
     limit: z.coerce.number().min(1).max(100).default(20),
-    offset: z.coerce.number().min(0).default(0)
+    offset: z.coerce.number().min(0).default(0),
   });
 };
 ```
@@ -311,8 +331,8 @@ export const withPagination = <T extends z.ZodRawShape>(schema: z.ZodObject<T>) 
 ```typescript
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis/cloudflare";
-import { createMiddleware } from 'hono/factory';
-import { HTTPException } from 'hono/http-exception';
+import { createMiddleware } from "hono/factory";
+import { HTTPException } from "hono/http-exception";
 
 export const rateLimiter = (requests: number, windowSeconds: number) => {
   return createMiddleware(async (c, next) => {
@@ -325,18 +345,20 @@ export const rateLimiter = (requests: number, windowSeconds: number) => {
     });
 
     // Use user ID if authenticated, otherwise IP
-    const identifier = c.var.user?.id ?? c.req.header("cf-connecting-ip") ?? "anonymous";
+    const identifier =
+      c.var.user?.id ?? c.req.header("cf-connecting-ip") ?? "anonymous";
 
-    const { success, limit, remaining, reset } = await ratelimit.limit(identifier);
+    const { success, limit, remaining, reset } =
+      await ratelimit.limit(identifier);
 
     // Add rate limit headers
-    c.res.headers.set('X-RateLimit-Limit', limit.toString());
-    c.res.headers.set('X-RateLimit-Remaining', remaining.toString());
-    c.res.headers.set('X-RateLimit-Reset', reset.toString());
+    c.res.headers.set("X-RateLimit-Limit", limit.toString());
+    c.res.headers.set("X-RateLimit-Remaining", remaining.toString());
+    c.res.headers.set("X-RateLimit-Reset", reset.toString());
 
     if (!success) {
       throw new HTTPException(429, {
-        message: "Too many requests. Please try again later."
+        message: "Too many requests. Please try again later.",
       });
     }
 
@@ -384,9 +406,13 @@ export const uploadToR2 = async (
     path?: string;
     maxSize?: number; // bytes
     allowedTypes?: string[];
-  } = {}
+  } = {},
 ): Promise<UploadResult> => {
-  const { path = 'uploads', maxSize = 10 * 1024 * 1024, allowedTypes } = options;
+  const {
+    path = "uploads",
+    maxSize = 10 * 1024 * 1024,
+    allowedTypes,
+  } = options;
 
   // Validate file size
   if (file.size > maxSize) {
@@ -399,51 +425,61 @@ export const uploadToR2 = async (
   }
 
   // Generate unique key
-  const ext = file.name.split('.').pop();
+  const ext = file.name.split(".").pop();
   const key = `${path}/${crypto.randomUUID()}.${ext}`;
 
   // Upload to R2
   await r2.put(key, file, {
     httpMetadata: {
-      contentType: file.type
+      contentType: file.type,
     },
     customMetadata: {
       originalName: file.name,
-      uploadedAt: new Date().toISOString()
-    }
+      uploadedAt: new Date().toISOString(),
+    },
   });
 
   return {
     key,
     url: `https://your-r2-domain.com/${key}`, // TODO: Replace with your R2 domain
     size: file.size,
-    contentType: file.type
+    contentType: file.type,
   };
 };
 
-export const deleteFromR2 = async (r2: R2Bucket, key: string): Promise<void> => {
+export const deleteFromR2 = async (
+  r2: R2Bucket,
+  key: string,
+): Promise<void> => {
   await r2.delete(key);
 };
 
-export const getFromR2 = async (r2: R2Bucket, key: string): Promise<R2ObjectBody | null> => {
+export const getFromR2 = async (
+  r2: R2Bucket,
+  key: string,
+): Promise<R2ObjectBody | null> => {
   return await r2.get(key);
 };
 
 // Image-specific helpers
 export const uploadImage = async (r2: R2Bucket, file: File) => {
   return uploadToR2(r2, file, {
-    path: 'images',
+    path: "images",
     maxSize: 5 * 1024 * 1024, // 5MB
-    allowedTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+    allowedTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
   });
 };
 
 // Document-specific helpers
 export const uploadDocument = async (r2: R2Bucket, file: File) => {
   return uploadToR2(r2, file, {
-    path: 'documents',
+    path: "documents",
     maxSize: 20 * 1024 * 1024, // 20MB
-    allowedTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    allowedTypes: [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ],
   });
 };
 ```
@@ -453,7 +489,7 @@ export const uploadDocument = async (r2: R2Bucket, file: File) => {
 ```typescript
 app.post("/api/upload", async (c) => {
   const formData = await c.req.formData();
-  const file = formData.get('file') as File;
+  const file = formData.get("file") as File;
 
   if (!file) {
     throw new HTTPException(400, { message: "No file provided" });
@@ -485,7 +521,7 @@ export const emailJobs = {
       maxAttempts: 3,
       factor: 2,
       minTimeoutInMs: 1000,
-      maxTimeoutInMs: 10000
+      maxTimeoutInMs: 10000,
     },
     run: async (payload: { userId: string; email: string; name: string }) => {
       // Your email sending logic here
@@ -500,7 +536,7 @@ export const emailJobs = {
       // });
 
       return { success: true, emailSent: payload.email };
-    }
+    },
   }),
 
   sendPasswordReset: tasks.create({
@@ -509,16 +545,20 @@ export const emailJobs = {
       console.log(`Sending password reset to ${payload.email}`);
       // Reset email logic
       return { success: true };
-    }
+    },
   }),
 
   sendNotification: tasks.create({
     id: "send-notification",
-    run: async (payload: { userId: string; message: string; type: 'email' | 'sms' }) => {
+    run: async (payload: {
+      userId: string;
+      message: string;
+      type: "email" | "sms";
+    }) => {
       // Multi-channel notification logic
       return { success: true };
-    }
-  })
+    },
+  }),
 };
 ```
 
@@ -535,7 +575,7 @@ export const cronJobs = {
       console.log("Cleaning up expired sessions");
       // Your cleanup logic here
       return { deletedCount: 0 };
-    }
+    },
   }),
 
   sendDailyDigest: tasks.create({
@@ -544,7 +584,7 @@ export const cronJobs = {
     run: async () => {
       console.log("Sending daily digest emails");
       return { emailsSent: 0 };
-    }
+    },
   }),
 
   generateReports: tasks.create({
@@ -553,8 +593,8 @@ export const cronJobs = {
     run: async () => {
       console.log("Generating weekly reports");
       return { reportsGenerated: 0 };
-    }
-  })
+    },
+  }),
 };
 ```
 
@@ -567,15 +607,18 @@ export const dataJobs = {
     run: async (payload: { fileKey: string; userId: string }) => {
       // Process uploaded files (resize images, extract metadata, etc.)
       return { processed: true };
-    }
+    },
   }),
 
   exportData: tasks.create({
     id: "export-data",
-    run: async (payload: { userId: string; format: 'csv' | 'json' | 'xlsx' }) => {
+    run: async (payload: {
+      userId: string;
+      format: "csv" | "json" | "xlsx";
+    }) => {
       // Generate exports for users
-      return { downloadUrl: '' };
-    }
+      return { downloadUrl: "" };
+    },
   }),
 
   syncExternalData: tasks.create({
@@ -583,8 +626,8 @@ export const dataJobs = {
     run: async (payload: { source: string; userId: string }) => {
       // Sync data from external APIs
       return { synced: true, recordCount: 0 };
-    }
-  })
+    },
+  }),
 };
 ```
 
@@ -606,14 +649,14 @@ import { getApiHost } from "./config";
 // Get auth token from storage
 const getAuthToken = async (): Promise<string | null> => {
   // Your auth token retrieval logic
-  return localStorage.getItem('auth_token');
+  return localStorage.getItem("auth_token");
 };
 
 // Retry logic with exponential backoff
 const fetchWithRetry = async (
   input: RequestInfo | URL,
   init?: RequestInit,
-  maxRetries = 3
+  maxRetries = 3,
 ): Promise<Response> => {
   let lastError: Error | undefined;
 
@@ -639,12 +682,12 @@ const fetchWithRetry = async (
       if (attempt < maxRetries - 1) {
         // Exponential backoff: 1s, 2s, 4s
         const delay = 1000 * Math.pow(2, attempt);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
   }
 
-  throw lastError || new Error('Request failed after retries');
+  throw lastError || new Error("Request failed after retries");
 };
 
 export const createApiClient = () => {
@@ -653,10 +696,10 @@ export const createApiClient = () => {
       const token = await getAuthToken();
       return {
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       };
     },
-    fetch: fetchWithRetry
+    fetch: fetchWithRetry,
   });
 
   return client;
@@ -682,33 +725,33 @@ export const resetApiClient = () => {
 
 ```typescript
 // apps/webapp/app/lib/queries.ts
-import { queryOptions } from '@tanstack/react-query';
-import { getApiClient } from './api-client';
+import { queryOptions } from "@tanstack/react-query";
+import { getApiClient } from "./api-client";
 
 export const postsQueries = {
-  all: () => ['posts'],
+  all: () => ["posts"],
   list: (filters?: { limit?: number; offset?: number }) =>
     queryOptions({
-      queryKey: [...postsQueries.all(), 'list', filters],
+      queryKey: [...postsQueries.all(), "list", filters],
       queryFn: async () => {
         const client = getApiClient();
         const response = await client.api.posts.$get({
-          query: filters
+          query: filters,
         });
         return response.json();
-      }
+      },
     }),
   detail: (id: string) =>
     queryOptions({
-      queryKey: [...postsQueries.all(), 'detail', id],
+      queryKey: [...postsQueries.all(), "detail", id],
       queryFn: async () => {
         const client = getApiClient();
-        const response = await client.api.posts[':id'].$get({
-          param: { id }
+        const response = await client.api.posts[":id"].$get({
+          param: { id },
         });
         return response.json();
-      }
-    })
+      },
+    }),
 };
 ```
 
@@ -723,36 +766,43 @@ export const postsQueries = {
 **Location:** `apps/api/tests/factories.ts`
 
 ```typescript
-import { faker } from '@faker-js/faker';
-import type { testClient } from 'hono/testing';
+import { faker } from "@faker-js/faker";
+import type { testClient } from "hono/testing";
 
 // Type-safe factory functions
 export const userFactory = (overrides?: Partial<User>) => ({
   name: faker.person.fullName(),
   email: faker.internet.email(),
-  ...overrides
+  ...overrides,
 });
 
 export const postFactory = (overrides?: Partial<Post>) => ({
   title: faker.lorem.sentence(),
   content: faker.lorem.paragraphs(3),
   isPublished: true,
-  ...overrides
+  ...overrides,
 });
 
 export const replyFactory = (overrides?: Partial<Reply>) => ({
   content: faker.lorem.paragraph(),
-  ...overrides
+  ...overrides,
 });
 
 // Helper to create test entities
-export const createTestUser = async (client: any, overrides?: Partial<User>) => {
+export const createTestUser = async (
+  client: any,
+  overrides?: Partial<User>,
+) => {
   const userData = userFactory(overrides);
   const response = await client.api.users.$post({ json: userData });
   return response.json();
 };
 
-export const createTestPost = async (client: any, userId: string, overrides?: Partial<Post>) => {
+export const createTestPost = async (
+  client: any,
+  userId: string,
+  overrides?: Partial<Post>,
+) => {
   const postData = postFactory({ userId, ...overrides });
   const response = await client.api.posts.$post({ json: postData });
   return response.json();
@@ -762,7 +812,7 @@ export const createTestReply = async (
   client: any,
   postId: string,
   userId: string,
-  overrides?: Partial<Reply>
+  overrides?: Partial<Reply>,
 ) => {
   const replyData = replyFactory({ postId, userId, ...overrides });
   const response = await client.api.replies.$post({ json: replyData });
@@ -799,7 +849,8 @@ export const cleanupTestDb = async (tables: string[]) => {
 };
 
 export const expectValidUuid = (value: string) => {
-  const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+  const UUID_REGEX =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
   expect(value).toMatch(UUID_REGEX);
 };
 
@@ -810,14 +861,14 @@ export const expectValidTimestamp = (value: string) => {
 
 // API response matchers
 export const expectSuccessResponse = (response: any) => {
-  expect(response).toHaveProperty('success', true);
-  expect(response).toHaveProperty('data');
-  expect(response).toHaveProperty('timestamp');
+  expect(response).toHaveProperty("success", true);
+  expect(response).toHaveProperty("data");
+  expect(response).toHaveProperty("timestamp");
 };
 
 export const expectErrorResponse = (response: any, code?: string) => {
-  expect(response).toHaveProperty('success', false);
-  expect(response).toHaveProperty('error');
+  expect(response).toHaveProperty("success", false);
+  expect(response).toHaveProperty("error");
   if (code) {
     expect(response.error.code).toBe(code);
   }
@@ -825,11 +876,11 @@ export const expectErrorResponse = (response: any, code?: string) => {
 
 export const expectPaginatedResponse = (response: any) => {
   expectSuccessResponse(response);
-  expect(response).toHaveProperty('pagination');
-  expect(response.pagination).toHaveProperty('page');
-  expect(response.pagination).toHaveProperty('limit');
-  expect(response.pagination).toHaveProperty('total');
-  expect(response.pagination).toHaveProperty('pages');
+  expect(response).toHaveProperty("pagination");
+  expect(response.pagination).toHaveProperty("page");
+  expect(response.pagination).toHaveProperty("limit");
+  expect(response.pagination).toHaveProperty("total");
+  expect(response.pagination).toHaveProperty("pages");
 };
 ```
 
@@ -848,7 +899,9 @@ import { z } from "zod";
 
 // Define environment-specific schemas
 const baseEnvSchema = z.object({
-  NODE_ENV: z.enum(["development", "staging", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "staging", "production"])
+    .default("development"),
 });
 
 const apiEnvSchema = baseEnvSchema.extend({
@@ -907,7 +960,7 @@ export type WebappConfig = z.infer<typeof webappEnvSchema>;
 
 ```typescript
 // In your API entry point
-import { parseApiEnv } from '@printy-mobile/config';
+import { parseApiEnv } from "@printy-mobile/config";
 
 const config = parseApiEnv();
 // TypeScript knows all the config properties now
@@ -925,17 +978,17 @@ console.log(config.API_PORT);
 **Location:** `apps/api/src/webhooks/stripe.ts`
 
 ```typescript
-import { Hono } from 'hono';
-import Stripe from 'stripe';
-import { logger } from '@printy-mobile/logger';
+import { Hono } from "hono";
+import Stripe from "stripe";
+import { logger } from "@printy-mobile/logger";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-11-20.acacia'
+  apiVersion: "2024-11-20.acacia",
 });
 
 export const stripeWebhooks = new Hono();
 
-stripeWebhooks.post('/stripe', async (c) => {
+stripeWebhooks.post("/stripe", async (c) => {
   const sig = c.req.header("stripe-signature");
   const body = await c.req.text();
 
@@ -949,7 +1002,7 @@ stripeWebhooks.post('/stripe', async (c) => {
     event = stripe.webhooks.constructEvent(
       body,
       sig,
-      c.env.STRIPE_WEBHOOK_SECRET
+      c.env.STRIPE_WEBHOOK_SECRET,
     );
   } catch (error) {
     logger.error("Webhook signature verification failed", error);
@@ -1008,9 +1061,9 @@ const handleSubscriptionDeleted = async (subscription: Stripe.Subscription) => {
 
 ```typescript
 // apps/api/src/app.ts
-import { stripeWebhooks } from './webhooks/stripe';
+import { stripeWebhooks } from "./webhooks/stripe";
 
-app.route('/webhooks', stripeWebhooks);
+app.route("/webhooks", stripeWebhooks);
 ```
 
 ---
@@ -1024,7 +1077,7 @@ app.route('/webhooks', stripeWebhooks);
 **Location:** `apps/api/src/middleware/cache.ts`
 
 ```typescript
-import { createMiddleware } from 'hono/factory';
+import { createMiddleware } from "hono/factory";
 
 interface CacheOptions {
   ttl: number; // seconds
@@ -1044,14 +1097,14 @@ export const cacheMiddleware = (options: CacheOptions) => {
 
     // Generate cache key
     const baseKey = c.req.path;
-    const varyKey = options.varyBy ? options.varyBy(c) : '';
-    const cacheKey = `${options.keyPrefix || 'api'}:${baseKey}${varyKey}`;
+    const varyKey = options.varyBy ? options.varyBy(c) : "";
+    const cacheKey = `${options.keyPrefix || "api"}:${baseKey}${varyKey}`;
 
     // Try to get from cache
-    const cached = await cache.get(cacheKey, { type: 'json' });
+    const cached = await cache.get(cacheKey, { type: "json" });
     if (cached) {
       return c.json(cached, 200, {
-        'X-Cache': 'HIT'
+        "X-Cache": "HIT",
       });
     }
 
@@ -1062,10 +1115,10 @@ export const cacheMiddleware = (options: CacheOptions) => {
     if (c.res.status === 200) {
       const responseData = await c.res.clone().json();
       await cache.put(cacheKey, JSON.stringify(responseData), {
-        expirationTtl: options.ttl
+        expirationTtl: options.ttl,
       });
 
-      c.res.headers.set('X-Cache', 'MISS');
+      c.res.headers.set("X-Cache", "MISS");
     }
   });
 };
@@ -1076,10 +1129,11 @@ export const mediumCache = cacheMiddleware({ ttl: 300 }); // 5 minutes
 export const longCache = cacheMiddleware({ ttl: 3600 }); // 1 hour
 
 // Cache with user-specific keys
-export const userCache = (ttl: number) => cacheMiddleware({
-  ttl,
-  varyBy: (c) => c.var.user?.id || 'anonymous'
-});
+export const userCache = (ttl: number) =>
+  cacheMiddleware({
+    ttl,
+    varyBy: (c) => c.var.user?.id || "anonymous",
+  });
 ```
 
 **Usage:**
@@ -1103,46 +1157,52 @@ app.get("/api/posts", longCache, async (c) => {
 **Location:** `packages/db/scripts/seed.ts`
 
 ```typescript
-import { drizzle } from 'drizzle-orm/d1';
-import * as schema from '../src/schema';
+import { drizzle } from "drizzle-orm/d1";
+import * as schema from "../src/schema";
 
 export const seedDatabase = async (db: ReturnType<typeof drizzle>) => {
-  console.log('Starting database seed...');
+  console.log("Starting database seed...");
 
   // Check if already seeded
   const existingUsers = await db.select().from(schema.tUsers);
   if (existingUsers.length > 0) {
-    console.log('Database already seeded, skipping...');
+    console.log("Database already seeded, skipping...");
     return;
   }
 
   // Seed users
-  const testUsers = await db.insert(schema.tUsers).values([
-    {
-      name: 'Admin User',
-      email: 'admin@example.com',
-    },
-    {
-      name: 'Test User',
-      email: 'test@example.com',
-    }
-  ]).returning();
+  const testUsers = await db
+    .insert(schema.tUsers)
+    .values([
+      {
+        name: "Admin User",
+        email: "admin@example.com",
+      },
+      {
+        name: "Test User",
+        email: "test@example.com",
+      },
+    ])
+    .returning();
 
   console.log(`Created ${testUsers.length} users`);
 
   // Seed posts
-  const testPosts = await db.insert(schema.tPosts).values([
-    {
-      userId: testUsers[0].id,
-      title: 'Welcome Post',
-      content: 'This is a sample post',
-      isPublished: true
-    }
-  ]).returning();
+  const testPosts = await db
+    .insert(schema.tPosts)
+    .values([
+      {
+        userId: testUsers[0].id,
+        title: "Welcome Post",
+        content: "This is a sample post",
+        isPublished: true,
+      },
+    ])
+    .returning();
 
   console.log(`Created ${testPosts.length} posts`);
 
-  console.log('Database seed completed!');
+  console.log("Database seed completed!");
 };
 ```
 
@@ -1169,17 +1229,25 @@ export const seedDatabase = async (db: ReturnType<typeof drizzle>) => {
 **Location:** `apps/api/src/app.ts`
 
 ```typescript
-import { Hono } from 'hono';
+import { Hono } from "hono";
 
 // V1 routes
 const v1 = new Hono()
-  .get('/users', async (c) => { /* v1 logic */ })
-  .get('/posts', async (c) => { /* v1 logic */ });
+  .get("/users", async (c) => {
+    /* v1 logic */
+  })
+  .get("/posts", async (c) => {
+    /* v1 logic */
+  });
 
 // V2 routes (when you need breaking changes)
 const v2 = new Hono()
-  .get('/users', async (c) => { /* v2 logic with different response format */ })
-  .get('/posts', async (c) => { /* v2 logic */ });
+  .get("/users", async (c) => {
+    /* v2 logic with different response format */
+  })
+  .get("/posts", async (c) => {
+    /* v2 logic */
+  });
 
 // Mount versions
 export const app = new Hono()
@@ -1193,17 +1261,17 @@ export const app = new Hono()
 
 ```typescript
 const versionMiddleware = createMiddleware(async (c, next) => {
-  const version = c.req.header('API-Version') || '1';
-  c.set('apiVersion', version);
+  const version = c.req.header("API-Version") || "1";
+  c.set("apiVersion", version);
   await next();
 });
 
-app.use('*', versionMiddleware);
+app.use("*", versionMiddleware);
 
-app.get('/api/users', (c) => {
+app.get("/api/users", (c) => {
   const version = c.var.apiVersion;
 
-  if (version === '2') {
+  if (version === "2") {
     // V2 response format
     return c.json({ users: [] });
   }
@@ -1227,54 +1295,54 @@ app.get('/api/users', (c) => {
 // Only available in development
 export const devTools = {
   logRequest: (c: any) => {
-    if (process.env.NODE_ENV !== 'development') return;
+    if (process.env.NODE_ENV !== "development") return;
 
-    console.log('\n=== REQUEST ===');
+    console.log("\n=== REQUEST ===");
     console.log(`${c.req.method} ${c.req.url}`);
-    console.log('Headers:', Object.fromEntries(c.req.headers));
-    console.log('================\n');
+    console.log("Headers:", Object.fromEntries(c.req.headers));
+    console.log("================\n");
   },
 
   logResponse: (data: any) => {
-    if (process.env.NODE_ENV !== 'development') return;
+    if (process.env.NODE_ENV !== "development") return;
 
-    console.log('\n=== RESPONSE ===');
+    console.log("\n=== RESPONSE ===");
     console.log(JSON.stringify(data, null, 2));
-    console.log('================\n');
+    console.log("================\n");
   },
 
   // Simulate network delay for testing loading states
   mockDelay: async (ms: number = 1000) => {
-    if (process.env.NODE_ENV !== 'development') return;
-    await new Promise(resolve => setTimeout(resolve, ms));
+    if (process.env.NODE_ENV !== "development") return;
+    await new Promise((resolve) => setTimeout(resolve, ms));
   },
 
   // Quick database reset for testing
   resetDb: async (db: any) => {
-    if (process.env.NODE_ENV !== 'development') {
-      throw new Error('resetDb only available in development');
+    if (process.env.NODE_ENV !== "development") {
+      throw new Error("resetDb only available in development");
     }
 
-    console.log('Resetting database...');
+    console.log("Resetting database...");
     // Your reset logic here
   },
 
   // Generate fake data on demand
   generateMockData: {
     user: () => ({
-      name: 'Mock User',
-      email: `mock-${Date.now()}@example.com`
+      name: "Mock User",
+      email: `mock-${Date.now()}@example.com`,
     }),
     post: () => ({
-      title: 'Mock Post',
-      content: 'This is mock content generated at ' + new Date().toISOString()
-    })
-  }
+      title: "Mock Post",
+      content: "This is mock content generated at " + new Date().toISOString(),
+    }),
+  },
 };
 
 // Middleware to enable dev logging
 export const devLoggingMiddleware = createMiddleware(async (c, next) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === "development") {
     devTools.logRequest(c);
     await next();
     devTools.logResponse(await c.res.clone().json());
@@ -1291,6 +1359,7 @@ export const devLoggingMiddleware = createMiddleware(async (c, next) => {
 **Current issue:** `apps/api/package.json:6` invokes bare `wrangler` inside `db:touchy`. Fresh machines without a global install hit `command not found` when Turbo kicks that script as part of `pnpm dev`.
 
 ### Recommended fix
+
 - Swap the direct call for `pnpx wrangler …` (matching every other script in that file) or wrap it in `[ ! -d ./.wrangler ] && pnpx wrangler …`. This keeps the “touch if missing” behavior while ensuring the CLI resolves from the workspace.
 
 ```diff
@@ -1305,6 +1374,7 @@ export const devLoggingMiddleware = createMiddleware(async (c, next) => {
 **Current issue:** `repo-init.ts:388-399` filters target files by extension, but the list omits `.conf`/`.env`. After running `pnpm run init-project`, `repo.example.conf` still holds template identifiers, so downstream deploy configs drift from the rest of the replacements.
 
 ### Recommended fix
+
 - Extend the extension allowlist to include `.conf` and `.env`, then (optionally) auto-copy `repo.example.conf` to `repo.conf` when none exists so the initializer can patch it in place.
 
 ```diff
@@ -1323,6 +1393,7 @@ export const devLoggingMiddleware = createMiddleware(async (c, next) => {
 **Current issue:** `TEMPLATE_SETUP.md:1-118` walks readers through manual search-and-replace even though `package.json:12` already exposes `pnpm run init-project`. The missing call-out leads people to repeat work your initializer handles automatically.
 
 ### Recommended fix
+
 - Add a “Step 0 – Run \`pnpm run init-project\`” section at the top of `TEMPLATE_SETUP.md`, noting the script’s prompts and linking to `repo.example.conf`. Keep the existing checklist as validation rather than the primary workflow.
 
 ---
@@ -1332,6 +1403,7 @@ export const devLoggingMiddleware = createMiddleware(async (c, next) => {
 **Current issue:** The setup checklist (`TEMPLATE_SETUP.md:51`) tells contributors to copy `.env.example`, but `find . -maxdepth 4 -name '.env.example'` returns no files. New projects have to reverse-engineer required variables from notes.
 
 ### Recommended fix
+
 - Commit minimal `.env.example` files in each app/package (e.g., `apps/api/.env.example` with `DATABASE_URL`, `BETTER_AUTH_SECRET`, etc.) and point the checklist to them. Alternatively, update the doc to reference `notes/PRODUCTION_FIXES.md` if you prefer documentation-only guidance.
 
 ---
@@ -1341,6 +1413,7 @@ export const devLoggingMiddleware = createMiddleware(async (c, next) => {
 **Current issue:** `TEMPLATE_SETUP.md:103` references `notes/sys-arch.md`, but the actual document is `notes/SYSTEM_ARCHITECTURE.md`. Following the link currently 404s during onboarding.
 
 ### Recommended fix
+
 - Update the filename in the checklist (and any other docs) to the exact casing used in `notes/`.
 
 ---

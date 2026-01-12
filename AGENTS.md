@@ -28,22 +28,24 @@ Mobile-first thermal printing application for generating labels, tickets, and do
 
 ## WHERE TO LOOK
 
-| Task                    | Location                                | Notes                        |
-| ----------------------- | --------------------------------------- | ---------------------------- |
-| Add PDF Template        | `packages/capabilities/src/templates/`  | React PDF components         |
-| Add Data Service        | `packages/capabilities/src/services/`   | API fetching logic           |
-| Modify Printer API      | `apps/printer-api-service/src/routes/`  | Hono route handlers          |
-| Add Mobile Screen       | `apps/native/src/screens/`              | Expo / React Native          |
-| Add Main API endpoint   | `apps/api/src/routes/`                  | See API-PATTERNS.md          |
+| Task                  | Location                               | Notes                |
+| --------------------- | -------------------------------------- | -------------------- |
+| Add PDF Template      | `packages/capabilities/src/templates/` | React PDF components |
+| Add Data Service      | `packages/capabilities/src/services/`  | API fetching logic   |
+| Modify Printer API    | `apps/printer-api-service/src/routes/` | Hono route handlers  |
+| Add Mobile Screen     | `apps/native/src/screens/`             | Expo / React Native  |
+| Add Main API endpoint | `apps/api/src/routes/`                 | See API-PATTERNS.md  |
 
 ## CONVENTIONS
 
 ### PDF Generation
+
 - Use `@react-pdf/renderer` for templates.
 - Standard thermal label size: `[288, 432]` points (4x6 inches).
 - Always use dithering for images to ensure clarity on thermal prints via `packages/capabilities/src/utils/dithering.ts`.
 
 ### Monorepo
+
 - Use `pnpm` exclusively.
 - Run commands using Turborepo filters: `pnpm --filter @printy-mobile/printer-api-service dev`.
 

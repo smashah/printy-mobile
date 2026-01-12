@@ -9,6 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Printy Mobile is Print labels anywhere with your mobile device. [Add your specific project description here]
 
 **Important Documentation:**
+
 - `notes/PRD.md` - Product Requirements Document with detailed user stories
 - `notes/STACK.md` - Complete technology stack documentation
 - `notes/TODO.md` - Current tasks and priorities
@@ -148,6 +149,7 @@ pnpm db:studio:prd
 - **Authentication**: Better-auth with TanStack integration
 
 **Key Patterns:**
+
 - Use server-side rendering where possible with TanStack Start
 - Implement proper error boundaries
 - Handle loading states appropriately
@@ -162,6 +164,7 @@ pnpm db:studio:prd
 - **Storage**: Cloudflare R2 for media files
 
 **Key Patterns:**
+
 - All routes are defined in `apps/api/src/app.ts`
 - Database access is provided via `dbProvider` middleware
 - Authentication is handled via `authMiddleware`
@@ -171,6 +174,7 @@ pnpm db:studio:prd
 - Use `/auth/*` routes for authentication endpoints
 
 **Middleware Stack:**
+
 1. `dbProvider` - Provides Drizzle database instance
 2. `authMiddleware` - Handles authentication and session
 3. `cors` - CORS configuration for allowed origins
@@ -185,6 +189,7 @@ pnpm db:studio:prd
 - **Migrations**: Auto-generated in `packages/db/migrations/`
 
 **Schema Organization:**
+
 - Authentication tables are managed by better-auth
 - Application tables use Drizzle's schema definitions
 - Use drizzle-zod for automatic Zod schema generation
@@ -199,6 +204,7 @@ pnpm db:studio:prd
 - **Middleware**: Available in `apps/api/src/middleware/auth.ts`
 
 **Integration:**
+
 - API uses `authMiddleware` to inject `user` and `session` into context
 - Webapp uses `@daveyplate/better-auth-tanstack` for TanStack integration
 - Auth routes are exposed at `/auth/*` on the API
@@ -250,6 +256,7 @@ BETTER_AUTH_SECRET=
 - `apps/webapp/wrangler.toml` - Webapp Pages configuration
 
 **Bindings:**
+
 - D1 database binding for API
 - R2 bucket binding for media storage
 

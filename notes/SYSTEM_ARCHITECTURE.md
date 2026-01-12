@@ -38,13 +38,13 @@ graph TD
     Backoffice --> API
     Backoffice --> AuthPkg
     Backoffice --> UiPkg
-    
+
     API --> D1
     API --> R2
     API --> AuthPkg
     API --> Jobs
     API --> DbPkg
-    
+
     Jobs --> DbPkg
     Jobs --> Email
 ```
@@ -74,7 +74,6 @@ graph TD
     - 🎨 **`@printy-mobile/ui`**: A shared component library built with shadcn/ui, Radix, and Tailwind CSS.
     - 🛠️ **`@printy-mobile/common`**: Shared utilities and types used across the monorepo.
 
-
 ## Key Architectural Principles
 
 - **Serverless First**: The entire backend is built on serverless components (Cloudflare Workers, D1, R2) to ensure high scalability, low operational overhead, and cost-efficiency.
@@ -98,4 +97,4 @@ graph TD
 3.  **Reliability**
     - Distributed architecture
     - Fault tolerance
-    - Data redundancy 
+    - Data redundancy

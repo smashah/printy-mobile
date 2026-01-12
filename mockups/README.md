@@ -50,5 +50,3 @@ mockups/
 - Minimal custom CSS: prefer existing utilities; avoid new styling unless required by existing patterns.
 
 See also: `.cursor/rules/mockups.mdc` for full agent rules.
-
-
