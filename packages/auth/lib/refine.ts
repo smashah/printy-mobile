@@ -11,7 +11,7 @@ export const authProvider: AuthProvider = {
       email,
       password,
       options,
-      params
+      params,
     );
     const { data, error } = providerName
       ? await authClient.signIn.social({

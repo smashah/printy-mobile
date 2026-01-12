@@ -164,7 +164,9 @@ export const cloudflareBindingsSchema = z.object({
 /**
  * Complete API environment including both env vars and Cloudflare bindings
  */
-export const apiCompleteEnvSchema = apiEnvSchema.merge(cloudflareBindingsSchema);
+export const apiCompleteEnvSchema = apiEnvSchema.merge(
+  cloudflareBindingsSchema,
+);
 
 // ============================================================================
 // Type Exports
@@ -198,7 +200,7 @@ export type ApiCompleteConfig = z.infer<typeof apiCompleteEnvSchema>;
  */
 export const parseApiEnv = (
   env: Record<string, unknown>,
-  options: { strict?: boolean } = {}
+  options: { strict?: boolean } = {},
 ) => {
   try {
     if (options.strict) {
@@ -210,11 +212,8 @@ export const parseApiEnv = (
       console.error("❌ API Environment validation failed:");
       console.error(
         error.errors
-          .map(
-            (err) =>
-              `  - ${err.path.join(".")}: ${err.message}`
-          )
-          .join("\n")
+          .map((err) => `  - ${err.path.join(".")}: ${err.message}`)
+          .join("\n"),
       );
     }
     throw error;
@@ -242,11 +241,8 @@ export const parseWebappEnv = (env: Record<string, unknown>) => {
       console.error("❌ Webapp Environment validation failed:");
       console.error(
         error.errors
-          .map(
-            (err) =>
-              `  - ${err.path.join(".")}: ${err.message}`
-          )
-          .join("\n")
+          .map((err) => `  - ${err.path.join(".")}: ${err.message}`)
+          .join("\n"),
       );
     }
     throw error;
@@ -298,7 +294,7 @@ export const safeParseWebappEnv = (env: Record<string, unknown>) => {
  */
 export const getMissingEnvVars = (
   env: Record<string, unknown>,
-  required: string[]
+  required: string[],
 ): string[] => {
   return required.filter((key) => !env[key]);
 };
@@ -334,8 +330,7 @@ export const isProduction = () => process.env.NODE_ENV === "production";
  * Check if running in development
  */
 export const isDevelopment = () =>
-  process.env.NODE_ENV === "development" ||
-  process.env.NODE_ENV === undefined;
+  process.env.NODE_ENV === "development" || process.env.NODE_ENV === undefined;
 
 /**
  * Check if running in staging
