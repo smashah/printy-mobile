@@ -227,7 +227,9 @@ export const WifiAccessCard = ({ wifi }: { wifi: WifiData }) => {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Generated: {new Date().toLocaleDateString()}</Text>
+          <Text style={styles.footerText}>
+            Generated: {new Date().toLocaleDateString()}
+          </Text>
           <Text style={styles.footerText}>Guest Access</Text>
         </View>
       </Page>

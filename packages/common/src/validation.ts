@@ -47,7 +47,7 @@ export const commonSchemas = {
 
 // Schema composition helpers
 export const withTimestamps = <T extends z.ZodRawShape>(
-  schema: z.ZodObject<T>
+  schema: z.ZodObject<T>,
 ) => {
   return schema.extend({
     createdAt: z.string().datetime(),
@@ -56,11 +56,10 @@ export const withTimestamps = <T extends z.ZodRawShape>(
 };
 
 export const withPagination = <T extends z.ZodRawShape>(
-  schema: z.ZodObject<T>
+  schema: z.ZodObject<T>,
 ) => {
   return schema.extend({
     limit: z.coerce.number().min(1).max(100).default(20),
     offset: z.coerce.number().min(0).default(0),
   });
 };
-

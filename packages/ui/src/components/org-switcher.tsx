@@ -58,7 +58,7 @@ export function OrgSwitcher({
               size="lg"
               className={cn(
                 "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
-                !activeOrg && "data-[state=open]:border"
+                !activeOrg && "data-[state=open]:border",
               )}
             >
               {activeOrg ? (

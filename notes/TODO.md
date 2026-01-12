@@ -1,6 +1,7 @@
 # Printy Mobile Implementation TODO
 
 ## 1. Project Setup & Foundational Configuration
+
 - [ ] Initialize Turborepo monorepo structure.
 - [ ] Configure pnpm workspaces for `apps` and `packages`.
 - [ ] Set up `apps/webapp` with TanStack Start (React + Vite).
@@ -13,6 +14,7 @@
 - [ ] Set up base TypeScript configurations (`tsconfig.json`) across the monorepo.
 
 ## Phase 1: Super MVP (V-1) - Anonymous Trip Logging
+
 - **Backend (`apps/api`)**
   - [ ] Define initial D1 database schema for anonymous trip logs.
   - [ ] Create API endpoint to submit a new trip log.
@@ -25,6 +27,7 @@
   - [ ] Add a UI element (e.g., dropdown) to filter the trip log list.
 
 ## Phase 2: MVP (V1) - User Accounts & Basic Social Features
+
 - **Authentication & Users**
   - [ ] Integrate `better-auth` for user registration (email/social) and login.
   - [ ] Implement backend middleware to protect API endpoints.
@@ -47,6 +50,7 @@
   - [ ] Add "Follow" buttons and follower/following counts to profiles.
 
 ## Phase 3: Enhanced Social Platform (V2) - Feed & Interactions
+
 - **Backend (`apps/api`)**
   - [ ] Design and implement API endpoint for a personalized activity feed.
   - [ ] Develop API endpoints for liking and commenting on trip updates.
@@ -60,6 +64,7 @@
   - [ ] Create a dedicated statistics dashboard for trips.
 
 ## Phase 4: Gamification & Advanced Features (V3)
+
 - **Backend (`apps/api`)**
   - [ ] Develop logic to award badges and achievements based on user activity.
   - [ ] Create and update leaderboards for various metrics (e.g., fuel efficiency).
@@ -73,6 +78,7 @@
   - [ ] Implement user-facing privacy controls for trips and profiles.
 
 ## Phase 5: Monetization & Growth (V4)
+
 - [ ] Design and implement subscription flow with a payment provider.
 - [ ] Gate specific features for premium users.
 - [ ] Develop a trip planning tool with route and cost estimates.
@@ -80,6 +86,7 @@
 - [ ] Build a recommendation engine for suggesting new trips or users to follow.
 
 ## General & Ongoing Tasks
+
 - **Testing**
   - [ ] Set up Vitest for unit and integration testing in all packages.
   - [ ] Write tests for critical API endpoints and UI components.
@@ -90,4 +97,4 @@
   - [ ] Create a user guide as features are developed.
 - **Deployment & DevOps**
 - [x] Set up a CI/CD pipeline using GitHub Actions to deploy to Cloudflare.
-  - [ ] Configure monitoring, logging, and error tracking for production. 
+  - [ ] Configure monitoring, logging, and error tracking for production.

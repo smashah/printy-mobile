@@ -81,7 +81,7 @@ function getLocalDb() {
   const pathToDb = getLocalD1dbPath();
   if (!pathToDb) {
     console.error(
-      "❌ Local D1 database not found. Try running the dev server first."
+      "❌ Local D1 database not found. Try running the dev server first.",
     );
     process.exit(1);
   }

@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "../../select";
 import { Button } from "../../button";
-import { cn } from "@printy-mobile/ui/lib/utils"
+import { cn } from "@printy-mobile/ui/lib/utils";
 
 type DataTablePaginationProps = {
   currentPage: number;
@@ -55,7 +55,7 @@ export function DataTablePagination({
         "flex-wrap",
         "px-2",
         "w-full",
-        "gap-2"
+        "gap-2",
       )}
     >
       <div
@@ -63,7 +63,7 @@ export function DataTablePagination({
           "flex-1",
           "text-sm",
           "text-muted-foreground",
-          "whitespace-nowrap"
+          "whitespace-nowrap",
         )}
       >
         {typeof total === "number" ? `${total} row(s)` : null}
@@ -94,7 +94,7 @@ export function DataTablePagination({
               "items-center",
               "justify-center",
               "text-sm",
-              "font-medium"
+              "font-medium",
             )}
           >
             Page {currentPage} of {pageCount}

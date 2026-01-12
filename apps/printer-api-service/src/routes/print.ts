@@ -31,7 +31,9 @@ import type {
 
 const printRoutes = new Hono();
 
-async function renderPdfResponse(element: React.ReactElement): Promise<Response> {
+async function renderPdfResponse(
+  element: React.ReactElement,
+): Promise<Response> {
   const stream = await (ReactPDF.renderToStream as any)(element);
   return new Response(stream as unknown as ReadableStream, {
     headers: { "Content-Type": "application/pdf" },
@@ -152,7 +154,9 @@ printRoutes.post("/release", async (c) => {
       qrCodeDataUrl = await QRCode.toDataURL(body.releaseNotesUrl);
     }
     const data: ReleaseData = { ...body, qrCodeDataUrl };
-    const element = React.createElement(ReleaseDeploymentTag, { release: data });
+    const element = React.createElement(ReleaseDeploymentTag, {
+      release: data,
+    });
     return renderPdfResponse(element);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

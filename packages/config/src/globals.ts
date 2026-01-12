@@ -31,7 +31,8 @@ export const projectSlug = "printy-mobile";
 export const projectSlogan = "Print labels anywhere with your mobile device";
 
 /** Project description for SEO and meta tags */
-export const projectDescription = "Mobile-first thermal printing application for generating labels, tickets, and documents on the go";
+export const projectDescription =
+  "Mobile-first thermal printing application for generating labels, tickets, and documents on the go";
 
 // ============================================================================
 // Domains & URLs

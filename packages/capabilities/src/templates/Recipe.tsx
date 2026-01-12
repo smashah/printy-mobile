@@ -1,5 +1,13 @@
 import React from "react";
-import { Document, Page, Text, View, StyleSheet, Image, Font } from "@react-pdf/renderer";
+import {
+  Document,
+  Page,
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  Font,
+} from "@react-pdf/renderer";
 
 Font.register({
   family: "Fira Code",
@@ -20,7 +28,7 @@ const styles = StyleSheet.create({
     width: PAGE_WIDTH,
     height: PAGE_HEIGHT,
     padding: 0,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   borderWrapper: {
     margin: 8,
@@ -120,7 +128,7 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 7,
     fontFamily: "Fira Code",
-  }
+  },
 });
 
 export interface RecipeData {
@@ -133,12 +141,16 @@ export interface RecipeData {
 }
 
 export const Recipe = ({ recipe }: { recipe: RecipeData }) => {
-  const sourceKeys = ['source', 'url', 'link'];
-  const sourceKey = Object.keys(recipe.metadata || {}).find(k => sourceKeys.includes(k.toLowerCase()));
-  const sourceUrl = sourceKey && recipe.metadata ? recipe.metadata[sourceKey] : null;
+  const sourceKeys = ["source", "url", "link"];
+  const sourceKey = Object.keys(recipe.metadata || {}).find((k) =>
+    sourceKeys.includes(k.toLowerCase()),
+  );
+  const sourceUrl =
+    sourceKey && recipe.metadata ? recipe.metadata[sourceKey] : null;
 
-  const displayMetadata = Object.entries(recipe.metadata || {})
-    .filter(([k]) => k !== sourceKey);
+  const displayMetadata = Object.entries(recipe.metadata || {}).filter(
+    ([k]) => k !== sourceKey,
+  );
 
   const MAX_CONTENT_HEIGHT = 260;
   const stepFontSize = 9;
@@ -152,22 +164,25 @@ export const Recipe = ({ recipe }: { recipe: RecipeData }) => {
 
   recipe.steps.forEach((step) => {
     const lines = Math.ceil(step.length / charsPerLine) || 1;
-    const stepHeight = (lines * stepFontSize * stepLineHeight) + stepMargin;
-    
-    if (currentHeight + stepHeight > MAX_CONTENT_HEIGHT && currentChunk.length > 0) {
+    const stepHeight = lines * stepFontSize * stepLineHeight + stepMargin;
+
+    if (
+      currentHeight + stepHeight > MAX_CONTENT_HEIGHT &&
+      currentChunk.length > 0
+    ) {
       stepChunks.push(currentChunk);
       currentChunk = [];
       currentHeight = 0;
     }
-    
+
     currentChunk.push(step);
     currentHeight += stepHeight;
   });
-  
+
   if (currentChunk.length > 0) {
     stepChunks.push(currentChunk);
   }
-  
+
   if (stepChunks.length === 0) stepChunks.push([]);
 
   const chunkStartIndices: number[] = [];
@@ -189,30 +204,34 @@ export const Recipe = ({ recipe }: { recipe: RecipeData }) => {
               <View style={styles.headerText}>
                 <Text style={styles.title}>{recipe.title}</Text>
                 {displayMetadata.map(([key, val]) => (
-                  <Text key={key} style={styles.metadata}>{key.toUpperCase()}: {val}</Text>
+                  <Text key={key} style={styles.metadata}>
+                    {key.toUpperCase()}: {val}
+                  </Text>
                 ))}
               </View>
               {sourceUrl && (
-                <Image 
+                <Image
                   src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(sourceUrl)}`}
                   style={styles.qrCode}
                 />
               )}
             </View>
 
-            {recipe.image && (
-              <Image src={recipe.image} style={styles.image} />
-            )}
+            {recipe.image && <Image src={recipe.image} style={styles.image} />}
 
             <View>
               <Text style={styles.sectionTitle}>Ingredients</Text>
               {recipe.ingredients.slice(0, ingLimit).map((ing, i) => (
                 <View key={i} style={styles.row}>
-                   <Text style={styles.ingredient}>{ing.quantity} {ing.unit} {ing.name}</Text>
+                  <Text style={styles.ingredient}>
+                    {ing.quantity} {ing.unit} {ing.name}
+                  </Text>
                 </View>
               ))}
               {recipe.ingredients.length > ingLimit && (
-                <Text style={{ fontSize: 8, fontStyle: 'italic', marginTop: 4 }}>
+                <Text
+                  style={{ fontSize: 8, fontStyle: "italic", marginTop: 4 }}
+                >
                   ...and {recipe.ingredients.length - ingLimit} more
                 </Text>
               )}
@@ -221,53 +240,93 @@ export const Recipe = ({ recipe }: { recipe: RecipeData }) => {
             {recipe.cookware.length > 0 && (
               <View>
                 <Text style={styles.sectionTitle}>Cookware</Text>
-                 <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-                   {recipe.cookware.slice(0, 6).map((c, i) => (
-                     <Text key={i} style={[styles.ingredient, { marginRight: 8, marginBottom: 4, flexGrow: 0, flexShrink: 0, flexBasis: 'auto' }]}>• {c.name}</Text>
-                   ))}
-                 </View>
+                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+                  {recipe.cookware.slice(0, 6).map((c, i) => (
+                    <Text
+                      key={i}
+                      style={[
+                        styles.ingredient,
+                        {
+                          marginRight: 8,
+                          marginBottom: 4,
+                          flexGrow: 0,
+                          flexShrink: 0,
+                          flexBasis: "auto",
+                        },
+                      ]}
+                    >
+                      • {c.name}
+                    </Text>
+                  ))}
+                </View>
               </View>
             )}
           </View>
-          
+
           <View style={styles.footer}>
-             <Text style={styles.footerText}>PRINTY • RECIPE</Text>
-             <Text style={styles.footerText}>1 / {1 + stepChunks.length}</Text>
+            <Text style={styles.footerText}>PRINTY • RECIPE</Text>
+            <Text style={styles.footerText}>1 / {1 + stepChunks.length}</Text>
           </View>
         </View>
       </Page>
-      
+
       {stepChunks.map((chunk, pageIndex) => {
         const startIndex = chunkStartIndices[pageIndex] ?? 0;
         const endIndex = startIndex + chunk.length;
-        
+
         return (
-          <Page key={pageIndex} size={[PAGE_WIDTH, PAGE_HEIGHT]} style={styles.page}>
-             <View style={styles.borderWrapper}>
-               <View style={styles.content}>
-                 <View style={styles.header}>
-                    <Text style={styles.title}>{recipe.title}</Text>
-                 </View>
-                 <Text style={[styles.sectionTitle, { marginBottom: 10 }]}>
-                   {startIndex + 1 === endIndex ? `Step ${startIndex + 1}` : `Steps (${startIndex + 1}-${endIndex})`}
-                 </Text>
-                 <View>
-                   {chunk.map((step, i) => (
-                     <View key={i} style={[styles.stepContainer, { marginBottom: stepMargin }]}>
-                       <Text style={[styles.stepIndex, { fontSize: stepFontSize }]}>
-                         {startIndex + i + 1}.
-                       </Text>
-                       <Text style={[styles.step, { fontSize: stepFontSize, lineHeight: stepLineHeight }]}>{step}</Text>
-                     </View>
-                   ))}
-                 </View>
-               </View>
-               
-               <View style={styles.footer}>
-                  <Text style={styles.footerText}>PRINTY • RECIPE</Text>
-                  <Text style={styles.footerText}>{pageIndex + 2} / {1 + stepChunks.length}</Text>
-               </View>
-             </View>
+          <Page
+            key={pageIndex}
+            size={[PAGE_WIDTH, PAGE_HEIGHT]}
+            style={styles.page}
+          >
+            <View style={styles.borderWrapper}>
+              <View style={styles.content}>
+                <View style={styles.header}>
+                  <Text style={styles.title}>{recipe.title}</Text>
+                </View>
+                <Text style={[styles.sectionTitle, { marginBottom: 10 }]}>
+                  {startIndex + 1 === endIndex
+                    ? `Step ${startIndex + 1}`
+                    : `Steps (${startIndex + 1}-${endIndex})`}
+                </Text>
+                <View>
+                  {chunk.map((step, i) => (
+                    <View
+                      key={i}
+                      style={[
+                        styles.stepContainer,
+                        { marginBottom: stepMargin },
+                      ]}
+                    >
+                      <Text
+                        style={[styles.stepIndex, { fontSize: stepFontSize }]}
+                      >
+                        {startIndex + i + 1}.
+                      </Text>
+                      <Text
+                        style={[
+                          styles.step,
+                          {
+                            fontSize: stepFontSize,
+                            lineHeight: stepLineHeight,
+                          },
+                        ]}
+                      >
+                        {step}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              <View style={styles.footer}>
+                <Text style={styles.footerText}>PRINTY • RECIPE</Text>
+                <Text style={styles.footerText}>
+                  {pageIndex + 2} / {1 + stepChunks.length}
+                </Text>
+              </View>
+            </View>
           </Page>
         );
       })}

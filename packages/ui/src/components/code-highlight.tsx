@@ -6,7 +6,7 @@ import { cn } from "../lib/utils";
 /**
  * Generic Code Highlight component with fallback for when prism-react-renderer is not available
  * To enable syntax highlighting, install: `npm install prism-react-renderer`
- * 
+ *
  * Features:
  * - Syntax highlighting (if prism-react-renderer is installed)
  * - Dark theme optimized
@@ -18,7 +18,15 @@ export interface CodeHighlightProps {
   /** The code string to display */
   code: string;
   /** Programming language for syntax highlighting */
-  language?: "tsx" | "typescript" | "javascript" | "json" | "css" | "html" | "sql" | "bash";
+  language?:
+    | "tsx"
+    | "typescript"
+    | "javascript"
+    | "json"
+    | "css"
+    | "html"
+    | "sql"
+    | "bash";
   /** Additional wrapper props */
   wrapperProps?: React.ComponentProps<"div">;
   /** Show copy button */
@@ -40,7 +48,7 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
     // Add custom scrollbar styles
     const styleElement = document.createElement("style");
     styleElement.id = "code-highlight-styles";
-    
+
     // Only add styles once
     if (!document.getElementById("code-highlight-styles")) {
       styleElement.appendChild(
@@ -60,7 +68,7 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
           .code-highlight-container::-webkit-scrollbar-corner {
             background-color: #1f2937;
           }
-        `)
+        `),
       );
       document.head.appendChild(styleElement);
     }
@@ -80,16 +88,20 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
 
   // Try to use prism-react-renderer if available, otherwise fallback
   let HighlightComponent: React.ReactNode;
-  
+
   try {
     // Dynamic import attempt for prism-react-renderer
     // This will be tree-shaken if not available
-    const PrismHighlight = React.lazy(() => 
+    const PrismHighlight = React.lazy(() =>
       import("prism-react-renderer").then((module) => ({
         default: ({ code, language }: { code: string; language: string }) => {
           const { Highlight, themes } = module;
           return (
-            <Highlight theme={themes.vsDark} code={code} language={language as any}>
+            <Highlight
+              theme={themes.vsDark}
+              code={code}
+              language={language as any}
+            >
               {({ className, style, tokens, getLineProps, getTokenProps }) => (
                 <pre
                   ref={codeRef}
@@ -110,8 +122,8 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
               )}
             </Highlight>
           );
-        }
-      }))
+        },
+      })),
     );
 
     HighlightComponent = (
@@ -129,7 +141,7 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
       className={cn(
         "relative group",
         "border border-gray-700 rounded-lg overflow-hidden",
-        "bg-gray-900 dark:bg-gray-900"
+        "bg-gray-900 dark:bg-gray-900",
       )}
       {...wrapperProps}
     >
@@ -144,14 +156,14 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
             className={cn(
               "text-xs text-gray-400 hover:text-gray-200",
               "opacity-0 group-hover:opacity-100 transition-opacity",
-              "px-2 py-1 rounded bg-gray-700 hover:bg-gray-600"
+              "px-2 py-1 rounded bg-gray-700 hover:bg-gray-600",
             )}
           >
             Copy
           </button>
         )}
       </div>
-      
+
       {/* Code content */}
       <div
         className="code-highlight-container overflow-auto"
@@ -165,13 +177,15 @@ export const CodeHighlight: React.FC<CodeHighlightProps> = ({
 
 // Fallback component when prism-react-renderer is not available
 const FallbackCode: React.FC<{ code: string }> = ({ code }) => (
-  <pre className={cn(
-    "p-4 m-0 w-full box-border text-sm",
-    "text-gray-200 bg-gray-900",
-    "whitespace-pre-wrap break-words",
-    "font-mono leading-relaxed"
-  )}>
-    {code.split('\n').map((line, i) => (
+  <pre
+    className={cn(
+      "p-4 m-0 w-full box-border text-sm",
+      "text-gray-200 bg-gray-900",
+      "whitespace-pre-wrap break-words",
+      "font-mono leading-relaxed",
+    )}
+  >
+    {code.split("\n").map((line, i) => (
       <div key={i}>
         <span className="inline-block w-8 text-right mr-4 text-gray-500 select-none">
           {i + 1}

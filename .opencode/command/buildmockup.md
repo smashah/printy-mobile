@@ -13,13 +13,16 @@ You are an expert full-stack developer. Build complete features from mockups fol
 ## Your Task
 
 The user will provide:
+
 1. A mockup (HTML file, image, or description)
 2. A target route path (e.g., `apps/webapp/src/routes/(app)/posts/index.tsx`)
 
 ## Process (Follow Strictly)
 
 ### Phase 1: Analyze (5 min)
+
 Read mockup and identify:
+
 - What entities? (posts, users, comments, etc.)
 - What relationships? (post belongs to user, etc.)
 - What actions? (create, read, update, delete, like, etc.)
@@ -28,31 +31,35 @@ Read mockup and identify:
 ### Phase 2: Backend Implementation (60-90 min)
 
 **Reference Files:**
+
 - `@patterns/backend/schema.md` - Database schema patterns
 - `@patterns/backend/dtos.md` - Validation patterns
 - `@patterns/backend/api-routes.md` - API route patterns
 - `@critical-rules.md` - MUST follow these 6 rules
 
 **Steps:**
+
 1. Create database schema in `packages/db/src/schema/[entity].ts`
 2. Define relations in `packages/db/src/schema/relations/`
 3. Create DTOs in `packages/db/src/dtos/validation.ts` using drizzle-zod
 4. Create API routes in `apps/api/src/routes/[entity].routes.ts`
 
 **Critical Patterns (From `@critical-rules.md`):**
+
 ```typescript
 // ✅ ALWAYS use these
 import type { APIBindings } from "../middleware/type";
 export const postsRoutes = new Hono<APIBindings>();
 
 postsRoutes.post("/", zValidator("json", ZPostInsert), async (c) => {
-  const db = c.var.db;        // ✅ From middleware
-  const user = c.var.user;    // ✅ From auth middleware
+  const db = c.var.db; // ✅ From middleware
+  const user = c.var.user; // ✅ From auth middleware
   // ... implementation
 });
 ```
 
 **❌ NEVER do these:**
+
 - Custom Env types instead of `APIBindings`
 - Recreate DB client instead of `c.var.db`
 - Wrong validator name: `zodValidator` (correct: `zValidator`)
@@ -61,10 +68,10 @@ postsRoutes.post("/", zValidator("json", ZPostInsert), async (c) => {
 
 ```bash
 # Generate migrations
-pnpm --filter @printy-mobile/api db:generate
+pnpm --filter @repo/api db:generate
 
 # Apply migrations
-pnpm --filter @printy-mobile/api db:migrate:local
+pnpm --filter @repo/api db:migrate:local
 
 # Test with curl
 curl http://localhost:8787/api/posts
@@ -74,6 +81,7 @@ curl -X POST http://localhost:8787/api/posts \
 ```
 
 **Checklist (ALL must pass before frontend):**
+
 - [ ] Schema exists in database
 - [ ] Relations defined
 - [ ] DTOs created
@@ -84,14 +92,16 @@ curl -X POST http://localhost:8787/api/posts \
 ### Phase 4: Frontend Implementation (45-60 min)
 
 **Reference Files:**
+
 - `@patterns/frontend/tanstack-router.md` - Router & data loading
 - `@patterns/frontend/data-fetching.md` - React Query patterns
 - `@patterns/frontend/forms.md` - Form handling
 
 **TanStack Router Pattern (REQUIRED):**
+
 ```typescript
 import { useSuspenseQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { PostSelect } from '@printy-mobile/db/dtos';
+import type { PostSelect } from '@repo/db/dtos';
 import { backendClient, MutationWrapper } from '~/utils/api';
 
 export const Route = createFileRoute('/(app)/posts/')({
@@ -128,6 +138,7 @@ function PostsPage() {
 ```
 
 **Component Structure:**
+
 ```
 routes/(app)/posts/
 ├── index.tsx              # Main route
@@ -154,11 +165,13 @@ Provide implementation in this order:
    - API route files
 
 3. **Migration Command**
+
    ```bash
-   pnpm --filter @printy-mobile/api db:generate
+   pnpm --filter @repo/api db:generate
    ```
 
 4. **Test Commands**
+
    ```bash
    curl commands to verify backend
    ```
@@ -171,18 +184,20 @@ Provide implementation in this order:
 ## Key Reminders
 
 ✅ **DO:**
+
 - Use `APIBindings` for routes
 - Use `c.var.db` for database
 - Use `c.var.user` for auth
-- Import from `@printy-mobile/db/schema`
+- Import from `@repo/db/schema`
 - Use `zValidator` (correct name!)
 - Test backend before writing frontend
 - Use `mutationOptions()` for mutations
 - Wrap mutation data with `MutationWrapper()`
 - Use `useSuspenseQuery` for data loading
-- Import types from `@printy-mobile/db/dtos`
+- Import types from `@repo/db/dtos`
 
 ❌ **DON'T:**
+
 - Create frontend before backend works
 - Use custom Env types
 - Recreate DB client

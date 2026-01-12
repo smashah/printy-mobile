@@ -7,6 +7,7 @@ Printy Mobile uses a modern, TypeScript-based stack with a monorepo structure ma
 ## Core Technologies
 
 ### Frontend
+
 - **Framework**: TanStack Start (React + Vite)
 - **Language**: TypeScript
 - **UI Components**: shadcn/ui
@@ -14,6 +15,7 @@ Printy Mobile uses a modern, TypeScript-based stack with a monorepo structure ma
 - **Data Management**: TanStack Query for data fetching
 
 ### Backend
+
 - **API Framework**: Hono API running on Cloudflare Workers
 - **Database**: Cloudflare D1 (SQLite) with Drizzle ORM
 - **Authentication**: Better-auth
@@ -21,6 +23,7 @@ Printy Mobile uses a modern, TypeScript-based stack with a monorepo structure ma
 - **Background Jobs**: Trigger.dev (future phases)
 
 ### Development Tools
+
 - **Package Manager**: pnpm
 - **Monorepo Tool**: Turborepo
 - **Testing**: Vitest
@@ -102,6 +105,7 @@ Printy Mobile/
 ### Apps
 
 #### `apps/webapp`
+
 - Main TanStack Start application
 - Trip logging and management
 - Social feed and interactions
@@ -109,6 +113,7 @@ Printy Mobile/
 - Mobile-responsive design
 
 #### `apps/api`
+
 - Hono API on Cloudflare Workers
 - RESTful endpoints for trips, users, feed
 - Authentication middleware
@@ -116,18 +121,21 @@ Printy Mobile/
 - Real-time features (future)
 
 #### `apps/backoffice`
+
 - Admin panel built with Refine
 - User and content moderation
 - Analytics and reporting
 - System configuration
 
 #### `apps/web`
+
 - Marketing and landing pages
 - Public trip galleries
 - SEO-optimized content
 - Authentication flows
 
 #### `apps/docs`
+
 - API documentation
 - User guides
 - Developer resources
@@ -135,36 +143,42 @@ Printy Mobile/
 ### Packages
 
 #### `packages/auth`
+
 - Better-auth configuration
 - Authentication providers
 - Session management
 - Role-based access control
 
 #### `packages/db`
+
 - Drizzle ORM schemas
 - Database migrations
 - Type-safe database utilities
 - Seed data for development
 
 #### `packages/ui`
+
 - shadcn/ui components
 - Custom trip and feed components
 - Responsive design system
 - Dark/light theme support
 
 #### `packages/common`
+
 - Shared TypeScript types
 - Utility functions
 - Constants and enums
 - Validation schemas
 
 #### `packages/eslint-config`
+
 - Base ESLint configuration
 - React-specific rules
 - Next.js configuration
 - TypeScript rules
 
 #### `packages/typescript-config`
+
 - Base TypeScript configuration
 - Strict type checking
 - Path mapping
@@ -173,30 +187,35 @@ Printy Mobile/
 ## Development Phases
 
 ### Phase 1 (V-1): Super MVP
+
 - Basic trip logging form
 - No authentication required
 - Simple list view of recent trips
 - Minimal styling
 
 ### Phase 2 (V1): MVP
+
 - User authentication system
 - Trip creation and management
 - Basic user profiles
 - Following system
 
 ### Phase 3 (V2): Enhanced Social Platform
+
 - Social feed implementation
 - Like and comment system
 - Search functionality
 - Trip collaboration
 
 ### Phase 4 (V3): Gamification & Advanced Features
+
 - Achievement system
 - Leaderboards
 - Map visualization
 - Third-party integrations
 
 ### Phase 5 (V4): Monetization & Growth
+
 - Premium features
 - Trip planning tools
 - Data export
@@ -207,6 +226,7 @@ Printy Mobile/
 ### Required Environment Variables
 
 #### API (`apps/api`)
+
 ```env
 DATABASE_URL=
 CLOUDFLARE_R2_ACCESS_KEY_ID=
@@ -216,6 +236,7 @@ BETTER_AUTH_SECRET=
 ```
 
 #### Webapp (`apps/webapp`)
+
 ```env
 VITE_API_URL=
 BETTER_AUTH_SECRET=
@@ -234,12 +255,14 @@ BETTER_AUTH_SECRET=
 ## Deployment
 
 ### Cloudflare Workers (API)
+
 - Deploy via Wrangler CLI
 - Environment variables via Cloudflare dashboard
 - D1 database binding
 - R2 bucket binding
 
 ### Static Sites (webapp, web, docs)
+
 - Deploy to Cloudflare Pages
 - Automatic builds from Git
 - Preview deployments for PRs

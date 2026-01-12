@@ -5,7 +5,10 @@ import type { SQLiteColumn } from "drizzle-orm/sqlite-core";
  * Pagination helper
  * Converts string parameters to safe integers for database queries
  */
-export const withPagination = (limit?: string | number, offset?: string | number) => ({
+export const withPagination = (
+  limit?: string | number,
+  offset?: string | number,
+) => ({
   limit: limit ? Number.parseInt(String(limit), 10) : 20,
   offset: offset ? Number.parseInt(String(offset), 10) : 0,
 });
@@ -14,10 +17,13 @@ export const withPagination = (limit?: string | number, offset?: string | number
  * Page-based pagination helper
  * Converts page number to offset
  */
-export const withPagePagination = (page?: string | number, limit?: string | number) => {
+export const withPagePagination = (
+  page?: string | number,
+  limit?: string | number,
+) => {
   const pageNum = page ? Number.parseInt(String(page), 10) : 1;
   const limitNum = limit ? Number.parseInt(String(limit), 10) : 20;
-  
+
   return {
     limit: limitNum,
     offset: (pageNum - 1) * limitNum,
@@ -30,18 +36,18 @@ export const withPagePagination = (page?: string | number, limit?: string | numb
  * Returns condition to filter out soft-deleted records
  */
 export const withSoftDelete = <T extends { deletedAt: SQLiteColumn }>(
-  table: T
+  table: T,
 ): SQL => isNull(table.deletedAt);
 
 /**
  * Find one record or throw an error
  * Useful for ensuring a record exists before proceeding
- * 
+ *
  * TODO: Replace Error with AppError from @printy-mobile/logger when it's implemented
  */
 export const findOneOrThrow = async <T>(
   query: Promise<T[]>,
-  errorMsg = "Resource not found"
+  errorMsg = "Resource not found",
 ): Promise<T> => {
   const results = await query;
   if (results.length === 0) {
@@ -61,7 +67,7 @@ export const findOneOrThrow = async <T>(
  */
 export const findManyWithCount = async <T>(
   query: Promise<T[]>,
-  countQuery: Promise<{ count: number }[]>
+  countQuery: Promise<{ count: number }[]>,
 ): Promise<{ data: T[]; total: number }> => {
   const [data, countResult] = await Promise.all([query, countQuery]);
   return {
@@ -73,13 +79,15 @@ export const findManyWithCount = async <T>(
 /**
  * Soft delete helper
  * Sets deletedAt timestamp instead of removing the record
- * 
+ *
  * Note: Requires table to have a deletedAt column
  */
-export const softDelete = async <T extends { id: SQLiteColumn; deletedAt: SQLiteColumn }>(
+export const softDelete = async <
+  T extends { id: SQLiteColumn; deletedAt: SQLiteColumn },
+>(
   db: any,
   table: T,
-  id: string
+  id: string,
 ) => {
   return db
     .update(table)
@@ -95,16 +103,22 @@ export const withOrderBy = <T extends string>(
   orderBy?: string,
   allowedColumns: readonly T[] = [] as readonly T[],
   defaultColumn: T = allowedColumns[0] as T,
-  defaultDirection: "asc" | "desc" = "desc"
+  defaultDirection: "asc" | "desc" = "desc",
 ): { column: T; direction: "asc" | "desc" } => {
   if (!orderBy) {
     return { column: defaultColumn, direction: defaultDirection };
   }
 
-  const [column, direction] = orderBy.split(":") as [string, "asc" | "desc" | undefined];
-  
-  const validColumn = allowedColumns.includes(column as T) ? (column as T) : defaultColumn;
-  const validDirection = direction === "asc" || direction === "desc" ? direction : defaultDirection;
+  const [column, direction] = orderBy.split(":") as [
+    string,
+    "asc" | "desc" | undefined,
+  ];
+
+  const validColumn = allowedColumns.includes(column as T)
+    ? (column as T)
+    : defaultColumn;
+  const validDirection =
+    direction === "asc" || direction === "desc" ? direction : defaultDirection;
 
   return {
     column: validColumn,
@@ -115,12 +129,12 @@ export const withOrderBy = <T extends string>(
 /**
  * Build search conditions for multiple fields
  * Creates OR conditions for flexible text search
- * 
+ *
  * TODO: Implement with Drizzle's or() and like() helpers when needed
  */
 export const buildSearchConditions = (
   _searchTerm: string,
-  _columns: SQLiteColumn[]
+  _columns: SQLiteColumn[],
 ): SQL | undefined => {
   // Placeholder for future implementation
   // Will use: or(...columns.map(col => like(col, `%${searchTerm}%`)))
@@ -134,7 +148,7 @@ export const buildSearchConditions = (
 export const getPaginationMeta = (
   total: number,
   page: number,
-  limit: number
+  limit: number,
 ) => ({
   page,
   limit,
@@ -143,4 +157,3 @@ export const getPaginationMeta = (
   hasNext: page * limit < total,
   hasPrev: page > 1,
 });
-

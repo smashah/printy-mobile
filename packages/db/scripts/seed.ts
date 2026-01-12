@@ -255,7 +255,8 @@ async function seedReplies(db: Any, posts: Any[], users: Any[]) {
 
     // Decide if this should be a nested reply
     const isNested =
-      replies.length > 0 && Math.random() < SEED_CONFIG.replies.nestedProbability;
+      replies.length > 0 &&
+      Math.random() < SEED_CONFIG.replies.nestedProbability;
     const parentReply = isNested
       ? replies[Math.floor(Math.random() * replies.length)]
       : null;
@@ -292,7 +293,7 @@ function getLocalD1Db() {
   const pathToDb = getLocalD1dbPath();
   if (!pathToDb) {
     console.error(
-      "❌ Local D1 database not found. Try running `pnpm run db:touch` to create one."
+      "❌ Local D1 database not found. Try running `pnpm run db:touch` to create one.",
     );
     process.exit(1);
   }
@@ -312,9 +313,7 @@ function getLocalD1Db() {
  */
 function getLocalD1dbPath() {
   try {
-    const basePath = path.resolve(
-      "../../apps/api/.wrangler/state/v3/d1"
-    );
+    const basePath = path.resolve("../../apps/api/.wrangler/state/v3/d1");
     const files = fs
       .readdirSync(basePath, { encoding: "utf-8", recursive: true })
       .filter((f) => f.endsWith(".sqlite"));
@@ -341,7 +340,9 @@ function getLocalD1dbPath() {
 /**
  * Get production database connection
  */
-async function getProductionDatabase(): Promise<SqliteRemoteDatabase<Record<string, never>>> {
+async function getProductionDatabase(): Promise<
+  SqliteRemoteDatabase<Record<string, never>>
+> {
   config({ path: "../../apps/api/.prod.vars" });
 
   const apiToken = process.env.CLOUDFLARE_D1_TOKEN;
@@ -350,7 +351,7 @@ async function getProductionDatabase(): Promise<SqliteRemoteDatabase<Record<stri
 
   if (!(apiToken && accountId && databaseId)) {
     console.error(
-      "❌ Database seed failed: production environment variables not set"
+      "❌ Database seed failed: production environment variables not set",
     );
     console.error("   Make sure you have a .prod.vars file in apps/api/");
     process.exit(1);
@@ -365,7 +366,7 @@ async function getProductionDatabase(): Promise<SqliteRemoteDatabase<Record<stri
 function createProductionD1Connection(
   accountId: string,
   databaseId: string,
-  apiToken: string
+  apiToken: string,
 ) {
   async function executeCloudflareD1Query(
     accountId: string,
@@ -373,7 +374,7 @@ function createProductionD1Connection(
     apiToken: string,
     sql: string,
     params: Any[],
-    method: string
+    method: string,
   ): Promise<{ rows: Any[][] }> {
     const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`;
 
@@ -390,24 +391,35 @@ function createProductionD1Connection(
 
     if (res.status !== 200) {
       throw new Error(
-        `Error from sqlite proxy server: ${res.status} ${res.statusText}\n${JSON.stringify(data)}`
+        `Error from sqlite proxy server: ${res.status} ${res.statusText}\n${JSON.stringify(data)}`,
       );
     }
 
     if (data.errors.length > 0 || !data.success) {
-      throw new Error(`Error from sqlite proxy server: \n${JSON.stringify(data)}`);
+      throw new Error(
+        `Error from sqlite proxy server: \n${JSON.stringify(data)}`,
+      );
     }
 
     const qResult = data?.result?.[0];
     if (!qResult?.success) {
-      throw new Error(`Error from sqlite proxy server: \n${JSON.stringify(data)}`);
+      throw new Error(
+        `Error from sqlite proxy server: \n${JSON.stringify(data)}`,
+      );
     }
 
     return { rows: qResult.results.map((r: Any) => Object.values(r)) };
   }
 
   const queryClient: AsyncRemoteCallback = async (sql, params, method) =>
-    executeCloudflareD1Query(accountId, databaseId, apiToken, sql, params, method);
+    executeCloudflareD1Query(
+      accountId,
+      databaseId,
+      apiToken,
+      sql,
+      params,
+      method,
+    );
 
   const batchQueryClient: AsyncBatchRemoteCallback = async (queries) => {
     const results: { rows: Any[][] }[] = [];
@@ -419,7 +431,7 @@ function createProductionD1Connection(
         apiToken,
         sql,
         params,
-        method
+        method,
       );
       results.push(result);
     }

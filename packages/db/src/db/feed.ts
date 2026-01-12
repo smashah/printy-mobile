@@ -21,7 +21,7 @@ export const post = sqliteTable(
   (table) => [
     index("post_body_idx").on(table.body),
     index("post_username_idx").on(table.username),
-  ]
+  ],
 );
 
 // Reply schema

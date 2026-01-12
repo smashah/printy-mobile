@@ -126,7 +126,7 @@ export const defaultBetterAuthConfig = (options?: {
   // Add Polar payment plugin if enabled and client provided
   if (!options?.withoutPayments && options?.polarClient) {
     plugins.push(
-      polarConfig(options.polarClient, options.polarWebhookSecret) as any
+      polarConfig(options.polarClient, options.polarWebhookSecret) as any,
     );
   }
 

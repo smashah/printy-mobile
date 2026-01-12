@@ -14,8 +14,8 @@ Shared PDF templates, data services, and utilities for the Printy Mobile ecosyst
 ### Using Templates
 
 ```tsx
-import { GithubIssueLabel } from '@printy-mobile/capabilities/templates';
-import { renderToStream } from '@react-pdf/renderer';
+import { GithubIssueLabel } from "@printy-mobile/capabilities/templates";
+import { renderToStream } from "@react-pdf/renderer";
 
 const element = <GithubIssueLabel issue={data} />;
 const stream = await renderToStream(element);
@@ -24,9 +24,9 @@ const stream = await renderToStream(element);
 ### Using Services
 
 ```ts
-import { fetchGithubIssue } from '@printy-mobile/capabilities/services';
+import { fetchGithubIssue } from "@printy-mobile/capabilities/services";
 
-const data = await fetchGithubIssue('https://github.com/owner/repo/issues/1');
+const data = await fetchGithubIssue("https://github.com/owner/repo/issues/1");
 ```
 
 ### Image Dithering
@@ -34,7 +34,7 @@ const data = await fetchGithubIssue('https://github.com/owner/repo/issues/1');
 Thermal printers handle grayscale poorly. Use dithering to convert images to high-contrast 1-bit patterns.
 
 ```ts
-import { ditherImage } from '@printy-mobile/capabilities/utils';
+import { ditherImage } from "@printy-mobile/capabilities/utils";
 
 const ditheredBase64 = await ditherImage(imageUrl, 60, 60);
 ```

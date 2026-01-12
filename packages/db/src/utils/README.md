@@ -29,20 +29,21 @@ import {
 Converts string parameters to safe integers for database queries.
 
 **Parameters:**
+
 - `limit` (string | number, optional) - Number of records to return (default: 20)
 - `offset` (string | number, optional) - Number of records to skip (default: 0)
 
 **Returns:** `{ limit: number, offset: number }`
 
 **Example:**
-```typescript
-const { limit, offset } = withPagination(c.req.query("limit"), c.req.query("offset"));
 
-const posts = await db
-  .select()
-  .from(schema.posts)
-  .limit(limit)
-  .offset(offset);
+```typescript
+const { limit, offset } = withPagination(
+  c.req.query("limit"),
+  c.req.query("offset"),
+);
+
+const posts = await db.select().from(schema.posts).limit(limit).offset(offset);
 ```
 
 ---
@@ -52,14 +53,19 @@ const posts = await db
 Page-based pagination with automatic offset calculation.
 
 **Parameters:**
+
 - `page` (string | number, optional) - Page number (default: 1)
 - `limit` (string | number, optional) - Records per page (default: 20)
 
 **Returns:** `{ limit: number, offset: number, page: number }`
 
 **Example:**
+
 ```typescript
-const pagination = withPagePagination(c.req.query("page"), c.req.query("limit"));
+const pagination = withPagePagination(
+  c.req.query("page"),
+  c.req.query("limit"),
+);
 
 const posts = await db
   .select()
@@ -75,6 +81,7 @@ const posts = await db
 Finds a single record or throws a 404 error if not found.
 
 **Parameters:**
+
 - `query` (Promise<T[]>) - Drizzle query that returns an array
 - `errorMsg` (string, optional) - Custom error message (default: "Resource not found")
 
@@ -83,16 +90,16 @@ Finds a single record or throws a 404 error if not found.
 **Throws:** Error with `statusCode: 404` and `code: "NOT_FOUND"`
 
 **Example:**
+
 ```typescript
 const post = await findOneOrThrow(
-  db.select()
-    .from(schema.posts)
-    .where(eq(schema.posts.id, postId)),
-  "Post not found"
+  db.select().from(schema.posts).where(eq(schema.posts.id, postId)),
+  "Post not found",
 );
 ```
 
 **Error Handling:**
+
 ```typescript
 try {
   const post = await findOneOrThrow(query, "Post not found");
@@ -112,29 +119,25 @@ try {
 Executes data and count queries in parallel for efficient pagination.
 
 **Parameters:**
+
 - `query` (Promise<T[]>) - Query for data records
 - `countQuery` (Promise<{ count: number }[]>) - Query for total count
 
 **Returns:** Promise<{ data: T[], total: number }>
 
 **Example:**
-```typescript
-const postsQuery = db
-  .select()
-  .from(schema.posts)
-  .limit(20)
-  .offset(0);
 
-const countQuery = db
-  .select({ count: count() })
-  .from(schema.posts);
+```typescript
+const postsQuery = db.select().from(schema.posts).limit(20).offset(0);
+
+const countQuery = db.select({ count: count() }).from(schema.posts);
 
 const { data, total } = await findManyWithCount(postsQuery, countQuery);
 
 return c.json({
   posts: data,
   total,
-  hasMore: total > 20
+  hasMore: total > 20,
 });
 ```
 
@@ -145,6 +148,7 @@ return c.json({
 Soft deletes a record by setting the `deletedAt` timestamp.
 
 **Parameters:**
+
 - `db` - Drizzle database instance
 - `table` - Table with `id` and `deletedAt` columns
 - `id` (string) - Record ID to soft delete
@@ -154,6 +158,7 @@ Soft deletes a record by setting the `deletedAt` timestamp.
 **Requirements:** Table must have a `deletedAt` column (use `softDeleteField()` helper)
 
 **Example:**
+
 ```typescript
 // In your schema (add to tables that need soft delete):
 import { softDeleteField } from "@printy-mobile/db";
@@ -176,11 +181,13 @@ await softDelete(db, schema.posts, postId);
 Creates a filter condition to exclude soft-deleted records.
 
 **Parameters:**
+
 - `table` - Table with `deletedAt` column
 
 **Returns:** SQL condition
 
 **Example:**
+
 ```typescript
 const activePosts = await db
   .select()
@@ -195,6 +202,7 @@ const activePosts = await db
 Safely builds ORDER BY clauses with column validation to prevent SQL injection.
 
 **Parameters:**
+
 - `orderBy` (string, optional) - Sort parameter in format "column:direction" (e.g., "createdAt:desc")
 - `allowedColumns` (readonly string[]) - Whitelist of sortable columns
 - `defaultColumn` (string) - Fallback column (default: first allowed column)
@@ -203,19 +211,22 @@ Safely builds ORDER BY clauses with column validation to prevent SQL injection.
 **Returns:** `{ column: string, direction: "asc" | "desc" }`
 
 **Example:**
+
 ```typescript
 const allowedColumns = ["createdAt", "title", "likesCount"] as const;
 const { column, direction } = withOrderBy(
   c.req.query("orderBy"),
   allowedColumns,
   "createdAt",
-  "desc"
+  "desc",
 );
 
 const posts = await db
   .select()
   .from(schema.posts)
-  .orderBy(direction === "desc" ? desc(schema.posts[column]) : schema.posts[column]);
+  .orderBy(
+    direction === "desc" ? desc(schema.posts[column]) : schema.posts[column],
+  );
 ```
 
 ---
@@ -225,23 +236,26 @@ const posts = await db
 Calculates pagination metadata for API responses.
 
 **Parameters:**
+
 - `total` (number) - Total number of records
 - `page` (number) - Current page number
 - `limit` (number) - Records per page
 
-**Returns:** 
+**Returns:**
+
 ```typescript
 {
   page: number;
   limit: number;
   total: number;
-  pages: number;      // Total number of pages
-  hasNext: boolean;   // Whether there's a next page
-  hasPrev: boolean;   // Whether there's a previous page
+  pages: number; // Total number of pages
+  hasNext: boolean; // Whether there's a next page
+  hasPrev: boolean; // Whether there's a previous page
 }
 ```
 
 **Example:**
+
 ```typescript
 const pagination = withPagePagination(page, limit);
 const { data, total } = await findManyWithCount(query, countQuery);
@@ -249,7 +263,7 @@ const { data, total } = await findManyWithCount(query, countQuery);
 return c.json({
   success: true,
   data,
-  pagination: getPaginationMeta(total, pagination.page, pagination.limit)
+  pagination: getPaginationMeta(total, pagination.page, pagination.limit),
 });
 
 // Response:
@@ -310,9 +324,11 @@ app.get("/api/posts", async (c) => {
 
   // Add sorting and pagination
   query = query
-    .orderBy(sort.direction === "desc" 
-      ? desc(schema.posts[sort.column]) 
-      : schema.posts[sort.column])
+    .orderBy(
+      sort.direction === "desc"
+        ? desc(schema.posts[sort.column])
+        : schema.posts[sort.column],
+    )
     .limit(pagination.limit)
     .offset(pagination.offset);
 
@@ -333,10 +349,8 @@ app.get("/api/posts/:id", async (c) => {
 
   try {
     const post = await findOneOrThrow(
-      db.select()
-        .from(schema.posts)
-        .where(eq(schema.posts.id, id)),
-      "Post not found"
+      db.select().from(schema.posts).where(eq(schema.posts.id, id)),
+      "Post not found",
     );
 
     return c.json({ success: true, data: post });
@@ -356,6 +370,7 @@ export default app;
 To enable soft deletes on a table:
 
 1. **Add the field to your schema:**
+
 ```typescript
 import { softDeleteField } from "@printy-mobile/db";
 
@@ -368,6 +383,7 @@ export const posts = sqliteTable("posts", {
 ```
 
 2. **Use the helpers in your queries:**
+
 ```typescript
 // Exclude deleted records
 const activePosts = await db
@@ -415,7 +431,7 @@ throw new AppError(errorMsg, "NOT_FOUND", 404);
 ## Support
 
 For issues or questions about query helpers, refer to:
+
 - `packages/db/src/utils/queries.ts` - Source code
 - `packages/db/src/utils/queries.example.ts` - Usage examples
 - `ai_notes/suggested-improvements.md` - Original specification
-

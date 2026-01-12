@@ -210,11 +210,13 @@ export const LinearIssueLabel = ({ issue }: { issue: IssueData }) => {
             <Text style={styles.repoName}>{issue.repo || "LINEAR"}</Text>
             <Text style={styles.issueNumber}>{issue.number}</Text>
           </View>
-          {SHOW_QR_CODE_TOP_RIGHT_CORNER ? issue.qrCodeDataUrl && (
-            <Image
-              style={[styles.qrCode, { marginLeft: 10 }]}
-              src={issue.qrCodeDataUrl}
-            />
+          {SHOW_QR_CODE_TOP_RIGHT_CORNER ? (
+            issue.qrCodeDataUrl && (
+              <Image
+                style={[styles.qrCode, { marginLeft: 10 }]}
+                src={issue.qrCodeDataUrl}
+              />
+            )
           ) : (
             <View
               style={[
@@ -267,7 +269,11 @@ export const LinearIssueLabel = ({ issue }: { issue: IssueData }) => {
                   key={i}
                   style={[
                     styles.labelChip,
-                    { backgroundColor: "transparent", position: "relative", border: "1" },
+                    {
+                      backgroundColor: "transparent",
+                      position: "relative",
+                      border: "1",
+                    },
                   ]}
                 >
                   <View
@@ -298,10 +304,10 @@ export const LinearIssueLabel = ({ issue }: { issue: IssueData }) => {
 
           <View style={styles.statRow}>
             <View style={{ flexDirection: "row" }}>
-              {typeof issue.commentsCount === 'number' && (
+              {typeof issue.commentsCount === "number" && (
                 <View style={styles.statItem}>
-                    <CommentIcon />
-                    <Text style={styles.statText}>{issue.commentsCount}</Text>
+                  <CommentIcon />
+                  <Text style={styles.statText}>{issue.commentsCount}</Text>
                 </View>
               )}
             </View>

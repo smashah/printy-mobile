@@ -125,7 +125,7 @@ export const garage = sqliteTable(
   (table) => [
     // Ensure a user can't have duplicate vehicles in their garage
     uniqueIndex("userVehicleIndex").on(table.userId, table.vehicleId),
-  ]
+  ],
 );
 
 // Type exports for MVP-1

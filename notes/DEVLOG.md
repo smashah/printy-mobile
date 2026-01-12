@@ -2,10 +2,64 @@
 
 This file tracks all significant changes and development progress for Printy Mobile.
 
------ EXAMPLE ENTRY ----- 
+## 2026-01-11
+
+### Moving from Mock to Real (Phase 2)
+
+Today we focused on connecting the "plumbing" of the Printy Mobile ecosystem. We transitioned from a set of beautiful but static UI screens to a connected application with a real database schema, API endpoints, and authentication.
+
+#### Infrastructure & Monorepo
+- Verified and fixed `turbo.json` and package dependencies.
+- Ensured `@printy-mobile/config` is providing type-safe environment variables across apps.
+- Validated the shared `typescript-config`.
+
+#### Database & Schema (D1)
+- Implemented the core data models in Drizzle (`packages/db/src/schema`):
+  - **`subscriptions`**: Tracks user Pro status (Polar/RevenueCat).
+  - **`credit_balance`**: Manages AI generation credits.
+  - **`webhooks`**: Stores user-configured webhooks for "Print as a Service".
+  - **`auth`**: Better-Auth tables (User, Session, Account, etc.).
+- Successfully generated SQL migrations (`packages/db/migrations`).
+
+#### API Core (Hono)
+- Implemented `apps/api/src/routes/webhooks.ts` with CRUD operations.
+- Implemented `apps/api/src/routes/credits.ts` for balance checking and manual refill (admin).
+- Implemented `apps/api/src/routes/subscriptions.ts` for status checks.
+- Refactored `apps/api/src/app.ts` to mount these new routers and expose them via RPC.
+- Cleaned up unused example routes (`products.ts`).
+
+#### Authentication (Better-Auth)
+- Configured `apps/native/lib/auth-client.ts` to use the Expo plugin for secure storage.
+- Wired up the **Sign In Screen** (`apps/native/app/auth/sign-in.tsx`) to use the real `authClient` for Social (GitHub/Google) and Magic Link login.
+- Connected the **Settings Screen** (`apps/native/app/(drawer)/settings.tsx`) to the `useSession` hook to display real user data (Avatar, Name, Email) and handle Sign Out.
+
+#### Hardware (Bluetooth LE)
+- Implemented `apps/native/utils/ble.ts` using `react-native-ble-plx`.
+  - Added permission handling for Android (Fine Location, Bluetooth Connect/Scan).
+  - Implemented `scanForPeripherals`, `connectToDevice`, and `printData`.
+- Wired up the **Device Scan Screen** (`apps/native/app/device/scan.tsx`) to use the real BLE utility instead of mock timers. It now actually scans for peripherals!
+
+#### Architecture Update
+
+```mermaid
+graph TD
+    App[Mobile App] -->|BLE| Printer[Thermal Printer]
+    App -->|RPC| API[Hono API]
+    API -->|Drizzle| DB[(D1 Database)]
+    API -->|BetterAuth| Auth[Auth Tables]
+    
+    subgraph "Next Phase"
+    Cloud[GitHub Webhook] --> API
+    API -->|Queue| Jobs[Trigger.dev]
+    Jobs -->|WebSocket| DO[Durable Object Hub]
+    DO -->|WebSocket| App
+    end
+```
+
 ## 2024-03-21
 
 ### Project Initialization and Planning
+
 - Created initial project structure using Turborepo monorepo setup
 - Added comprehensive README.md with:
   - Project overview and key features
@@ -27,11 +81,12 @@ This file tracks all significant changes and development progress for Printy Mob
   - shadcn/ui for UI components
   - evidence.dev for report generation
   - trigger.dev for background processing
------ EXAMPLE ENTRY ----- 
+    ----- EXAMPLE ENTRY -----
 
 ## 2025-10-16
 
 ### Governance
+
 - Amended `.specify/memory/constitution.md` to v1.0.1
 - Carried forward Cloudflare-first, type-safe APIs (Zod + Hono RPC), tests-first gates,
   monorepo discipline, and Twelve-Factor compliance.
@@ -39,6 +94,7 @@ This file tracks all significant changes and development progress for Printy Mob
   Check gates with the updated principles.
 
 ### Design & Workflow
+
 - Added root `mockups/` directory for UI/UX artifacts (HTML, screenshots, notes)
 - Introduced `mockups/manifest.schema.json` and starter `mockups/manifest.json`
 - Added `mockups/example-landing-page/` with `design.html` and `notes.md`
@@ -50,6 +106,7 @@ This file tracks all significant changes and development progress for Printy Mob
 ## 2025-11-04
 
 ### Database Query Helpers Implementation
+
 - ✅ Completed improvement #3 from `ai_notes/suggested-improvements.md`
 - Created `packages/db/src/utils/queries.ts` with reusable database query utilities:
   - `withPagination()` - Convert string parameters to safe pagination integers
@@ -67,6 +124,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Added TODO notes for future integration with `@printy-mobile/logger` package (AppError class)
 
 ### Enhanced Validation Schemas
+
 - ✅ Completed improvement #4 from `ai_notes/suggested-improvements.md`
 - Created `packages/common/src/validation.ts` with reusable validation utilities
 - Added sanitizers for email, slug, phone, and URL
@@ -75,6 +133,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Added zod dependency to `@printy-mobile/common` package
 
 ### File Upload Utilities (R2)
+
 - ✅ Completed improvement #6 from `ai_notes/suggested-improvements.md`
 - Created `packages/common/src/storage.ts` with R2 upload utilities
 - Direct upload helpers: uploadToR2(), uploadImage(), uploadDocument()
@@ -84,6 +143,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Created `storage.example.ts` with complete upload flow examples
 
 ### Background Job Templates (Trigger.dev)
+
 - ✅ Completed improvement #7 from `ai_notes/suggested-improvements.md`
 - Created `packages/jobs/src/trigger/email-jobs.ts` with email job templates:
   - `sendWelcomeEmail` - Welcome emails with retry logic
@@ -113,6 +173,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - All templates include proper TypeScript types, error handling, retry logic, and detailed TODOs for implementation
 
 ### Environment Config Package
+
 - ✅ Completed improvement #10 from `ai_notes/suggested-improvements.md`
 - Created new `packages/config` package for centralized environment variable validation
 - Created `packages/config/src/index.ts` with comprehensive environment schemas:
@@ -147,9 +208,11 @@ This file tracks all significant changes and development progress for Printy Mob
 - All validation uses Zod for runtime type safety with helpful error messages
 
 ### Documentation and Tooling Improvements
+
 - ✅ Completed improvements #17, #18, and #20 from `ai_notes/suggested-improvements.md`
 
 #### Improvement #17 - repo-init Configuration Coverage
+
 - Updated `repo-init.ts` line 388-401 to include `.conf` and `.env` extensions in file filtering
 - The project initializer (`pnpm run init-project`) now processes:
   - Configuration files with `.conf` extension (e.g., `repo.example.conf`)
@@ -158,6 +221,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Prevents downstream deploy configs from drifting from the rest of the replacements
 
 #### Improvement #18 - Surface the Initializer in Docs
+
 - Updated `TEMPLATE_SETUP.md` to add prominent "Step 0" section at the beginning
 - New "🚀 Quick Start - Automated Setup" section explains `pnpm run init-project` usage
 - Documents what the initializer does:
@@ -168,15 +232,18 @@ This file tracks all significant changes and development progress for Printy Mob
 - Guides users to use the checklist as validation rather than primary workflow
 
 #### Improvement #20 - Fix System Architecture Doc Reference
+
 - Fixed broken documentation link in `TEMPLATE_SETUP.md` line 138
 - Changed `notes/sys-arch.md` → `notes/SYSTEM_ARCHITECTURE.md` to match actual filename
 - Prevents 404 errors during onboarding when users try to access system architecture documentation
 
 ### Migration & Seed Scripts
+
 - ✅ Completed improvement #13 from `ai_notes/suggested-improvements.md`
 - Created comprehensive database management scripts in `packages/db/scripts/`
 
 #### Database Seed Script (`scripts/seed.ts`)
+
 - Full-featured seeding system with configurable sample data:
   - Creates 10 users including admin and test accounts
   - Generates 20 posts distributed across users
@@ -195,6 +262,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Production safety: 5-second cancellation window before seeding production
 
 #### Migration Script (`scripts/migrate.ts`)
+
 - Standalone migration runner for applying pending migrations
 - Works with both local D1 and production databases
 - Features:
@@ -206,6 +274,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Automatically finds local D1 database in `.wrangler` directory
 
 #### Database Reset Script (`scripts/reset.ts`)
+
 - Complete database reset workflow: drop → migrate → seed
 - Safely drops all tables while preserving SQLite system tables
 - Features:
@@ -217,6 +286,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Guides users to run seed script after reset
 
 #### Package.json Scripts
+
 - Updated `packages/db/package.json` with new scripts:
   - `db:migrate` - Run migrations with tsx (replaces drizzle-kit migrate)
   - `db:seed` - Populate database with sample data
@@ -224,6 +294,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - All scripts use tsx for TypeScript execution
 
 #### Comprehensive Documentation
+
 - Created `packages/db/scripts/README.md` (500+ lines) covering:
   - Quick start guide for all database operations
   - Detailed documentation for each script command
@@ -237,6 +308,7 @@ This file tracks all significant changes and development progress for Printy Mob
 - Includes safety warnings, examples, and step-by-step guides
 
 #### Features Summary
+
 ✅ Smart seeding with duplicate prevention
 ✅ Support for local and production databases
 ✅ Production safety mechanisms (cancellation windows, blocked resets)
@@ -246,4 +318,3 @@ This file tracks all significant changes and development progress for Printy Mob
 ✅ Comprehensive error handling and user guidance
 ✅ Integration with Better Auth
 ✅ Full TypeScript support with tsx execution
-

@@ -34,7 +34,7 @@ This package is already part of the monorepo. To use it in your apps:
 ### API (Cloudflare Workers / Hono)
 
 ```typescript
-import { parseApiEnv, type ApiConfig } from '@printy-mobile/config';
+import { parseApiEnv, type ApiConfig } from "@printy-mobile/config";
 
 // In your Cloudflare Worker entry point
 export default {
@@ -52,14 +52,14 @@ export default {
     // ... your routes
 
     return app.fetch(request, env);
-  }
+  },
 };
 ```
 
 ### Webapp (React + Vite)
 
 ```typescript
-import { parseWebappEnv, type WebappConfig } from '@printy-mobile/config';
+import { parseWebappEnv, type WebappConfig } from "@printy-mobile/config";
 
 // In your main.tsx or app entry point
 const config = parseWebappEnv(import.meta.env);
@@ -73,7 +73,7 @@ console.log(config.VITE_ENABLE_ANALYTICS); // boolean | undefined
 If you don't want validation errors to throw:
 
 ```typescript
-import { safeParseApiEnv } from '@printy-mobile/config';
+import { safeParseApiEnv } from "@printy-mobile/config";
 
 const result = safeParseApiEnv(env);
 
@@ -83,9 +83,9 @@ if (result.success) {
   console.log(config.API_PORT);
 } else {
   // Validation failed
-  console.error('Environment validation failed:');
+  console.error("Environment validation failed:");
   result.error.errors.forEach((err) => {
-    console.error(`  ${err.path.join('.')}: ${err.message}`);
+    console.error(`  ${err.path.join(".")}: ${err.message}`);
   });
 }
 ```
@@ -96,44 +96,52 @@ if (result.success) {
 
 #### Required
 
-| Variable | Type | Description |
-|----------|------|-------------|
+| Variable             | Type                  | Description                                                          |
+| -------------------- | --------------------- | -------------------------------------------------------------------- |
 | `BETTER_AUTH_SECRET` | string (min 32 chars) | Secret key for Better Auth (generate with `openssl rand -base64 32`) |
-| `BETTER_AUTH_URL` | URL | Base URL for Better Auth endpoints |
+| `BETTER_AUTH_URL`    | URL                   | Base URL for Better Auth endpoints                                   |
 
 #### Optional
 
 **OAuth Providers:**
+
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` - Google OAuth
 - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` - GitHub OAuth
 - `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` - Discord OAuth
 
 **Database:**
+
 - `DATABASE_URL` - Database connection string (for local development)
 
 **Redis:**
+
 - `UPSTASH_REDIS_REST_URL` - Upstash Redis REST API URL
 - `UPSTASH_REDIS_REST_TOKEN` - Upstash Redis REST API token
 
 **Background Jobs:**
+
 - `TRIGGER_SECRET_KEY` - Trigger.dev secret key
 - `TRIGGER_API_URL` - Trigger.dev API URL
 
 **Email Services (choose one):**
+
 - `RESEND_API_KEY` - Resend email service
 - `SENDGRID_API_KEY` - SendGrid email service
 - `MAILGUN_API_KEY` - Mailgun email service
 
 **Payments:**
+
 - `STRIPE_SECRET_KEY` - Stripe secret key
 - `STRIPE_WEBHOOK_SECRET` - Stripe webhook signing secret
 - `STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
 
 **AI Services:**
+
 - `OPENAI_API_KEY` - OpenAI API key
 - `ANTHROPIC_API_KEY` - Anthropic API key
 
 **Monitoring:**
+
 - `SENTRY_DSN` - Sentry error tracking DSN
 - `AXIOM_TOKEN` - Axiom logging token
 - `AXIOM_DATASET` - Axiom dataset name
@@ -144,23 +152,23 @@ All webapp env vars must be prefixed with `VITE_` to be exposed to the frontend.
 
 #### Required
 
-| Variable | Type | Description |
-|----------|------|-------------|
-| `VITE_API_URL` | URL | API base URL |
-| `VITE_APP_URL` | URL | Application base URL |
+| Variable       | Type | Description          |
+| -------------- | ---- | -------------------- |
+| `VITE_API_URL` | URL  | API base URL         |
+| `VITE_APP_URL` | URL  | Application base URL |
 
 #### Optional
 
-| Variable | Type | Description |
-|----------|------|-------------|
-| `VITE_BETTER_AUTH_URL` | URL | Better Auth URL (usually same as API URL) |
-| `VITE_ENABLE_ANALYTICS` | boolean | Enable analytics |
-| `VITE_ENABLE_SENTRY` | boolean | Enable Sentry error tracking |
-| `VITE_STRIPE_PUBLISHABLE_KEY` | string | Stripe publishable key (safe for frontend) |
-| `VITE_GOOGLE_ANALYTICS_ID` | string | Google Analytics ID |
-| `VITE_POSTHOG_KEY` | string | PostHog analytics key |
-| `VITE_POSTHOG_HOST` | URL | PostHog host URL |
-| `VITE_SENTRY_DSN` | URL | Sentry DSN for frontend |
+| Variable                      | Type    | Description                                |
+| ----------------------------- | ------- | ------------------------------------------ |
+| `VITE_BETTER_AUTH_URL`        | URL     | Better Auth URL (usually same as API URL)  |
+| `VITE_ENABLE_ANALYTICS`       | boolean | Enable analytics                           |
+| `VITE_ENABLE_SENTRY`          | boolean | Enable Sentry error tracking               |
+| `VITE_STRIPE_PUBLISHABLE_KEY` | string  | Stripe publishable key (safe for frontend) |
+| `VITE_GOOGLE_ANALYTICS_ID`    | string  | Google Analytics ID                        |
+| `VITE_POSTHOG_KEY`            | string  | PostHog analytics key                      |
+| `VITE_POSTHOG_HOST`           | URL     | PostHog host URL                           |
+| `VITE_SENTRY_DSN`             | URL     | Sentry DSN for frontend                    |
 
 ### Cloudflare Bindings
 
@@ -177,39 +185,39 @@ These are automatically injected by Cloudflare Workers runtime and configured in
 ### Environment Checks
 
 ```typescript
-import { isProduction, isDevelopment, isStaging } from '@printy-mobile/config';
+import { isProduction, isDevelopment, isStaging } from "@printy-mobile/config";
 
 if (isProduction()) {
   // Production-specific logic
 }
 
 if (isDevelopment()) {
-  console.log('Running in development mode');
+  console.log("Running in development mode");
 }
 ```
 
 ### Environment-Specific Config
 
 ```typescript
-import { getEnvSpecific } from '@printy-mobile/config';
+import { getEnvSpecific } from "@printy-mobile/config";
 
 const apiUrl = getEnvSpecific({
-  development: 'http://localhost:7800',
-  staging: 'https://api-staging.example.com',
-  production: 'https://api.example.com'
+  development: "http://localhost:7800",
+  staging: "https://api-staging.example.com",
+  production: "https://api.example.com",
 });
 ```
 
 ### Missing Variables Check
 
 ```typescript
-import { getMissingEnvVars } from '@printy-mobile/config';
+import { getMissingEnvVars } from "@printy-mobile/config";
 
-const required = ['BETTER_AUTH_SECRET', 'BETTER_AUTH_URL'];
+const required = ["BETTER_AUTH_SECRET", "BETTER_AUTH_URL"];
 const missing = getMissingEnvVars(process.env, required);
 
 if (missing.length > 0) {
-  console.error(`Missing required env vars: ${missing.join(', ')}`);
+  console.error(`Missing required env vars: ${missing.join(", ")}`);
   process.exit(1);
 }
 ```
@@ -243,6 +251,7 @@ VITE_APP_URL=http://localhost:5173
 Set environment variables in:
 
 **Cloudflare Workers:**
+
 ```bash
 # Using Wrangler CLI
 wrangler secret put BETTER_AUTH_SECRET
@@ -253,6 +262,7 @@ wrangler secret put STRIPE_SECRET_KEY
 ```
 
 **Cloudflare Pages (for webapp):**
+
 ```bash
 # Via Cloudflare Dashboard
 # Workers & Pages → Your Pages project → Settings → Environment variables
@@ -288,8 +298,8 @@ console.log(config.NEW_API_KEY); // TypeScript knows this exists!
 For specialized apps or services:
 
 ```typescript
-import { baseEnvSchema } from '@printy-mobile/config';
-import { z } from 'zod';
+import { baseEnvSchema } from "@printy-mobile/config";
+import { z } from "zod";
 
 const myServiceEnvSchema = baseEnvSchema.extend({
   MY_SERVICE_API_KEY: z.string(),
@@ -315,16 +325,16 @@ export default {
   async fetch(request: Request, env: any) {
     const config = parseApiEnv(env); // Throws if invalid
     // ... rest of app
-  }
+  },
 };
 
 // ❌ Bad - validates on every request
 export default {
   async fetch(request: Request, env: any) {
-    app.get('/endpoint', (c) => {
+    app.get("/endpoint", (c) => {
       const config = parseApiEnv(c.env); // Slow and redundant
     });
-  }
+  },
 };
 ```
 
@@ -333,7 +343,7 @@ export default {
 Export and reuse types for consistency:
 
 ```typescript
-import type { ApiConfig } from '@printy-mobile/config';
+import type { ApiConfig } from "@printy-mobile/config";
 
 function doSomething(config: ApiConfig) {
   // TypeScript enforces correct config shape
@@ -380,11 +390,13 @@ Read the error message carefully. It shows exactly which variables are missing o
 ### Variables Not Loading
 
 **Cloudflare Workers:**
+
 - Check `.dev.vars` file exists and has correct variables
 - Restart `wrangler dev` after changing `.dev.vars`
 - For secrets, use `wrangler secret put` in production
 
 **Vite Apps:**
+
 - Env variables must start with `VITE_`
 - Restart dev server after changing `.env` files
 - Check `.env.local` is not in `.gitignore`
@@ -402,14 +414,16 @@ If TypeScript doesn't recognize new config properties:
 ### From Manual Env Vars to @printy-mobile/config
 
 **Before:**
+
 ```typescript
 const apiKey = process.env.API_KEY; // string | undefined
 const port = Number(process.env.PORT || 3000); // manual parsing
 ```
 
 **After:**
+
 ```typescript
-import { parseApiEnv } from '@printy-mobile/config';
+import { parseApiEnv } from "@printy-mobile/config";
 
 const config = parseApiEnv(env);
 const apiKey = config.API_KEY; // validated and typed

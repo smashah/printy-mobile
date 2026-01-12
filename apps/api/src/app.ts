@@ -1,30 +1,18 @@
 import { createFiberplane, createOpenAPISpec } from "@fiberplane/hono";
-import { ZUserByIDParams, ZUserInsert } from "@printy-mobile/db/dtos";
-import * as schema from "@printy-mobile/db/alias";
-import { eq } from "drizzle-orm";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createMiddleware } from "hono/factory";
 import { HTTPException } from "hono/http-exception";
-import * as z from "zod";
 import { auth, authMiddleware } from "./middleware/auth";
 import { dbProvider } from "./middleware/dbProvider";
 import { initPaymentSdk, paymentsMiddleware } from "./middleware/payments";
-import { zodValidator } from "./middleware/validator";
+import { creditsRouter } from "./routes/credits";
+import { subscriptionsRouter } from "./routes/subscriptions";
 import { uploadsRouter } from "./routes/uploads";
-import { productsRoutes } from "./routes/products";
+import { webhooksRouter } from "./routes/webhooks";
 import type { APIBindings } from "./middleware/type";
 
-const postsQuerySchema = z.object({
-  limit: z.string().optional(),
-  offset: z.string().optional(),
-  category: z.string().optional(),
-});
-
-const createPostSchema = z.object({
-  body: z.string().min(1, "Post body is required"),
-  username: z.string().min(1, "Username is required"),
-});
+const INTERNAL_SERVER_ERROR = 500;
 
 export const api = new Hono<APIBindings>()
   .use("*", dbProvider)
@@ -49,8 +37,8 @@ export const api = new Hono<APIBindings>()
         return c.redirect(`${c.env.WEB_APP_HOST}/${path}`);
       }
 
-      return next();
-    })
+      await next();
+    }),
   )
   .use(
     "*",
@@ -69,64 +57,33 @@ export const api = new Hono<APIBindings>()
         "https://printy-mobile-webapp.printy.workers.dev",
       ],
       allowHeaders: ["Content-Type", "Authorization"],
-      allowMethods: ["POST", "GET", "OPTIONS"],
+      allowMethods: ["POST", "GET", "OPTIONS", "DELETE", "PUT", "PATCH"],
       exposeHeaders: ["Content-Length"],
       maxAge: 600,
       credentials: true,
-    })
+    }),
   )
   .on(["POST", "GET", "OPTIONS"], "/auth/*", (c) => auth(c).handler(c.req.raw))
   .use("*", authMiddleware)
   .use("*", paymentsMiddleware)
-  .get("/users", async (c) => {
-    const db = c.var.db;
-    const users = await db.select().from(schema.tUsers);
-    return c.json(users);
-  })
-  .get("/posts", zodValidator("query", postsQuerySchema), async (c) => {
-    const db = c.var.db;
-    const query = db.select().from(schema.tPosts);
-    const posts = await query;
-    return c.json(posts);
-  })
-  .get("/posts/:id", async (c) => {
-    const db = c.var.db;
-    const { id } = c.req.param();
-    const post = await db
-      .select()
-      .from(schema.tPosts)
-      .where(eq(schema.tPosts.id, id));
-    return c.json(post);
-  })
-  .post("/posts", zodValidator("json", createPostSchema), async (c) => {
-    const db = c.var.db;
-    const { body, username } = c.req.valid("json");
-    const post = await db.insert(schema.tPosts).values({ body, username });
-    return c.json(post);
-  })
-  .post("/replies", async (c) => {
-    const db = c.var.db;
-    const { postId, body } = await c.req.json();
-    const reply = await db.insert(schema.tReplies).values({ postId, body });
-    return c.json(reply);
-  });
+  .route("/subscriptions", subscriptionsRouter)
+  .route("/webhooks", webhooksRouter)
+  .route("/credits", creditsRouter)
+  .route("/uploads", uploadsRouter);
 
 export const app = new Hono<APIBindings>()
-  .get("/", (c) => c.text("Honc from above!"))
+  .get("/", (c) => c.text("Printy Mobile API"))
   .get("/health", (c) => c.text("OK"))
   .route("/auth", api)
-  .route("/api", api)
-  .route("/api/uploads", uploadsRouter)
-  .route("/api/products", productsRoutes);
+  .route("/api", api);
 
 app.onError((error, c) => {
-  console.error(error);
   if (error instanceof HTTPException) {
     return c.json(
       {
         message: error.message,
       },
-      error.status
+      error.status,
     );
   }
 
@@ -134,7 +91,7 @@ app.onError((error, c) => {
     {
       message: "Something went wrong",
     },
-    500
+    INTERNAL_SERVER_ERROR,
   );
 });
 
@@ -142,11 +99,11 @@ app.get("/openapi.json", (c) =>
   c.json(
     createOpenAPISpec(app, {
       info: {
-        title: "Honc D1 App",
+        title: "Printy Mobile API",
         version: "1.0.0",
       },
-    })
-  )
+    }),
+  ),
 );
 
 app.use(
@@ -154,7 +111,7 @@ app.use(
   createFiberplane({
     app,
     openapi: { url: "/openapi.json" },
-  })
+  }),
 );
 
 export default app;

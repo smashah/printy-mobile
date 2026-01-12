@@ -58,7 +58,7 @@ export function BrandSwitcher({
               size="lg"
               className={cn(
                 "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
-                !activeBrand && "data-[state=open]:border"
+                !activeBrand && "data-[state=open]:border",
               )}
             >
               {activeBrand ? (

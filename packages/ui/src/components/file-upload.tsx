@@ -360,8 +360,8 @@ export function FileUpload({
     // Store AbortController with the file
     setFiles((prev) =>
       prev.map((f) =>
-        f.id === fileWithProgress.id ? { ...f, abortController } : f
-      )
+        f.id === fileWithProgress.id ? { ...f, abortController } : f,
+      ),
     );
 
     try {
@@ -377,7 +377,7 @@ export function FileUpload({
             "x-file-extension": fileExtension,
             ...headers,
           },
-        }
+        },
       );
 
       if (!presignedResponse.ok) {
@@ -396,8 +396,8 @@ export function FileUpload({
           const progress = Math.round((e.loaded / e.total) * 100);
           setFiles((prev) =>
             prev.map((f) =>
-              f.id === fileWithProgress.id ? { ...f, progress } : f
-            )
+              f.id === fileWithProgress.id ? { ...f, progress } : f,
+            ),
           );
         }
       });
@@ -456,8 +456,8 @@ export function FileUpload({
                 progress: 100,
                 abortController: undefined,
               }
-            : f
-        )
+            : f,
+        ),
       );
 
       if (onSuccess) {
@@ -478,8 +478,8 @@ export function FileUpload({
                   error: errorMessage,
                   abortController: undefined,
                 }
-              : f
-          )
+              : f,
+          ),
         );
 
         if (onError) {
@@ -508,7 +508,7 @@ export function FileUpload({
     formData.append("file", fileWithProgress.file);
     formData.append(
       "metadata",
-      JSON.stringify({ uploadedAt: new Date().toISOString() })
+      JSON.stringify({ uploadedAt: new Date().toISOString() }),
     );
 
     // Create AbortController for this upload
@@ -517,8 +517,8 @@ export function FileUpload({
     // Store AbortController with the file
     setFiles((prev) =>
       prev.map((f) =>
-        f.id === fileWithProgress.id ? { ...f, abortController } : f
-      )
+        f.id === fileWithProgress.id ? { ...f, abortController } : f,
+      ),
     );
 
     try {
@@ -530,8 +530,8 @@ export function FileUpload({
           const progress = Math.round((e.loaded / e.total) * 100);
           setFiles((prev) =>
             prev.map((f) =>
-              f.id === fileWithProgress.id ? { ...f, progress } : f
-            )
+              f.id === fileWithProgress.id ? { ...f, progress } : f,
+            ),
           );
         }
       });
@@ -591,8 +591,8 @@ export function FileUpload({
                 progress: 100,
                 abortController: undefined,
               }
-            : f
-        )
+            : f,
+        ),
       );
 
       if (onSuccess) {
@@ -613,8 +613,8 @@ export function FileUpload({
                   error: errorMessage,
                   abortController: undefined,
                 }
-              : f
-          )
+              : f,
+          ),
         );
 
         if (onError) {
@@ -685,12 +685,12 @@ export function FileUpload({
           id: crypto.randomUUID(),
           progress: 100,
           uploading: false,
-        })
+        }),
       );
 
       if (!isControlled) {
         setFiles((prev) =>
-          multiple ? [...prev, ...newFilesWithProgress] : newFilesWithProgress
+          multiple ? [...prev, ...newFilesWithProgress] : newFilesWithProgress,
         );
       }
 
@@ -702,7 +702,7 @@ export function FileUpload({
       // Show success toast if files were added successfully and there were no errors
       if (validFiles.length > 0 && !hasErrors) {
         toast.success(
-          `${validFiles.length} ${validFiles.length === 1 ? "file" : "files"} selected`
+          `${validFiles.length} ${validFiles.length === 1 ? "file" : "files"} selected`,
         );
       }
 
@@ -847,7 +847,7 @@ export function FileUpload({
       const urlWithParams = new URL(apiEndpoint);
       urlWithParams.searchParams.append(
         "storageKey",
-        fileToDelete.uploaded.storageKey
+        fileToDelete.uploaded.storageKey,
       );
       const response = await fetch(urlWithParams.toString(), {
         method: "DELETE",
@@ -870,7 +870,7 @@ export function FileUpload({
     } catch (error) {
       if (onError) {
         onError(
-          error instanceof Error ? error : new Error("Failed to delete file")
+          error instanceof Error ? error : new Error("Failed to delete file"),
         );
       }
     }
@@ -1066,7 +1066,7 @@ export function FileUpload({
                   ? "border-primary bg-primary/5"
                   : "border-muted-foreground/25",
                 disabled && "opacity-50 cursor-not-allowed",
-                !disabled && "cursor-pointer hover:border-primary/50"
+                !disabled && "cursor-pointer hover:border-primary/50",
               )}
               onDragEnter={handleDrag}
               onDragLeave={handleDrag}
@@ -1110,7 +1110,7 @@ export function FileUpload({
                 preview === "list" ? "space-y-2" : "grid gap-4",
                 preview === "preview" &&
                   "grid-cols-2 sm:grid-cols-3 md:grid-cols-4",
-                preview === "file" && "grid-cols-1"
+                preview === "file" && "grid-cols-1",
               )}
             >
               {files.map(renderPreview)}

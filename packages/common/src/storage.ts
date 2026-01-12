@@ -13,9 +13,14 @@ export const uploadToR2 = async (
     maxSize?: number;
     allowedTypes?: string[];
     customMetadata?: Record<string, string>;
-  } = {}
+  } = {},
 ): Promise<UploadResult> => {
-  const { path = "uploads", maxSize = 10 * 1024 * 1024, allowedTypes, customMetadata } = options;
+  const {
+    path = "uploads",
+    maxSize = 10 * 1024 * 1024,
+    allowedTypes,
+    customMetadata,
+  } = options;
 
   if (file.size > maxSize) {
     throw new Error(`File size exceeds ${maxSize} bytes`);
@@ -47,18 +52,24 @@ export const uploadToR2 = async (
   };
 };
 
-export const deleteFromR2 = async (r2: R2Bucket, key: string): Promise<void> => {
+export const deleteFromR2 = async (
+  r2: R2Bucket,
+  key: string,
+): Promise<void> => {
   await r2.delete(key);
 };
 
-export const getFromR2 = async (r2: R2Bucket, key: string): Promise<R2ObjectBody | null> => {
+export const getFromR2 = async (
+  r2: R2Bucket,
+  key: string,
+): Promise<R2ObjectBody | null> => {
   return r2.get(key);
 };
 
 export const uploadImage = async (
   r2: R2Bucket,
   file: File,
-  options?: { customMetadata?: Record<string, string> }
+  options?: { customMetadata?: Record<string, string> },
 ) => {
   return uploadToR2(r2, file, {
     path: "images",
@@ -71,7 +82,7 @@ export const uploadImage = async (
 export const uploadDocument = async (
   r2: R2Bucket,
   file: File,
-  options?: { customMetadata?: Record<string, string> }
+  options?: { customMetadata?: Record<string, string> },
 ) => {
   return uploadToR2(r2, file, {
     path: "documents",
@@ -85,8 +96,10 @@ export const uploadDocument = async (
   });
 };
 
-export const generateStorageKey = (path: string, fileExtension: string): string => {
+export const generateStorageKey = (
+  path: string,
+  fileExtension: string,
+): string => {
   const id = crypto.randomUUID();
   return `${path}/${id}.${fileExtension}`;
 };
-

@@ -1,7 +1,7 @@
 import { useGetIdentity } from "@refinedev/core";
 import { Skeleton } from "../../skeleton";
 import { UserAvatar } from "./user-avatar";
-import { cn } from "@printy-mobile/ui/lib/utils"
+import { cn } from "@printy-mobile/ui/lib/utils";
 
 type User = {
   id: number;
@@ -38,7 +38,7 @@ export function UserInfo() {
           "flex-col",
           "justify-between",
           "h-10",
-          "text-left"
+          "text-left",
         )}
       >
         <span className={cn("text-sm", "font-medium", "text-muted-foreground")}>

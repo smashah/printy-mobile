@@ -183,8 +183,12 @@ export const AssetDeviceTag = ({ asset }: { asset: AssetData }) => {
         <View style={styles.holePunch} />
 
         <View style={styles.header}>
-          <Text style={styles.propertyLabel}>Property of {asset.companyName}</Text>
-          <Text style={styles.propertySubtitle}>Company Asset - Do Not Remove</Text>
+          <Text style={styles.propertyLabel}>
+            Property of {asset.companyName}
+          </Text>
+          <Text style={styles.propertySubtitle}>
+            Company Asset - Do Not Remove
+          </Text>
         </View>
 
         <View style={styles.deviceInfo}>
@@ -211,9 +215,7 @@ export const AssetDeviceTag = ({ asset }: { asset: AssetData }) => {
             <Text style={styles.contactText}>
               If found, please return to {asset.contactName}
             </Text>
-            <Text style={styles.contactText}>
-              Email: {asset.contactEmail}
-            </Text>
+            <Text style={styles.contactText}>Email: {asset.contactEmail}</Text>
             {asset.contactPhone && (
               <Text style={styles.contactText}>
                 Phone: {asset.contactPhone}
@@ -230,9 +232,7 @@ export const AssetDeviceTag = ({ asset }: { asset: AssetData }) => {
             {asset.qrCodeDataUrl && (
               <Image style={styles.qrCode} src={asset.qrCodeDataUrl} />
             )}
-            <Text style={styles.qrLabel}>
-              Scan for asset information
-            </Text>
+            <Text style={styles.qrLabel}>Scan for asset information</Text>
           </View>
 
           <View style={styles.companyInfo}>

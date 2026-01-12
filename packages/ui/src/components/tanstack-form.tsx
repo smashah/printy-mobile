@@ -1,63 +1,63 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import * as LabelPrimitive from "@radix-ui/react-label"
-import { Slot } from "@radix-ui/react-slot"
-import { cn } from "@printy-mobile/ui/lib/utils"
+import * as React from "react";
+import * as LabelPrimitive from "@radix-ui/react-label";
+import { Slot } from "@radix-ui/react-slot";
+import { cn } from "@printy-mobile/ui/lib/utils";
 
-import { Label } from "@printy-mobile/ui/components/label"
-import { createFormHookContexts, useStore } from "@tanstack/react-form"
+import { Label } from "@printy-mobile/ui/components/label";
+import { createFormHookContexts, useStore } from "@tanstack/react-form";
 
 const { useFieldContext, useFormContext, fieldContext, formContext } =
-  createFormHookContexts()
+  createFormHookContexts();
 
 function Form(props: React.ComponentProps<"form">) {
-  const form = useFormContext()
+  const form = useFormContext();
 
   return (
     <form
       onSubmit={(e) => {
-        e.stopPropagation()
-        e.preventDefault()
-        form.handleSubmit()
+        e.stopPropagation();
+        e.preventDefault();
+        form.handleSubmit();
       }}
       {...props}
     />
-  )
+  );
 }
 
-const IdContext = React.createContext<string>(null as never)
+const IdContext = React.createContext<string>(null as never);
 
 function useFormItemContext() {
-  const field = useFieldContext()
-  const idContext = React.useContext(IdContext)
+  const field = useFieldContext();
+  const idContext = React.useContext(IdContext);
 
   if (typeof idContext !== "string") {
-    throw new Error("Form Item components should be used within <FormItem>")
+    throw new Error("Form Item components should be used within <FormItem>");
   }
 
-  const errors = useStore(field.store, (state) => state.meta.errors)
-  const isTouched = useStore(field.store, (state) => state.meta.isTouched)
+  const errors = useStore(field.store, (state) => state.meta.errors);
+  const isTouched = useStore(field.store, (state) => state.meta.isTouched);
   const submissionAttempts = useStore(
     field.form.store,
-    (state) => state.submissionAttempts
-  )
+    (state) => state.submissionAttempts,
+  );
 
   const formItem = React.useMemo(() => {
-    const showError = isTouched || submissionAttempts > 0
+    const showError = isTouched || submissionAttempts > 0;
 
-    let errorMessage: string | null = null
+    let errorMessage: string | null = null;
     if (showError && errors.length > 0) {
-      const error = errors[0]
+      const error = errors[0];
 
       if (typeof error === "string") {
-        errorMessage = error
+        errorMessage = error;
       } else if (typeof error === "object" && error !== null) {
         if ("message" in error && typeof error.message === "string") {
-          errorMessage = error.message
+          errorMessage = error.message;
         }
       } else if (error !== null && error !== undefined) {
-        errorMessage = String(error)
+        errorMessage = String(error);
       }
     }
 
@@ -67,14 +67,14 @@ function useFormItemContext() {
       formMessageId: `${idContext}-form-item-message`,
       error: errorMessage,
       hasError: showError && errorMessage !== null,
-    }
-  }, [idContext, isTouched, submissionAttempts, errors])
+    };
+  }, [idContext, isTouched, submissionAttempts, errors]);
 
-  return formItem
+  return formItem;
 }
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
-  const id = React.useId()
+  const id = React.useId();
 
   return (
     <IdContext.Provider value={id}>
@@ -84,14 +84,14 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
         {...props}
       />
     </IdContext.Provider>
-  )
+  );
 }
 
 function FormLabel({
   className,
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const formItem = useFormItemContext()
+  const formItem = useFormItemContext();
 
   return (
     <Label
@@ -101,16 +101,16 @@ function FormLabel({
       htmlFor={formItem.formControlId}
       {...props}
     />
-  )
+  );
 }
 
 function FormControl(props: React.ComponentProps<typeof Slot>) {
   const { formControlId, formDescriptionId, formMessageId, hasError } =
-    useFormItemContext()
+    useFormItemContext();
 
   const describedBy = hasError
     ? `${formDescriptionId} ${formMessageId}`
-    : `${formDescriptionId}`
+    : `${formDescriptionId}`;
 
   return (
     <Slot
@@ -120,11 +120,11 @@ function FormControl(props: React.ComponentProps<typeof Slot>) {
       aria-invalid={hasError}
       {...props}
     />
-  )
+  );
 }
 
 function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
-  const { formDescriptionId } = useFormItemContext()
+  const { formDescriptionId } = useFormItemContext();
 
   return (
     <p
@@ -133,15 +133,15 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
       className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
-  )
+  );
 }
 
 function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
-  const { error, formMessageId } = useFormItemContext()
-  const body = error ?? props.children
+  const { error, formMessageId } = useFormItemContext();
+  const body = error ?? props.children;
 
   if (!body) {
-    return null
+    return null;
   }
 
   return (
@@ -153,7 +153,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     >
       {body}
     </p>
-  )
+  );
 }
 
 export {
@@ -167,4 +167,4 @@ export {
   useFieldContext,
   formContext,
   useFormContext,
-}
+};

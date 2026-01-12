@@ -242,13 +242,19 @@ const formatDuration = (seconds: number) => {
   if (seconds < 60) return `${seconds}s`;
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+  return remainingSeconds > 0
+    ? `${minutes}m ${remainingSeconds}s`
+    : `${minutes}m`;
 };
 
 export const BuildReceipt = ({ build }: { build: BuildData }) => {
   const isSuccess = build.status === "success";
-  const statusBadgeClass = isSuccess ? styles.statusBadge : styles.statusBadgeFailing;
-  const progressFillClass = isSuccess ? styles.progressBarFill : styles.progressBarFillFailing;
+  const statusBadgeClass = isSuccess
+    ? styles.statusBadge
+    : styles.statusBadgeFailing;
+  const progressFillClass = isSuccess
+    ? styles.progressBarFill
+    : styles.progressBarFillFailing;
   const progressWidth = isSuccess ? 100 : 75;
 
   return (
@@ -266,35 +272,57 @@ export const BuildReceipt = ({ build }: { build: BuildData }) => {
           </View>
           <View style={styles.buildInfoItem}>
             <Text style={styles.buildInfoLabel}>Time</Text>
-            <Text style={styles.buildInfoValue}>{new Date(build.startTime).toLocaleTimeString()}</Text>
+            <Text style={styles.buildInfoValue}>
+              {new Date(build.startTime).toLocaleTimeString()}
+            </Text>
           </View>
         </View>
 
         <View style={styles.statusSection}>
           <View style={[styles.statusBadge, statusBadgeClass]}>
             <Text style={styles.statusText}>
-              {build.status === "success" ? "Success" : build.status === "failure" ? "Failed" : "Running"}
+              {build.status === "success"
+                ? "Success"
+                : build.status === "failure"
+                  ? "Failed"
+                  : "Running"}
             </Text>
           </View>
         </View>
 
         <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBarFill, progressFillClass, { width: `${progressWidth}%` }]} />
+          <View
+            style={[
+              styles.progressBarFill,
+              progressFillClass,
+              { width: `${progressWidth}%` },
+            ]}
+          />
         </View>
 
         <View style={styles.durationSection}>
           <ClockIcon />
-          <Text style={styles.durationText}>Duration: {formatDuration(build.duration)}</Text>
+          <Text style={styles.durationText}>
+            Duration: {formatDuration(build.duration)}
+          </Text>
         </View>
 
         <View style={styles.stagesSection}>
           <Text style={styles.stagesTitle}>Pipeline Stages</Text>
           {build.stages.slice(0, 5).map((stage, i) => (
             <View key={i} style={styles.stageRow}>
-              {stage.status === "success" ? <CheckIcon /> : stage.status === "failure" ? <XIcon /> : <View style={styles.stageStatusIcon} />}
+              {stage.status === "success" ? (
+                <CheckIcon />
+              ) : stage.status === "failure" ? (
+                <XIcon />
+              ) : (
+                <View style={styles.stageStatusIcon} />
+              )}
               <Text style={styles.stageName}>{stage.name}</Text>
               {stage.duration && (
-                <Text style={styles.stageDuration}>{formatDuration(stage.duration)}</Text>
+                <Text style={styles.stageDuration}>
+                  {formatDuration(stage.duration)}
+                </Text>
               )}
             </View>
           ))}
@@ -311,7 +339,9 @@ export const BuildReceipt = ({ build }: { build: BuildData }) => {
         )}
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Printed: {new Date().toLocaleDateString()}</Text>
+          <Text style={styles.footerText}>
+            Printed: {new Date().toLocaleDateString()}
+          </Text>
           <ReceiptDots />
           <Text style={styles.footerText}>Build #{build.buildId}</Text>
         </View>

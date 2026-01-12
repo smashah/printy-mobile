@@ -32,8 +32,12 @@ async function main() {
     console.error("   If you really need to reset production:");
     console.error("   1. Backup your data first");
     console.error("   2. Manually drop tables via Cloudflare dashboard");
-    console.error("   3. Run migrations: ENVIRONMENT=production pnpm db:migrate");
-    console.error("   4. Seed if needed: ENVIRONMENT=production pnpm db:seed\n");
+    console.error(
+      "   3. Run migrations: ENVIRONMENT=production pnpm db:migrate",
+    );
+    console.error(
+      "   4. Seed if needed: ENVIRONMENT=production pnpm db:seed\n",
+    );
     process.exit(1);
   }
 
@@ -127,7 +131,7 @@ function getLocalDb() {
   const pathToDb = getLocalD1dbPath();
   if (!pathToDb) {
     console.error(
-      "❌ Local D1 database not found. Try running the dev server first."
+      "❌ Local D1 database not found. Try running the dev server first.",
     );
     process.exit(1);
   }

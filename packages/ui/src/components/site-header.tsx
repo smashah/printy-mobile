@@ -1,6 +1,6 @@
-import { Button } from "@printy-mobile/ui/components/button"
-import { Separator } from "@printy-mobile/ui/components/separator"
-import { SidebarTrigger } from "@printy-mobile/ui/components/sidebar"
+import { Button } from "@printy-mobile/ui/components/button";
+import { Separator } from "@printy-mobile/ui/components/separator";
+import { SidebarTrigger } from "@printy-mobile/ui/components/sidebar";
 
 export function SiteHeader() {
   return (
@@ -26,5 +26,5 @@ export function SiteHeader() {
         </div>
       </div>
     </header>
-  )
+  );
 }

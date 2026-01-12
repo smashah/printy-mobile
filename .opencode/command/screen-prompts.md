@@ -37,7 +37,7 @@ Task({
     [Include the specific screen prompt]
     
     ## Implementation Notes
-    - Use @printy-mobile/ui components exclusively
+    - Use @repo/ui components exclusively
     - Follow existing route patterns in apps/webapp/src/routes
     - Match the aesthetic language precisely
   `,
@@ -479,7 +479,7 @@ When executing this command:
 6. **Create actionable outputs** - Each screen prompt should be implementable by `frontend-ui-ux-engineer` in isolation.
 
 7. **Reference existing codebase patterns**:
-   - Use `@printy-mobile/ui` components (shadcn/ui based)
+   - Use `@repo/ui` components (shadcn/ui based)
    - Reference existing routes in `apps/webapp/src/routes`
    - Follow Tailwind CSS conventions
 
@@ -508,7 +508,7 @@ Task({
 - Access: [Public / Authenticated]
 
 ### Components to Use
-- Use ONLY \`@printy-mobile/ui\` components (shadcn/ui based)
+- Use ONLY \`@repo/ui\` components (shadcn/ui based)
 - Location: \`packages/ui/src/components/\`
 
 ### File Location

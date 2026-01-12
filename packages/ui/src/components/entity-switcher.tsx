@@ -45,7 +45,9 @@ export interface EntitySwitcherProps<T = any> {
   /** Show create option in the dropdown */
   showCreate?: boolean;
   /** Custom renderer for entity metadata in the trigger button */
-  renderMetadata?: (entity: EntitySwitcherProps["entities"][0]) => React.ReactNode;
+  renderMetadata?: (
+    entity: EntitySwitcherProps["entities"][0],
+  ) => React.ReactNode;
 }
 
 export function EntitySwitcher({
@@ -68,12 +70,22 @@ export function EntitySwitcher({
     return entities[0];
   }, [entities, selectedEntityId]);
 
-  const defaultMetadataRenderer = (entity: EntitySwitcherProps["entities"][0]) => {
+  const defaultMetadataRenderer = (
+    entity: EntitySwitcherProps["entities"][0],
+  ) => {
     if (entity.description) {
       return <span className="truncate text-xs">{entity.description}</span>;
     }
-    if (entity.metadata && typeof entity.metadata === 'object' && 'plan' in entity.metadata) {
-      return <span className="truncate text-xs">{(entity.metadata as any).plan}</span>;
+    if (
+      entity.metadata &&
+      typeof entity.metadata === "object" &&
+      "plan" in entity.metadata
+    ) {
+      return (
+        <span className="truncate text-xs">
+          {(entity.metadata as any).plan}
+        </span>
+      );
     }
     return null;
   };
@@ -87,7 +99,7 @@ export function EntitySwitcher({
               size="lg"
               className={cn(
                 "data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground",
-                !activeEntity && "data-[state=open]:border"
+                !activeEntity && "data-[state=open]:border",
               )}
             >
               {activeEntity ? (
@@ -99,7 +111,9 @@ export function EntitySwitcher({
                     <span className="truncate font-semibold">
                       {activeEntity.name}
                     </span>
-                    {renderMetadata ? renderMetadata(activeEntity) : defaultMetadataRenderer(activeEntity)}
+                    {renderMetadata
+                      ? renderMetadata(activeEntity)
+                      : defaultMetadataRenderer(activeEntity)}
                   </div>
                   <ChevronsUpDown className="ml-auto" />
                 </>
@@ -119,7 +133,9 @@ export function EntitySwitcher({
                 </div>
               ) : (
                 <div className="flex flex-1 text-left text-sm leading-tight">
-                  <span className="text-muted-foreground">No {entityLabel.toLowerCase()}</span>
+                  <span className="text-muted-foreground">
+                    No {entityLabel.toLowerCase()}
+                  </span>
                 </div>
               )}
             </SidebarMenuButton>
@@ -177,18 +193,24 @@ export function EntitySwitcher({
 }
 
 // Convenience exports for common use cases
-export const OrgSwitcher = (props: Omit<EntitySwitcherProps, 'entityLabel' | 'createLabel'>) => (
-  <EntitySwitcher {...props} entityLabel="Organizations" createLabel="organization" />
+export const OrgSwitcher = (
+  props: Omit<EntitySwitcherProps, "entityLabel" | "createLabel">,
+) => (
+  <EntitySwitcher
+    {...props}
+    entityLabel="Organizations"
+    createLabel="organization"
+  />
 );
 
-export const BrandSwitcher = (props: Omit<EntitySwitcherProps, 'entityLabel' | 'createLabel'>) => (
-  <EntitySwitcher {...props} entityLabel="Brands" createLabel="brand" />
-);
+export const BrandSwitcher = (
+  props: Omit<EntitySwitcherProps, "entityLabel" | "createLabel">,
+) => <EntitySwitcher {...props} entityLabel="Brands" createLabel="brand" />;
 
-export const ProjectSwitcher = (props: Omit<EntitySwitcherProps, 'entityLabel' | 'createLabel'>) => (
-  <EntitySwitcher {...props} entityLabel="Projects" createLabel="project" />
-);
+export const ProjectSwitcher = (
+  props: Omit<EntitySwitcherProps, "entityLabel" | "createLabel">,
+) => <EntitySwitcher {...props} entityLabel="Projects" createLabel="project" />;
 
-export const TeamSwitcher = (props: Omit<EntitySwitcherProps, 'entityLabel' | 'createLabel'>) => (
-  <EntitySwitcher {...props} entityLabel="Teams" createLabel="team" />
-);
+export const TeamSwitcher = (
+  props: Omit<EntitySwitcherProps, "entityLabel" | "createLabel">,
+) => <EntitySwitcher {...props} entityLabel="Teams" createLabel="team" />;

@@ -32,13 +32,13 @@ export const postsRoutes = new Hono<{ Bindings: Env }>();
 ```typescript
 // ✅ CORRECT
 postsRoutes.post("/", async (c) => {
-  const db = c.var.db;  // From dbProvider middleware
+  const db = c.var.db; // From dbProvider middleware
   await db.insert(schema.posts).values(data);
 });
 
 // ❌ WRONG
 postsRoutes.post("/", async (c) => {
-  const db = drizzle(c.env.DB, { schema });  // Wasteful!
+  const db = drizzle(c.env.DB, { schema }); // Wasteful!
   await db.insert(schema.posts).values(data);
 });
 ```
@@ -52,7 +52,7 @@ postsRoutes.post("/", async (c) => {
 ```typescript
 // ✅ CORRECT
 postsRoutes.post("/", async (c) => {
-  const user = c.var.user;  // From authMiddleware
+  const user = c.var.user; // From authMiddleware
 
   if (!user) {
     throw new HTTPException(401, { message: "Authentication required" });
@@ -63,7 +63,7 @@ postsRoutes.post("/", async (c) => {
 
 // ❌ WRONG
 postsRoutes.post("/", async (c) => {
-  const userId = c.req.header("user-id");  // Insecure!
+  const userId = c.req.header("user-id"); // Insecure!
 });
 ```
 
@@ -74,15 +74,15 @@ postsRoutes.post("/", async (c) => {
 ### 4. ✅ Use `zValidator` (Correct Name!)
 
 ```typescript
-import { zValidator } from "@hono/zod-validator";  // ✅ CORRECT
+import { zValidator } from "@hono/zod-validator"; // ✅ CORRECT
 
 // ✅ CORRECT
 postsRoutes.post("/", zValidator("json", ZPostInsert), async (c) => {
-  const data = c.req.valid("json");  // Typed and validated!
+  const data = c.req.valid("json"); // Typed and validated!
 });
 
 // ❌ WRONG
-import { zodValidator } from "@hono/zod-validator";  // Doesn't exist!
+import { zodValidator } from "@hono/zod-validator"; // Doesn't exist!
 ```
 
 **Why:** It's `zValidator`, not `zodValidator`. This trips up AI assistants constantly.
@@ -94,7 +94,10 @@ import { zodValidator } from "@hono/zod-validator";  // Doesn't exist!
 ```typescript
 // ✅ CORRECT
 import * as schema from "@printy-mobile/db/schema";
-import { ZPostInsert, type PostSelect } from "@printy-mobile/db/dtos/validation";
+import {
+  ZPostInsert,
+  type PostSelect,
+} from "@printy-mobile/db/dtos/validation";
 
 // ❌ WRONG
 import * as schema from "@printy-mobile/db/schema/index";
@@ -127,14 +130,14 @@ apps/api/src/routes/
 When using `APIBindings`, you have access to:
 
 ```typescript
-c.var.db            // Drizzle DB client (with schema & relations)
-c.var.user          // Authenticated user (or null)
-c.var.session       // User session (or null)
-c.var.auth          // Better-auth instance
-c.var.setupTasks    // Trigger.dev jobs (if using)
+c.var.db; // Drizzle DB client (with schema & relations)
+c.var.user; // Authenticated user (or null)
+c.var.session; // User session (or null)
+c.var.auth; // Better-auth instance
+c.var.setupTasks; // Trigger.dev jobs (if using)
 
-c.env.DB            // Raw D1 database
-c.env.MEDIA_BUCKET  // R2 bucket for uploads
+c.env.DB; // Raw D1 database
+c.env.MEDIA_BUCKET; // R2 bucket for uploads
 // ... all environment variables
 ```
 
@@ -146,11 +149,14 @@ c.env.MEDIA_BUCKET  // R2 bucket for uploads
 
 ```typescript
 // Success (single item)
-return c.json({
-  success: true,
-  data: post,
-  message: "Post created"  // Optional
-}, 201);
+return c.json(
+  {
+    success: true,
+    data: post,
+    message: "Post created", // Optional
+  },
+  201,
+);
 
 // Success (list with pagination)
 return c.json({
@@ -160,8 +166,8 @@ return c.json({
     total: 100,
     limit: 20,
     offset: 0,
-    hasMore: true
-  }
+    hasMore: true,
+  },
 });
 
 // Error (use HTTPException)
@@ -176,6 +182,7 @@ throw new HTTPException(500, { message: "Failed to create post" });
 ## 🛡️ Common Patterns
 
 ### Authentication Check
+
 ```typescript
 const user = c.var.user;
 
@@ -186,6 +193,7 @@ if (!user) {
 ```
 
 ### Ownership Check
+
 ```typescript
 const post = await db.query.posts.findFirst({
   where: eq(schema.posts.id, postId),
@@ -202,6 +210,7 @@ if (post.userId !== user.id) {
 ```
 
 ### Privacy Filtering
+
 ```typescript
 const conditions = [];
 
@@ -222,6 +231,7 @@ const posts = await db.query.posts.findMany({
 ```
 
 ### Error Handling
+
 ```typescript
 try {
   // ... operation
@@ -237,14 +247,14 @@ try {
 
 ## 📚 Quick Reference
 
-| Pattern | ✅ Correct | ❌ Wrong |
-|---------|-----------|----------|
-| Type | `new Hono<APIBindings>()` | `new Hono<{ Bindings: Env }>()` |
-| DB Access | `c.var.db` | `drizzle(c.env.DB, ...)` |
-| Auth | `c.var.user` | `c.req.header("user-id")` |
-| Validator | `zValidator` | `zodValidator` |
-| Imports | `@printy-mobile/db/schema` | `.../db/schema/index` |
-| Location | `src/routes/posts.routes.ts` | `src/routes/myproject/posts.routes.ts` |
+| Pattern   | ✅ Correct                   | ❌ Wrong                               |
+| --------- | ---------------------------- | -------------------------------------- |
+| Type      | `new Hono<APIBindings>()`    | `new Hono<{ Bindings: Env }>()`        |
+| DB Access | `c.var.db`                   | `drizzle(c.env.DB, ...)`               |
+| Auth      | `c.var.user`                 | `c.req.header("user-id")`              |
+| Validator | `zValidator`                 | `zodValidator`                         |
+| Imports   | `@printy-mobile/db/schema`   | `.../db/schema/index`                  |
+| Location  | `src/routes/posts.routes.ts` | `src/routes/myproject/posts.routes.ts` |
 
 ---
 

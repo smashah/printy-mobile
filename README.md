@@ -7,6 +7,7 @@ Mobile-first thermal printing application for generating labels, tickets, and do
 ## Overview
 
 Printy Mobile is a monorepo that provides:
+
 - **Printer API Service** - REST API for generating PDF labels from various data sources
 - **Capabilities Package** - Shared PDF templates and data fetching logic
 - **Native App** (Future) - iOS/Android mobile app for printing on the go
@@ -59,18 +60,18 @@ pnpm --filter @printy-mobile/printer-api-service dev
 
 The Printer API Service exposes the following endpoints:
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/print/github` | POST | Generate GitHub issue label |
-| `/print/linear` | POST | Generate Linear issue label |
-| `/print/recipe` | POST | Generate recipe card |
-| `/print/coloring` | POST | Generate AI coloring page |
-| `/print/wifi` | POST | Generate WiFi access card |
-| `/print/asset` | POST | Generate asset device tag |
-| `/print/pr` | POST | Generate PR boarding pass |
-| `/print/release` | POST | Generate release deployment tag |
-| `/print/build` | POST | Generate build receipt |
-| `/print/todo` | POST | Generate daily todo list |
+| Endpoint          | Method | Description                     |
+| ----------------- | ------ | ------------------------------- |
+| `/print/github`   | POST   | Generate GitHub issue label     |
+| `/print/linear`   | POST   | Generate Linear issue label     |
+| `/print/recipe`   | POST   | Generate recipe card            |
+| `/print/coloring` | POST   | Generate AI coloring page       |
+| `/print/wifi`     | POST   | Generate WiFi access card       |
+| `/print/asset`    | POST   | Generate asset device tag       |
+| `/print/pr`       | POST   | Generate PR boarding pass       |
+| `/print/release`  | POST   | Generate release deployment tag |
+| `/print/build`    | POST   | Generate build receipt          |
+| `/print/todo`     | POST   | Generate daily todo list        |
 
 ### Example Usage
 
@@ -88,11 +89,11 @@ curl -X POST http://localhost:8930/print/wifi \
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
-| `GITHUB_TOKEN` | GitHub API token (optional, increases rate limits) |
-| `LINEAR_API_KEY` | Linear GraphQL API key |
-| `GEMINI_API_KEY` | Google Gemini API for AI coloring pages |
+| Variable         | Description                                        |
+| ---------------- | -------------------------------------------------- |
+| `GITHUB_TOKEN`   | GitHub API token (optional, increases rate limits) |
+| `LINEAR_API_KEY` | Linear GraphQL API key                             |
+| `GEMINI_API_KEY` | Google Gemini API for AI coloring pages            |
 
 ## Development
 
