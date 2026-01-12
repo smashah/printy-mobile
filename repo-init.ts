@@ -32,17 +32,17 @@ function isValidSlug(slug: string): boolean {
   // - Contain only lowercase letters, numbers, hyphens, and underscores
   // - No dots, spaces, uppercase letters, or other special characters
   const slugRegex = /^[a-z][a-z0-9-]*$/;
-  
+
   if (!slugRegex.test(slug)) {
     return false;
   }
-  
+
   // Additional checks
   if (slug.includes("..")) return false; // No consecutive dots
   if (slug.startsWith("-") || slug.endsWith("-")) return false; // No leading/trailing hyphens
   if (slug.includes("--")) return false; // No consecutive hyphens
   if (slug.length < 2 || slug.length > 214) return false; // npm package name length limits
-  
+
   return true;
 }
 
@@ -50,7 +50,7 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
   console.log("🚀 SmashStack Template Project Initializer\n");
 
   const projectName = await question(
-    "Enter project name (e.g., Hypermile Club): "
+    "Enter project name (e.g., Hypermile Club): ",
   );
   if (!projectName || projectName.trim().length === 0) {
     console.log("❌ Project name is required");
@@ -58,13 +58,13 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
   }
 
   const projectSlug = await question(
-    "Enter project slug (e.g., hypermile-club): "
+    "Enter project slug (e.g., hypermile-club): ",
   );
   if (!projectSlug || projectSlug.trim().length === 0) {
     console.log("❌ Project slug is required");
     process.exit(1);
   }
-  
+
   const trimmedSlug = projectSlug.trim();
   if (!isValidSlug(trimmedSlug)) {
     console.log("❌ Invalid project slug format!");
@@ -76,20 +76,20 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
     console.log("   - No dots, spaces, uppercase, or special characters");
     console.log("   - No consecutive or trailing/leading hyphens");
     console.log("   - Length between 2-214 characters");
-    
+
     // Provide a suggestion if possible
     const suggested = trimmedSlug
       .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '-')
-      .replace(/^[^a-z]+/, '')
-      .replace(/--+/g, '-')
-      .replace(/^-+|-+$/g, '')
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/^[^a-z]+/, "")
+      .replace(/--+/g, "-")
+      .replace(/^-+|-+$/g, "")
       .slice(0, 214);
-    
+
     if (suggested && isValidSlug(suggested)) {
       console.log(`\n💡 Suggested slug: ${suggested}`);
     }
-    
+
     process.exit(1);
   }
 
@@ -100,7 +100,7 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
   }
 
   const projectSlogan = await question(
-    "Enter project slogan/motto (e.g., Track your fuel efficiency): "
+    "Enter project slogan/motto (e.g., Track your fuel efficiency): ",
   );
   if (!projectSlogan || projectSlogan.trim().length === 0) {
     console.log("❌ Project slogan is required");
@@ -108,7 +108,7 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
   }
 
   const projectDescription = await question(
-    "Enter project description for SEO (e.g., Track and analyze your fuel efficiency with detailed insights): "
+    "Enter project description for SEO (e.g., Track and analyze your fuel efficiency with detailed insights): ",
   );
   if (!projectDescription || projectDescription.trim().length === 0) {
     console.log("❌ Project description is required");
@@ -116,14 +116,14 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
   }
 
   const portPrefixInput = await question(
-    "Enter dev port prefix (default 8920): "
+    "Enter dev port prefix (default 8920): ",
   );
   let portPrefix = 8920;
   if (portPrefixInput.trim() !== "") {
     const parsed = Number.parseInt(portPrefixInput.trim(), 10);
     if (Number.isNaN(parsed) || parsed < 1000 || parsed > 65_000) {
       console.log(
-        "❌ Invalid port prefix. Please enter a number between 1000 and 65000."
+        "❌ Invalid port prefix. Please enter a number between 1000 and 65000.",
       );
       process.exit(1);
     }
@@ -132,10 +132,10 @@ async function collectProjectInfo(): Promise<ProjectConfig> {
 
   console.log("\n📋 Optional Cloudflare Configuration:");
   const cloudflareAccountId = await question(
-    "Cloudflare Account ID (optional, press Enter to skip): "
+    "Cloudflare Account ID (optional, press Enter to skip): ",
   );
   const cloudflareZoneId = await question(
-    "Cloudflare Zone ID (optional, press Enter to skip): "
+    "Cloudflare Zone ID (optional, press Enter to skip): ",
   );
 
   return {
@@ -161,7 +161,7 @@ function getAllFiles(dir: string, fileList: string[] = []): string[] {
       // Skip node_modules, .git, and other common directories
       if (
         !["node_modules", ".git", ".next", "dist", "build", ".turbo"].includes(
-          file
+          file,
         )
       ) {
         getAllFiles(filePath, fileList);
@@ -182,20 +182,65 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
   const replacements = [
     // Basic replacements
     { pattern: /Printy Mobile/g, replacement: config.projectName },
-    { pattern: /Print labels anywhere with your mobile device/g, replacement: config.projectSlogan },
-    { pattern: /Mobile-first thermal printing application for generating labels, tickets, and documents on the go/g, replacement: config.projectDescription },
+    {
+      pattern: /Print labels anywhere with your mobile device/g,
+      replacement: config.projectSlogan,
+    },
+    {
+      pattern:
+        /Mobile-first thermal printing application for generating labels, tickets, and documents on the go/g,
+      replacement: config.projectDescription,
+    },
     { pattern: /"printy-mobile"/g, replacement: `"${config.projectSlug}"` },
     { pattern: /yourdomain\.com/g, replacement: config.domain },
-    { pattern: /portPrefix = 8930/g, replacement: `portPrefix = ${config.portPrefix}` },
-    { pattern: /export const apiPort = 8930/g, replacement: `export const apiPort = ${config.portPrefix}` },
-    { pattern: /export const backofficePort = portPrefix \+ 1/g, replacement: `export const backofficePort = ${config.portPrefix + 1}` },
-    { pattern: /export const webappPort = portPrefix \+ 2/g, replacement: `export const webappPort = ${config.portPrefix + 2}` },
-    { pattern: /export const dbPort = portPrefix \+ 3/g, replacement: `export const dbPort = ${config.portPrefix + 3}` },
-    { pattern: /export const devApiUrl = `http:\/\/localhost:\$\{apiPort\}`/g, replacement: `export const devApiUrl = \`http://localhost:${config.portPrefix}\`` },
-    { pattern: /export const devWebappUrl = `http:\/\/localhost:\$\{webappPort\}`/g, replacement: `export const devWebappUrl = \`http://localhost:${config.portPrefix + 2}\`` },
-    { pattern: /export const devBackofficeUrl = `http:\/\/localhost:\$\{backofficePort\}`/g, replacement: `export const devBackofficeUrl = \`http://localhost:${config.portPrefix + 1}\`` },
-    { pattern: /export const cloudflareAccountId: string \| undefined = undefined/g, replacement: config.cloudflareAccountId ? `export const cloudflareAccountId: string | undefined = "${config.cloudflareAccountId}"` : `export const cloudflareAccountId: string | undefined = undefined` },
-    { pattern: /export const cloudflareZoneId: string \| undefined = undefined/g, replacement: config.cloudflareZoneId ? `export const cloudflareZoneId: string | undefined = "${config.cloudflareZoneId}"` : `export const cloudflareZoneId: string | undefined = undefined` },
+    {
+      pattern: /portPrefix = 8930/g,
+      replacement: `portPrefix = ${config.portPrefix}`,
+    },
+    {
+      pattern: /export const apiPort = 8930/g,
+      replacement: `export const apiPort = ${config.portPrefix}`,
+    },
+    {
+      pattern: /export const backofficePort = portPrefix \+ 1/g,
+      replacement: `export const backofficePort = ${config.portPrefix + 1}`,
+    },
+    {
+      pattern: /export const webappPort = portPrefix \+ 2/g,
+      replacement: `export const webappPort = ${config.portPrefix + 2}`,
+    },
+    {
+      pattern: /export const dbPort = portPrefix \+ 3/g,
+      replacement: `export const dbPort = ${config.portPrefix + 3}`,
+    },
+    {
+      pattern: /export const devApiUrl = `http:\/\/localhost:\$\{apiPort\}`/g,
+      replacement: `export const devApiUrl = \`http://localhost:${config.portPrefix}\``,
+    },
+    {
+      pattern:
+        /export const devWebappUrl = `http:\/\/localhost:\$\{webappPort\}`/g,
+      replacement: `export const devWebappUrl = \`http://localhost:${config.portPrefix + 2}\``,
+    },
+    {
+      pattern:
+        /export const devBackofficeUrl = `http:\/\/localhost:\$\{backofficePort\}`/g,
+      replacement: `export const devBackofficeUrl = \`http://localhost:${config.portPrefix + 1}\``,
+    },
+    {
+      pattern:
+        /export const cloudflareAccountId: string \| undefined = undefined/g,
+      replacement: config.cloudflareAccountId
+        ? `export const cloudflareAccountId: string | undefined = "${config.cloudflareAccountId}"`
+        : `export const cloudflareAccountId: string | undefined = undefined`,
+    },
+    {
+      pattern:
+        /export const cloudflareZoneId: string \| undefined = undefined/g,
+      replacement: config.cloudflareZoneId
+        ? `export const cloudflareZoneId: string | undefined = "${config.cloudflareZoneId}"`
+        : `export const cloudflareZoneId: string | undefined = undefined`,
+    },
     {
       pattern: /PRINTY_MOBILE/g,
       replacement: config.projectName.replace(/\s+/g, "_").toUpperCase(),
@@ -304,7 +349,13 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
   const webappPkgPath = path.join("apps", "webapp", "package.json");
   const dbPkgPath = path.join("packages", "db", "package.json");
   const webappAuthPath = path.join("apps", "webapp", "src", "lib", "auth.ts");
-  const webappApiUtilPath = path.join("apps", "webapp", "src", "utils", "api.ts");
+  const webappApiUtilPath = path.join(
+    "apps",
+    "webapp",
+    "src",
+    "utils",
+    "api.ts",
+  );
   const configIndexPath = path.join("packages", "config", "src", "index.ts");
   const nativeAppJsonPath = path.join("apps", "native", "app.json");
 
@@ -350,10 +401,7 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
 
   // Replace hardcoded API port in webapp TypeScript files
   if (filePath.endsWith(webappAuthPath)) {
-    const updated = content.replace(
-      /localhost:7800/g,
-      `localhost:${apiPort}`
-    );
+    const updated = content.replace(/localhost:7800/g, `localhost:${apiPort}`);
     if (updated !== content) {
       content = updated;
       modified = true;
@@ -361,10 +409,7 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
   }
 
   if (filePath.endsWith(webappApiUtilPath)) {
-    const updated = content.replace(
-      /localhost:7800/g,
-      `localhost:${apiPort}`
-    );
+    const updated = content.replace(/localhost:7800/g, `localhost:${apiPort}`);
     if (updated !== content) {
       content = updated;
       modified = true;
@@ -373,13 +418,12 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
 
   // Replace API port default in config package
   if (filePath.endsWith(configIndexPath)) {
-    const updated = content.replace(
-      /(API_PORT:\s*z\.coerce\.number\(\)\.default\()\d+(\))/g,
-      `$1${apiPort}$2`
-    ).replace(
-      /localhost:7800/g,
-      `localhost:${apiPort}`
-    );
+    const updated = content
+      .replace(
+        /(API_PORT:\s*z\.coerce\.number\(\)\.default\()\d+(\))/g,
+        `$1${apiPort}$2`,
+      )
+      .replace(/localhost:7800/g, `localhost:${apiPort}`);
     if (updated !== content) {
       content = updated;
       modified = true;
@@ -392,24 +436,24 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
       // Update expo name from @printy-mobile/native to @{projectSlug}/native
       .replace(
         /"name":\s*"@printy-mobile\/native"/g,
-        `"name": "@${config.projectSlug}/native"`
+        `"name": "@${config.projectSlug}/native"`,
       )
       // Update slug from repo-native to {projectSlug}-native
       .replace(
         /"slug":\s*"repo-native"/g,
-        `"slug": "${config.projectSlug}-native"`
+        `"slug": "${config.projectSlug}-native"`,
       )
       // Update scheme from reponative to {projectSlug}native (no dash for deep linking)
       .replace(
         /"scheme":\s*"reponative"/g,
-        `"scheme": "${config.projectSlug.replace(/-/g, "")}native"`
+        `"scheme": "${config.projectSlug.replace(/-/g, "")}native"`,
       )
       // Update android package from com.anonymous.reponative to com.{projectSlug}.native
       .replace(
         /"package":\s*"com\.anonymous\.reponative"/g,
-        `"package": "com.${config.projectSlug.replace(/-/g, "")}.native"`
+        `"package": "com.${config.projectSlug.replace(/-/g, "")}.native"`,
       );
-    
+
     if (updated !== content) {
       content = updated;
       modified = true;
@@ -421,36 +465,75 @@ function replaceInFile(filePath: string, config: ProjectConfig): void {
   if (filePath.endsWith(globalsPath)) {
     let updated = content
       // Replace project metadata
-      .replace(/export const projectName = "Printy Mobile"/g, `export const projectName = "${config.projectName}"`)
-      .replace(/export const projectSlug = "printy-mobile"/g, `export const projectSlug = "${config.projectSlug}"`)
-      .replace(/export const projectSlogan = "Print labels anywhere with your mobile device"/g, `export const projectSlogan = "${config.projectSlogan}"`)
-      .replace(/export const projectDescription = "Mobile-first thermal printing application for generating labels, tickets, and documents on the go"/g, `export const projectDescription = "${config.projectDescription}"`)
+      .replace(
+        /export const projectName = "Printy Mobile"/g,
+        `export const projectName = "${config.projectName}"`,
+      )
+      .replace(
+        /export const projectSlug = "printy-mobile"/g,
+        `export const projectSlug = "${config.projectSlug}"`,
+      )
+      .replace(
+        /export const projectSlogan = "Print labels anywhere with your mobile device"/g,
+        `export const projectSlogan = "${config.projectSlogan}"`,
+      )
+      .replace(
+        /export const projectDescription = "Mobile-first thermal printing application for generating labels, tickets, and documents on the go"/g,
+        `export const projectDescription = "${config.projectDescription}"`,
+      )
       // Replace domain values (must come before domain-dependent replacements)
-      .replace(/export const domain = "yourdomain\.com"/g, `export const domain = "${config.domain}"`)
+      .replace(
+        /export const domain = "yourdomain\.com"/g,
+        `export const domain = "${config.domain}"`,
+      )
       // Replace port prefix and calculated ports
-      .replace(/export const portPrefix = 8930/g, `export const portPrefix = ${config.portPrefix}`)
-      .replace(/export const apiPort = 8930/g, `export const apiPort = ${config.portPrefix}`)
-      .replace(/export const backofficePort = portPrefix \+ 1/g, `export const backofficePort = ${config.portPrefix + 1}`)
-      .replace(/export const webappPort = portPrefix \+ 2/g, `export const webappPort = ${config.portPrefix + 2}`)
-      .replace(/export const dbPort = portPrefix \+ 3/g, `export const dbPort = ${config.portPrefix + 3}`)
+      .replace(
+        /export const portPrefix = 8930/g,
+        `export const portPrefix = ${config.portPrefix}`,
+      )
+      .replace(
+        /export const apiPort = 8930/g,
+        `export const apiPort = ${config.portPrefix}`,
+      )
+      .replace(
+        /export const backofficePort = portPrefix \+ 1/g,
+        `export const backofficePort = ${config.portPrefix + 1}`,
+      )
+      .replace(
+        /export const webappPort = portPrefix \+ 2/g,
+        `export const webappPort = ${config.portPrefix + 2}`,
+      )
+      .replace(
+        /export const dbPort = portPrefix \+ 3/g,
+        `export const dbPort = ${config.portPrefix + 3}`,
+      )
       // Replace dev URLs (hardcode values for reliability)
-      .replace(/export const devApiUrl = `http:\/\/localhost:\$\{apiPort\}`/g, `export const devApiUrl = "http://localhost:${config.portPrefix}"`)
-      .replace(/export const devWebappUrl = `http:\/\/localhost:\$\{webappPort\}`/g, `export const devWebappUrl = "http://localhost:${config.portPrefix + 2}"`)
-      .replace(/export const devBackofficeUrl = `http:\/\/localhost:\$\{backofficePort\}`/g, `export const devBackofficeUrl = "http://localhost:${config.portPrefix + 1}"`)
+      .replace(
+        /export const devApiUrl = `http:\/\/localhost:\$\{apiPort\}`/g,
+        `export const devApiUrl = "http://localhost:${config.portPrefix}"`,
+      )
+      .replace(
+        /export const devWebappUrl = `http:\/\/localhost:\$\{webappPort\}`/g,
+        `export const devWebappUrl = "http://localhost:${config.portPrefix + 2}"`,
+      )
+      .replace(
+        /export const devBackofficeUrl = `http:\/\/localhost:\$\{backofficePort\}`/g,
+        `export const devBackofficeUrl = "http://localhost:${config.portPrefix + 1}"`,
+      )
       // Replace Cloudflare IDs (conditional)
       .replace(
         /export const cloudflareAccountId: string \| undefined = undefined/g,
-        config.cloudflareAccountId 
+        config.cloudflareAccountId
           ? `export const cloudflareAccountId: string | undefined = "${config.cloudflareAccountId}"`
-          : `export const cloudflareAccountId: string | undefined = undefined`
+          : `export const cloudflareAccountId: string | undefined = undefined`,
       )
       .replace(
         /export const cloudflareZoneId: string \| undefined = undefined/g,
-        config.cloudflareZoneId 
+        config.cloudflareZoneId
           ? `export const cloudflareZoneId: string | undefined = "${config.cloudflareZoneId}"`
-          : `export const cloudflareZoneId: string | undefined = undefined`
+          : `export const cloudflareZoneId: string | undefined = undefined`,
       );
-    
+
     if (updated !== content) {
       content = updated;
       modified = true;
@@ -490,7 +573,7 @@ async function getConfigFromFile(): Promise<ProjectConfig | null> {
     }
 
     const trimmedSlug = String(configData.projectSlug).trim();
-    
+
     // Validate slug format
     if (!isValidSlug(trimmedSlug)) {
       console.log("❌ Invalid project slug format in repo.conf!");
@@ -534,10 +617,14 @@ function saveConfigToFile(config: ProjectConfig): void {
     projectSlogan: config.projectSlogan,
     projectDescription: config.projectDescription,
     portPrefix: config.portPrefix,
-    ...(config.cloudflareAccountId && { cloudflareAccountId: config.cloudflareAccountId }),
-    ...(config.cloudflareZoneId && { cloudflareZoneId: config.cloudflareZoneId }),
+    ...(config.cloudflareAccountId && {
+      cloudflareAccountId: config.cloudflareAccountId,
+    }),
+    ...(config.cloudflareZoneId && {
+      cloudflareZoneId: config.cloudflareZoneId,
+    }),
   };
-  
+
   try {
     fs.writeFileSync(configPath, JSON.stringify(configData, null, 2), "utf8");
     console.log(`✓ Saved configuration to repo.conf`);
@@ -554,7 +641,7 @@ function printSummary(config: ProjectConfig) {
   console.log(`   Project Slogan: ${config.projectSlogan}`);
   console.log(`   Project Description: ${config.projectDescription}`);
   console.log(
-    `   Dev Ports: API=${config.portPrefix}, Backoffice=${config.portPrefix + 1}, Webapp=${config.portPrefix + 2}, DB=${config.portPrefix + 3}`
+    `   Dev Ports: API=${config.portPrefix}, Backoffice=${config.portPrefix + 1}, Webapp=${config.portPrefix + 2}, DB=${config.portPrefix + 3}`,
   );
   if (config.cloudflareAccountId) {
     console.log(`   Cloudflare Account ID: ${config.cloudflareAccountId}`);
@@ -575,7 +662,7 @@ async function main() {
     printSummary(fileConfig);
 
     const confirmFile = await question(
-      "Proceed with this configuration? (y/N, or any other key for interactive mode): "
+      "Proceed with this configuration? (y/N, or any other key for interactive mode): ",
     );
     if (
       confirmFile.toLowerCase() === "y" ||
@@ -649,7 +736,7 @@ async function main() {
   const migrationsDir = path.join("packages", "db", "migrations");
   if (fs.existsSync(migrationsDir)) {
     const confirmDelete = await question(
-      "\nFound existing database migrations. Do you want to delete them? (y/N): "
+      "\nFound existing database migrations. Do you want to delete them? (y/N): ",
     );
     if (
       confirmDelete.toLowerCase() === "y" ||
@@ -681,7 +768,7 @@ async function main() {
   }
   if (!config.cloudflareZoneId) {
     console.log(
-      "   2. Add Cloudflare zone ID to wrangler.toml files for custom domains"
+      "   2. Add Cloudflare zone ID to wrangler.toml files for custom domains",
     );
   }
   console.log("   3. Set up your environment variables");
@@ -690,10 +777,10 @@ async function main() {
 
   console.log("💡 This template implements Spec-Driven Development.");
   console.log(
-    "   It flips the script on traditional software development where specifications become executable, directly generating working implementations."
+    "   It flips the script on traditional software development where specifications become executable, directly generating working implementations.",
   );
   console.log(
-    "   Learn more about this approach at: https://github.com/github/spec-kit"
+    "   Learn more about this approach at: https://github.com/github/spec-kit",
   );
 
   rl.close();
